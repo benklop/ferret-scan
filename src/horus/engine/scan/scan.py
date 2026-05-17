@@ -12,6 +12,7 @@ from horus.engine.algorithms.image_capture import ImageCapture
 from horus.engine.algorithms.image_detection import ImageDetection
 from horus.engine.algorithms.laser_segmentation import LaserSegmentation
 from horus.engine.algorithms.point_cloud_generation import PointCloudGeneration
+from horus.engine.algorithms.depth_to_point_cloud import DepthToPointCloud
 from horus.engine.algorithms.point_cloud_roi import PointCloudROI
 
 
@@ -31,6 +32,7 @@ class Scan(object):
         self.image_detection = ImageDetection()
         self.laser_segmentation = LaserSegmentation()
         self.point_cloud_generation = PointCloudGeneration()
+        self.depth_to_point_cloud = DepthToPointCloud()
         self.point_cloud_roi = PointCloudROI()
         self.is_scanning = False
 

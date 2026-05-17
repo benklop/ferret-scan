@@ -8,6 +8,7 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import threading
 
 from horus import Singleton
+from horus.util import profile
 from horus.engine.driver.board import Board
 from horus.engine.driver.camera_usb import Camera_usb
 
@@ -21,13 +22,23 @@ class Driver(object):
 
     def __init__(self):
         self.board = Board(self)
-        self.camera = Camera_usb(self)
+        self.camera = self._create_camera()
         self.is_connected = False
         self.unplugged = False
 
         # TODO: Callbacks to Observer pattern
         self._before_callback = None
         self._after_callback = None
+
+    def _create_camera(self):
+        mode = profile.settings.get('scanner_mode', 'Ciclop laser')
+        if mode == 'Ferret structured light':
+            from horus.engine.driver.camera_ferret import Camera_ferret
+            return Camera_ferret(self)
+        return Camera_usb(self)
+
+    def _is_ferret(self):
+        return profile.settings.get('scanner_mode', 'Ciclop laser') == 'Ferret structured light'
 
     def connect(self):
         self.__init__()
@@ -40,7 +51,13 @@ class Driver(object):
         self.is_connected = False
         try:
             self.camera.connect()
-            self.board.connect()
+            if self._is_ferret() and profile.settings.get('ferret_turntable_optional', True):
+                try:
+                    self.board.connect()
+                except Exception as board_err:
+                    logger.warning('Turntable board not connected: {0}'.format(board_err))
+            else:
+                self.board.connect()
         except Exception as e:
             exception = e
             logger.error('Failed to connect: '+ str(e))

@@ -201,6 +201,21 @@ class Settings(collections.MutableMapping):
         self._add_setting(
             Setting('camera_id', _('Camera ID'), 'preferences', unicode, u''))
         self._add_setting(
+            Setting('scanner_mode', _('Scanner mode'), 'preferences', unicode,
+                    u'Ferret structured light',
+                    possible_values=(u'Ciclop laser', u'Ferret structured light'),
+                    tooltip=_('Ciclop: webcam + line lasers. Ferret: CR-Scan Ferret depth/RGB-D.')))
+        self._add_setting(
+            Setting('ferret_libferret_root', _('libferret path'), 'preferences', unicode,
+                    os.path.expanduser('~/repos/ferret'),
+                    tooltip=_('Path to libferret clone (Python 3 snap script + OrbbecSDK submodule).')))
+        self._add_setting(
+            Setting('ferret_python3', _('Python 3 for Ferret'), 'preferences', unicode, u'python3',
+                    tooltip=_('Interpreter used to run scripts/ferret_snap_rgbd.py')))
+        self._add_setting(
+            Setting('ferret_turntable_optional', _('Turntable optional (Ferret)'), 'preferences', bool, True,
+                    tooltip=_('Allow Ferret connect when GRBL board is absent (manual rotation).')))
+        self._add_setting(
             Setting('board', _('Board'), 'preferences', unicode, u'BT ATmega328',
                     possible_values=(u'Arduino Uno', u'BT ATmega328')))
         self._add_setting(

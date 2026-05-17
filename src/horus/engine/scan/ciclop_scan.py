@@ -25,6 +25,10 @@ from horus.util import profile
 import logging
 logger = logging.getLogger(__name__)
 
+
+def _is_ferret_mode():
+    return profile.settings.get('scanner_mode', 'Ciclop laser') == 'Ferret structured light'
+
 import platform
 system = platform.system()
 
@@ -154,7 +158,8 @@ class CiclopScan(Scan):
             print string_time + " capture: 0 ms"
 
         # Setup scanner
-        self.driver.board.lasers_off()
+        if not _is_ferret_mode():
+            self.driver.board.lasers_off()
         if self.move_motor:
             self.driver.board.motor_enable()
             self.driver.board.motor_reset_origin()
@@ -234,7 +239,8 @@ class CiclopScan(Scan):
             # Sleep
             time.sleep(self._scan_sleep)
 
-        self.driver.board.lasers_off()
+        if not _is_ferret_mode():
+            self.driver.board.lasers_off()
         self.driver.board.motor_disable()
         self.capturing = False
         self.image_capture.stream = True
@@ -243,6 +249,14 @@ class CiclopScan(Scan):
         capture = ScanCapture(lasers = len(self.laser))
         capture.theta = np.deg2rad(self._theta)
         capture.count = self._count
+
+        if _is_ferret_mode():
+            color, depth, meta = self.driver.camera.capture_rgbd()
+            capture.texture = color
+            capture.depth = depth
+            capture.depth_scale = meta.get('depth_scale', 1.0)
+            self.current_video.set_texture(color)
+            return capture
 
         if self.texture_mode == 2:
             capture.texture = self.image_capture.capture_texture()
@@ -319,6 +333,25 @@ class CiclopScan(Scan):
 
 
     def _process_capture(self, capture):
+        if _is_ferret_mode() and capture.depth is not None:
+            point_cloud, texture = self.depth_to_point_cloud.compute_point_cloud(
+                capture.theta, capture.depth, capture.texture, capture.depth_scale)
+            if point_cloud is not None and self.point_cloud_callback:
+                if texture is None:
+                    r, g, b = self.color
+                    n = point_cloud.shape[1]
+                    texture = np.zeros((3, n), np.uint8)
+                    texture[0, :] = r
+                    texture[1, :] = g
+                    texture[2, :] = b
+                self.point_cloud_callback(self._range, self._progress,
+                                          (point_cloud, texture), (0, capture.count, capture.theta))
+            if self.ph_save_enable and capture.count % self.ph_save_divider == 0:
+                filename = self.ph_save_folder + "/img{:03.03f}.png".format(np.rad2deg(capture.theta))
+                if capture.texture is not None:
+                    self.driver.camera.save_image(filename, capture.texture)
+            return
+
         # Current video arrays
         image = None
         points = [None, None]

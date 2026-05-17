@@ -23,15 +23,15 @@ def package_data_dirs(source, basedir='/usr/share/horus'):
 
 
 setup(
-    name='Horus / Gryphon Scan',
+    name='ferret-scan',
     version=__version__,
-    author='Jesús Arroyo Torrens, Mikhail Nikolaevich Klimushin',
+    author='Jesús Arroyo Torrens, Mikhail Nikolaevich Klimushin, Benjamin Klop',
     author_email='jesus.arroyo@bq.com, gryphon@night-gryphon.ru',
-    description='Gryphon Scan is an advanced fork of Horus project, a full software solution for 3D scanning',
+    description='Structured-light 3D scanning for CR-Scan Ferret (fork of Gryphon Scan / Horus)',
 
     license='GPLv2',
-    keywords="gryphon scan horus ciclop scanning 3d",
-    url='https://github.com/nightgryphon/gryphon-scan',
+    keywords="ferret scan horus gryphon structured light 3d scanning",
+    url='https://github.com/benklop/ferret-scan',
 
     packages=find_packages('src'),
     package_dir={'': 'src'},
