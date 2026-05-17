@@ -8,3 +8,4 @@ pyserial>=3.5
 scipy>=1.10
 matplotlib>=3.8
 six>=1.16
+pybind11>=2.10

@@ -2,96 +2,60 @@
 
 Structured-light scanning workbench for the **Creality CR-Scan Ferret**, forked from [gryphon-scan](https://github.com/nightgryphon/gryphon-scan) (Horus lineage).
 
-| Mode | Hardware | Capture |
-|------|----------|---------|
-| **Ferret structured light** (default) | Orbbec Ferret RGB-D + optional GRBL turntable | Depth + color per turntable step |
-| **Ciclop laser** (legacy) | Webcam + line lasers + Ciclop board | Laser triangulation (original Gryphon path) |
+## Distribution
 
-## Quick start
+| Format | Build |
+|--------|--------|
+| **AppImage** | `./scripts/build appimage` |
+| **Flatpak** | `./scripts/build flatpak` |
+| **Both** | `./scripts/build all` |
 
-### 1. Clone with libferret submodule
+Packaging runs in Docker (host CPU by default). Cross-arch builds:
+
+```bash
+./scripts/build all --arch amd64
+./scripts/build all --arch arm64
+```
+
+Artifacts land in `dist/<arch>/`. CI builds both architectures on tag push (see `.github/workflows/packages.yml`).
+
+## Local development
 
 ```bash
 git clone --recursive https://github.com/benklop/ferret-scan.git
 cd ferret-scan
+./scripts/dev-setup          # .venv, OrbbecSDK, pyorbbecsdk, libferret
+./scripts/dev-check --snap   # optional camera test
+./ferret                     # GUI (binstub sets library paths)
 ```
 
-If you already cloned without submodules:
+On **Fedora**, `dev-setup` uses `/usr/bin/python3` with system `python3-wxpython4` (pip’s wxPython wheel does not match the distro wxGTK). Install `sudo dnf install python3-wxpython4` if needed, then recreate the venv: `rm -rf .venv && ./scripts/dev-setup`.
+
+No `source` step: `./ferret` and `./scripts/dev-check` configure `LD_LIBRARY_PATH`, `PYTHONPATH`, and `FERRET_LIBFERRET_ROOT` automatically.
+
+Settings: `~/.ferret/`. Defaults work for a source checkout (`libferret` submodule, `python3` from `.venv`).
+
+### USB permissions
 
 ```bash
-git submodule update --init --recursive
-```
-
-### 2. Build OrbbecSDK (inside submodule)
-
-```bash
-cd libferret/OrbbecSDK_v2
-cmake -B build && cmake --build build -j$(nproc)
-cd ../..
-```
-
-### 3. GUI + Python dependencies
-
-With [asdf](https://asdf-vm.com/), from the repo root:
-
-```bash
-asdf install    # reads .tool-versions (Python 3.13.7)
-pip install -r requirements.txt
-```
-
-Or use any Python ≥3.9; **3.13** is recommended for pyorbbecsdk compatibility.
-
-Install **wxPython** before matplotlib if the wx backend is missing.
-
-### 4. Ferret camera stack (pyorbbecsdk)
-
-```bash
-chmod +x scripts/setup_ferret_hw.sh scripts/check_ferret.py
-./scripts/setup_ferret_hw.sh    # uses ./libferret by default
-source scripts/ferret_env.sh
-python3 scripts/check_ferret.py --snap
-```
-
-### 5. Run the app
-
-```bash
-./ferret
-```
-
-Settings are stored under `~/.ferret/`. In **Preferences**:
-
-| Setting | Typical value |
-|---------|----------------|
-| Scanner mode | `Ferret structured light` |
-| libferret path | `./libferret` (auto-detected in source checkouts) |
-| Python 3 for Ferret | `python3` |
-| Turntable optional | `true` if you rotate manually |
-
-Connect → Control (turntable) → Calibration → Scanning.
-
-## Architecture
-
-```
-Python 3 (Ferret Scan wx GUI)
-  └─ camera_ferret → subprocess → scripts/ferret_snap_rgbd.py
-                                    └─ libferret/ (submodule) / pyorbbecsdk
-  └─ ciclop_scan → depth_to_point_cloud (Ferret mode)
-  └─ board.py (GRBL turntable, optional)
-```
-
-## Linux udev (USB permissions)
-
-```bash
-cd ~/repos/pyorbbecsdk/scripts/env_setup   # or your pyorbbecsdk clone
+cd .deps/pyorbbecsdk/scripts/env_setup
 sudo ./install_udev_rules.sh
 sudo udevadm control --reload && sudo udevadm trigger
 ```
 
-## Related repos
+## Layout
 
-- [libferret](https://github.com/benklop/libferret) — vendored at `libferret/`; includes OrbbecSDK_v2 fork and Python package
-- [OrbbecSDK_v2](https://github.com/benklop/OrbbecSDK_v2) — Ferret device support (submodule of libferret)
+```
+./ferret                 # GUI binstub
+./scripts/dev-setup      # native dev environment
+./scripts/dev-check      # license checks + hardware validation
+./scripts/build          # Docker → AppImage / Flatpak
+./libferret/             # submodule (OrbbecSDK + Python ferret package)
+./.deps/pyorbbecsdk/     # created by dev-setup
+```
 
 ## License
 
-GPLv2 (inherited from Horus / Gryphon Scan).
+Ferret Scan application code is **GPLv2** (inherited from Horus / Gryphon Scan). See [LICENSE](LICENSE).
+
+Third-party components (Orbbec SDK, extension libraries, Python dependencies) are documented in [doc/THIRD_PARTY_LICENSES.md](doc/THIRD_PARTY_LICENSES.md). Release builds (AppImage, Flatpak) include **unmodified** Orbbec extension `.so` files and their license text under `share/doc/ferret-scan/orbbec/`.

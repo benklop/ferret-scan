@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -eo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/common.sh
+source "${ROOT}/scripts/lib/common.sh"
+"${ROOT}/scripts/check_licenses.sh"
+ferret_export_libs
+exec "$(ferret_python)" "${ROOT}/scripts/check_ferret.py" "$@"

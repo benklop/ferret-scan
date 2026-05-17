@@ -1,0 +1,43 @@
+# Packaging image for AppImage and Flatpak (build on host arch or via buildx).
+FROM ubuntu:24.04 AS base
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake git pkg-config \
+    python3 python3-pip python3-venv python3-dev \
+    libusb-1.0-0-dev libudev-dev \
+    flatpak flatpak-builder \
+    wget fuse libfuse2 \
+    libgl1 libglib2.0-0 libgtk-3-0 libnotify4 \
+    libwebkit2gtk-4.1-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG FERRET_PACKAGE_ARCH=amd64
+RUN set -eux; \
+    case "${FERRET_PACKAGE_ARCH}" in \
+      arm64) URL='https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage' ;; \
+      *) URL='https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage' ;; \
+    esac; \
+    wget -q -O /usr/local/bin/appimagetool "${URL}"; \
+    chmod +x /usr/local/bin/appimagetool
+
+RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+WORKDIR /src
+COPY . /src
+
+RUN chmod +x /src/scripts/dev-setup /src/scripts/dev-check /src/scripts/build \
+    /src/scripts/docker/build-appimage.sh /src/scripts/docker/build-flatpak.sh \
+    && chmod +x /src/ferret
+
+FROM base AS appimage
+ARG FERRET_PACKAGE_ARCH=amd64
+ENV FERRET_PACKAGE_ARCH=${FERRET_PACKAGE_ARCH}
+RUN mkdir -p /artifacts && /src/scripts/docker/build-appimage.sh /artifacts
+
+FROM base AS flatpak
+ARG FERRET_PACKAGE_ARCH=amd64
+ENV FERRET_PACKAGE_ARCH=${FERRET_PACKAGE_ARCH}
+RUN mkdir -p /artifacts \
+    && flatpak install -y --noninteractive flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 \
+    && /src/scripts/docker/build-flatpak.sh /artifacts

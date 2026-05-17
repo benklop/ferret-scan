@@ -26,12 +26,33 @@ def main():
     libferret = os.environ.get("FERRET_LIBFERRET_ROOT", default_libferret)
     errors = 0
 
+    # libferret before ferret-scan imports (same package name).
+    lib_path = os.path.join(os.path.dirname(__file__), "lib")
+    if lib_path not in sys.path:
+        sys.path.insert(0, lib_path)
+
     if not os.path.isdir(libferret):
         errors += fail("libferret not found: {0}".format(libferret))
     else:
         ok("libferret: {0}".format(libferret))
 
-    sdk_lib = os.path.join(libferret, "OrbbecSDK_v2", "build", "linux_x86_64", "lib")
+    try:
+        from libferret_import import get_ferret_device_class
+        get_ferret_device_class()
+        ok("libferret Python package (device)")
+    except ImportError as e:
+        errors += fail("libferret device import: {0}".format(e))
+        print("      Run: ./scripts/dev-setup", file=sys.stderr)
+        return errors
+
+    try:
+        from ferret.util import runtime
+        sdk_lib = runtime.sdk_lib_dir()
+    except ImportError:
+        import platform
+        machine = platform.machine().lower()
+        plat = "linux_x86_64" if machine in ("x86_64", "amd64") else "linux_arm64"
+        sdk_lib = os.path.join(libferret, "OrbbecSDK_v2", "build", plat, "lib")
     sdk_so = os.path.join(sdk_lib, "libOrbbecSDK.so")
     if os.path.isfile(sdk_so):
         ok("OrbbecSDK: {0}".format(sdk_so))
@@ -44,19 +65,13 @@ def main():
     else:
         errors += fail("missing {0}".format(snap))
 
-    sys.path.insert(0, os.path.join(libferret, "python"))
-    try:
-        from ferret.device import FerretDevice  # noqa: F401
-        ok("ferret Python package")
-    except ImportError as e:
-        errors += fail("ferret import: {0}".format(e))
-        print("      Run: ./scripts/setup_ferret_hw.sh", file=sys.stderr)
-        return errors
-
     env = os.environ.copy()
     env["FERRET_LIBFERRET_ROOT"] = libferret
     if os.path.isdir(sdk_lib):
         env["LD_LIBRARY_PATH"] = sdk_lib + ":" + env.get("LD_LIBRARY_PATH", "")
+    pyob_lib = os.path.join(root, ".deps", "pyorbbecsdk", "install", "lib")
+    if os.path.isdir(pyob_lib):
+        env["LD_LIBRARY_PATH"] = pyob_lib + ":" + env.get("LD_LIBRARY_PATH", "")
 
     if "--snap" in sys.argv:
         tmp = tempfile.mkdtemp(prefix="ferret_check_")

@@ -23,15 +23,15 @@ def main():
     out_dir = sys.argv[1]
     os.makedirs(out_dir, exist_ok=True)
 
-    libferret_root = os.environ.get("FERRET_LIBFERRET_ROOT", "")
-    if libferret_root:
-        sys.path.insert(0, os.path.join(libferret_root, "python"))
-
+    lib_dir = os.path.join(os.path.dirname(__file__), "lib")
+    if lib_dir not in sys.path:
+        sys.path.insert(0, lib_dir)
     try:
-        from ferret.device import FerretDevice
+        from libferret_import import get_ferret_device_class
+        FerretDevice = get_ferret_device_class()
     except ImportError as e:
-        print("ferret package not found: {0}".format(e), file=sys.stderr)
-        print("Set FERRET_LIBFERRET_ROOT to your libferret clone.", file=sys.stderr)
+        print("libferret device import failed: {0}".format(e), file=sys.stderr)
+        print("Set FERRET_LIBFERRET_ROOT and run ./scripts/dev-setup", file=sys.stderr)
         return 2
 
     try:

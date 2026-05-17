@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import
 from ferret.util import profile
+from ferret.util import runtime
 
 import json
 import os
@@ -31,7 +32,9 @@ class Camera_ferret(Camera):
         self._is_connected = False
         self._last_image = None
         self._snap_script = self._find_snap_script()
-        self._python3 = profile.settings.get('ferret_python3', 'python3')
+        self._python3 = os.environ.get(
+            'FERRET_PYTHON',
+            profile.settings.get('ferret_python3', 'python3'))
         self._libferret_root = profile.settings.get('ferret_libferret_root', '')
         self.initialize()
         self._width = 1280
@@ -69,13 +72,9 @@ class Camera_ferret(Camera):
             shutil.rmtree(tmp, ignore_errors=True)
 
     def _ferret_env(self):
-        env = os.environ.copy()
+        env = runtime.augmented_environ()
         if self._libferret_root:
             env['FERRET_LIBFERRET_ROOT'] = self._libferret_root
-            sdk_lib = os.path.join(
-                self._libferret_root, 'OrbbecSDK_v2', 'build', 'linux_x86_64', 'lib')
-            if os.path.isdir(sdk_lib):
-                env['LD_LIBRARY_PATH'] = sdk_lib + ':' + env.get('LD_LIBRARY_PATH', '')
         return env
 
     def _run_snap(self, out_dir):

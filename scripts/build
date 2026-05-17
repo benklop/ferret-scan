@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Build AppImage and/or Flatpak in Docker (native arch by default).
+#
+# Usage:
+#   ./scripts/build [appimage|flatpak|all] [--arch amd64|arm64]
+#
+# Examples:
+#   ./scripts/build all                    # host CPU
+#   ./scripts/build appimage --arch arm64  # via buildx
+set -eo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/common.sh
+source "${ROOT}/scripts/lib/common.sh"
+
+TARGET="${1:-all}"
+shift || true
+
+BUILD_ARCH="$(ferret_native_arch)"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --arch)
+      BUILD_ARCH="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+PLATFORM="$(ferret_docker_platform "${BUILD_ARCH}")"
+IMAGE="ferret-scan-packager:${BUILD_ARCH}"
+DOCKERFILE="${ROOT}/docker/Dockerfile.packaging"
+
+if ! docker buildx version >/dev/null 2>&1; then
+  echo "docker buildx is required" >&2
+  exit 1
+fi
+
+build_target() {
+  local name="$1"
+  local out="${ROOT}/dist/${BUILD_ARCH}/${name}"
+  rm -rf "${out}"
+  mkdir -p "${out}"
+  echo "==> Building ${name} (${BUILD_ARCH}, ${PLATFORM})"
+  docker buildx build \
+    --platform "${PLATFORM}" \
+    -f "${DOCKERFILE}" \
+    --target "${name}" \
+    --build-arg "FERRET_PACKAGE_ARCH=${BUILD_ARCH}" \
+    -t "${IMAGE}-${name}" \
+    --load \
+    "${ROOT}"
+  cid="$(docker create "${IMAGE}-${name}")"
+  docker cp "${cid}:/artifacts/." "${out}/"
+  docker rm "${cid}"
+  echo "    → ${out}/"
+}
+
+mkdir -p "${ROOT}/dist"
+
+case "${TARGET}" in
+  appimage) build_target appimage ;;
+  flatpak) build_target flatpak ;;
+  all)
+    build_target appimage
+    build_target flatpak
+    ;;
+  *)
+    echo "Usage: $0 [appimage|flatpak|all] [--arch amd64|arm64]" >&2
+    exit 1
+    ;;
+esac
+
+echo "Packages written under dist/${BUILD_ARCH}/"

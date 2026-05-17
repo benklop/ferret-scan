@@ -1,0 +1,38 @@
+name: Packages
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  package:
+    name: ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+          - arch: arm64
+            platform: linux/arm64
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build AppImage
+        run: ./scripts/build appimage --arch ${{ matrix.arch }}
+
+      - name: Build Flatpak
+        run: ./scripts/build flatpak --arch ${{ matrix.arch }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ferret-scan-${{ matrix.arch }}
+          path: dist/${{ matrix.arch }}/

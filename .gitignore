@@ -24,6 +24,8 @@ dar_dist/*
 _site
 build/
 dist/
+.deps/
+.venv/
 src/Ferret.egg-info/
 ferret.egg-info/
 ferret.log
@@ -37,3 +39,10 @@ horus.bat
 src/ferret/*.json
 *.bak
 *.bk
+
+# Creality algo assets (not distributed; research only)
+algo.obconfig
+**/algo_blobs/
+libferret/share/ferret/
+libferret/.cache/creality/
+**/lib/ferret/
