@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,18 +10,18 @@ import wx._core
 import logging.config
 import datetime
 
-from horus.gui.main import MainWindow
-from horus.gui.splash import SplashScreen
-from horus.gui.welcome import WelcomeDialog
+from ferret.gui.main import MainWindow
+from ferret.gui.splash import SplashScreen
+from ferret.gui.welcome import WelcomeDialog
 
-from horus.util import profile, resources, version, system as sys
-from horus.gui.util.version_window import VersionWindow
+from ferret.util import profile, resources, version, system as sys
+from ferret.gui.util.version_window import VersionWindow
 
 
-class HorusApp(wx.App):
+class FerretApp(wx.App):
 
     def __init__(self):
-        super(HorusApp, self).__init__(redirect=False)
+        super(FerretApp, self).__init__(redirect=False)
 
         self.splash = None
 
@@ -86,7 +87,7 @@ class HorusApp(wx.App):
             last_log_date = datetime.datetime.strptime(last_log_date, date_format)
             # Remove log if have elapsed 7 days after last log clear
             if (current_log_date - last_log_date).days >= 7:
-                with open('horus.log', 'w'):
+                with open('ferret.log', 'w'):
                     pass
         except:
             pass

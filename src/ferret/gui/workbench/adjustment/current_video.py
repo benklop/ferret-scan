@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,9 +11,9 @@ import cv2
 import time
 import numpy as np
 
-from horus import Singleton
-from horus.gui.engine import image_capture, image_detection, laser_segmentation
-from horus.gui.util.augmented_view import augmented_draw_platform
+from ferret import Singleton
+from ferret.gui.engine import image_capture, image_detection, laser_segmentation
+from ferret.gui.util.augmented_view import augmented_draw_platform
 
 
 @Singleton
@@ -61,7 +63,7 @@ class CurrentVideo(object):
                 corners = image_detection.detect_corners(image)
 #                image_capture.flush_laser(14)
                 images = image_capture.capture_lasers()
-                for i in xrange(2):
+                for i in range(2):
                     images[i] = image_detection.pattern_mask(images[i], corners)
                     if self.draw_line:
                         (u, v), images[i] = laser_segmentation.compute_2d_points(images[i])
@@ -72,7 +74,7 @@ class CurrentVideo(object):
                         images[i] = cv2.cvtColor(images[i], cv2.COLOR_GRAY2RGB)
             else:
                 images = image_capture.capture_lasers()
-                for i in xrange(2):
+                for i in range(2):
                     if self.draw_line:
                         (u, v), images[i] = laser_segmentation.compute_2d_points(images[i])
                         images[i] = cv2.cvtColor(images[i], cv2.COLOR_GRAY2RGB)

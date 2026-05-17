@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,8 +12,8 @@ import cv2
 import numpy as np
 from distutils.version import StrictVersion, LooseVersion
 
-from horus import Singleton
-from horus.engine.calibration.calibration import Calibration
+from ferret import Singleton
+from ferret.engine.calibration.calibration import Calibration
 
 
 class CameraIntrinsicsError(Exception):
@@ -118,7 +121,7 @@ class CameraIntrinsics(Calibration):
             '''
         if ret:
             # Compute calibration error
-            for i in xrange(len(self.object_points)):
+            for i in range(len(self.object_points)):
                 imgpoints2, _ = cv2.projectPoints(
                     self.object_points[i], rvecs[i], tvecs[i], cmat, dvec)
                 error += cv2.norm(self.image_points[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)

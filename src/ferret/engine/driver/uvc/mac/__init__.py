@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 '''
  ----------------------------------------------
  -  Horus Project
@@ -23,10 +24,11 @@ Three classes:
     Control is the actual Control with methods for getting and setting them.
 """
 import sys
-from raw import *
+from .raw import *
 
 #logging
 import logging
+import six
 logger = logging.getLogger(__name__)
 
 class Control(object):
@@ -119,12 +121,12 @@ class Controls(dict):
             self[c] = Control(c,i,self.handle)
 
     def update_from_device(self):
-        for c in self.itervalues():
+        for c in six.itervalues(self):
             if c.flags == "active":
                 c.value = c.get_val_from_device()
 
     def load_defaults(self):
-        for c in self.itervalues():
+        for c in six.itervalues(self):
             if c.flags == "active" and c.default is not None:
                 c.set_val(c.default)
 

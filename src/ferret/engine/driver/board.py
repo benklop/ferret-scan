@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -10,7 +12,7 @@ import glob
 import serial
 import threading
 import platform
-from horus.util import profile
+from ferret.util import profile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -194,11 +196,11 @@ class Board(object):
                 self._send_command("M70T" + str(index + 1))
 
     def lasers_on(self):
-        for i in xrange(self._laser_number):
+        for i in range(self._laser_number):
             self.laser_on(i)
 
     def lasers_off(self):
-        for i in xrange(self._laser_number):
+        for i in range(self._laser_number):
             self.laser_off(i)
 
     def ldr_sensor(self, pin):
@@ -273,14 +275,14 @@ class Board(object):
         """Obtain list of serial devices"""
         baselist = []
         if system == 'Windows':
-            import _winreg
+            import six.moves.winreg
             try:
-                key = _winreg.OpenKey(
-                    _winreg.HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM")
+                key = six.moves.winreg.OpenKey(
+                    six.moves.winreg.HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM")
                 i = 0
                 while True:
                     try:
-                        values = _winreg.EnumValue(key, i)
+                        values = six.moves.winreg.EnumValue(key, i)
                     except:
                         return baselist
                     if 'USBSER' in values[0] or \
@@ -320,6 +322,6 @@ class Board(object):
         return False
 
     def lights_off(self):
-        for i in xrange(len(self._light)):
+        for i in range(len(self._light)):
             self.set_light(i,0)
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,8 +10,8 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import numpy as np
 import cv2
 
-from horus import Singleton
-from horus.engine.calibration.calibration_data import CalibrationData
+from ferret import Singleton
+from ferret.engine.calibration.calibration_data import CalibrationData
 
 
 @Singleton
@@ -99,7 +100,7 @@ class PointCloudGeneration(object):
         assert n.shape == (3,), "n should be (3,) vector!!!" 
 
         # Load calibration values
-	cam = self.calibration_data.camera_matrix
+        cam = self.calibration_data.camera_matrix
         dist = self.calibration_data.distortion_vector
 
         # Compute projection point

@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx
 
-from horus.util import profile, system as sys
+from ferret.util import profile, system as sys
 
-from horus.gui.engine import image_capture, laser_segmentation
+from ferret.gui.engine import image_capture, laser_segmentation
 
-from horus.gui.workbench.adjustment.current_video import CurrentVideo
-from horus.gui.util.custom_panels import ExpandablePanel, Slider, ComboBox, CheckBox
+from ferret.gui.workbench.adjustment.current_video import CurrentVideo
+from ferret.gui.util.custom_panels import ExpandablePanel, Slider, ComboBox, CheckBox
 
 current_video = CurrentVideo()
 

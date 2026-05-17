@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
@@ -24,7 +25,7 @@ import os
 import struct
 import numpy as np
 
-from horus.util import model
+from ferret.util import model
 
 
 def _load_ascii(mesh, stream):

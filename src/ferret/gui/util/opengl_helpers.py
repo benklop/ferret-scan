@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import map
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
@@ -9,7 +12,7 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx
 import numpy
 
-from horus.util.resources import get_path_for_image
+from ferret.util.resources import get_path_for_image
 
 import OpenGL
 
@@ -73,7 +76,7 @@ class GLShader(GLReferenceCounter):
                 raise RuntimeError("Link failure: %s" % (glGetProgramInfoLog(self._program)))
             glDeleteShader(vertex_shader)
             glDeleteShader(fragment_shader)
-        except RuntimeError, e:
+        except RuntimeError as e:
             logger.error(str(e))
             self._program = None
 
@@ -245,7 +248,7 @@ class GLVBO(GLReferenceCounter):
             batch_size = 996
             extra_start_pos = int(self._size / batch_size) * batch_size  # leftovers.
             extra_count = self._size - extra_start_pos
-            for i in xrange(0, int(self._size / batch_size)):
+            for i in range(0, int(self._size / batch_size)):
                 glDrawArrays(self._render_type, i * batch_size, batch_size)
             glDrawArrays(self._render_type, extra_start_pos, extra_count)
 
@@ -301,7 +304,7 @@ def unproject(winx, winy, winz, model_matrix, proj_matrix, viewport):
     final_matrix = np_model_matrix * np_proj_matrix
     final_matrix = numpy.linalg.inv(final_matrix)
 
-    viewport = map(float, viewport)
+    viewport = list(map(float, viewport))
     if viewport[2] > 0 and viewport[3] > 0:
         vector = numpy.array([(winx - viewport[0]) / viewport[2] * 2.0 - 1.0,
                               (winy - viewport[1]) / viewport[3] * 2.0 - 1.0,
@@ -326,7 +329,7 @@ def load_gl_texture(filename):
     alpha_data = img.GetAlphaData()
     if alpha_data is not None:
         data = ''
-        for i in xrange(0, len(alpha_data)):
+        for i in range(0, len(alpha_data)):
             data += rgb_data[i * 3:i * 3 + 3] + alpha_data[i]
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.GetWidth(),
                      img.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data)

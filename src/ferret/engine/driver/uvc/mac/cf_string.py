@@ -10,6 +10,8 @@
 
 # Python string to/from CFString conversion helper functions:
 
+from __future__ import absolute_import
+from __future__ import print_function
 from ctypes import *
 from ctypes import util
 
@@ -71,4 +73,4 @@ def release(cfstring):
 
 if __name__ == '__main__':
     cf_pointer = CFSTR("THIS is a Test")
-    print cfstring_to_string(cf_pointer)
+    print(cfstring_to_string(cf_pointer))

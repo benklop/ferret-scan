@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import numpy as np
 
-from horus import Singleton
-from horus.engine.calibration.calibration import Calibration, CalibrationCancel
+from ferret import Singleton
+from ferret.engine.calibration.calibration import Calibration, CalibrationCancel
 
 
 class PatternNotDetected(Exception):
@@ -100,7 +102,7 @@ class Autocheck(Calibration):
             self._progress_callback(0)
 
         # Capture data
-        for i in xrange(0, 360, scan_step):
+        for i in range(0, 360, scan_step):
             self.current_angle = i
             if not self._is_calibrating:
                 raise CalibrationCancel()
@@ -123,7 +125,7 @@ class Autocheck(Calibration):
         max_x = max(patterns_detected.values())
         max_i = [key for key, value in patterns_detected.items() if value == max_x][0]
         min_v = max_x
-        for i in xrange(max_i, max_i + 360, scan_step):
+        for i in range(max_i, max_i + 360, scan_step):
             if i % 360 in patterns_detected:
                 v = patterns_detected[i % 360]
                 patterns_sorted[i] = v
@@ -133,8 +135,8 @@ class Autocheck(Calibration):
                     raise WrongMotorDirection()
 
         # Move to nearest position
-        x = np.array(patterns_sorted.keys())
-        y = np.array(patterns_sorted.values())
+        x = np.array(list(patterns_sorted.keys()))
+        y = np.array(list(patterns_sorted.values()))
         A = np.vstack([x, np.ones(len(x))]).T
         m, c = np.linalg.lstsq(A, y)[0]
         pos = -c / m % 360
@@ -146,7 +148,7 @@ class Autocheck(Calibration):
         image = self.image_capture.capture_pattern()
         corners = self.image_detection.detect_corners(image)
 #        self.image_capture.flush_laser()
-        for i in xrange(2):
+        for i in range(2):
             if not self._is_calibrating:
                 raise CalibrationCancel()
             image = self.image_capture.capture_laser(i)[0]

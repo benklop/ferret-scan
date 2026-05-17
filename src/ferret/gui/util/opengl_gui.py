@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
@@ -64,19 +66,19 @@ class glGuiControl(object):
 
     def focus_next(self):
         control_list = self._parent._gl_gui_control_list
-        for n in xrange(control_list.index(self) + 1, len(control_list)):
+        for n in range(control_list.index(self) + 1, len(control_list)):
             if self._parent._gl_gui_control_list[n].setFocus():
                 return
-        for n in xrange(0, control_list.index(self)):
+        for n in range(0, control_list.index(self)):
             if self._parent._gl_gui_control_list[n].setFocus():
                 return
 
     def focus_previous(self):
         control_list = self._parent._gl_gui_control_list
-        for n in xrange(control_list.index(self) - 1, -1, -1):
+        for n in range(control_list.index(self) - 1, -1, -1):
             if self._parent._gl_gui_control_list[n].setFocus():
                 return
-        for n in xrange(len(control_list) - 1, control_list.index(self), -1):
+        for n in range(len(control_list) - 1, control_list.index(self), -1):
             if self._parent._gl_gui_control_list[n].setFocus():
                 return
 
@@ -235,7 +237,7 @@ class glGuiPanel(glcanvas.GLCanvas):
             errStr = _("An error occurred during the 3D view drawing.")
             tb = traceback.extract_tb(sys.exc_info()[2])
             errStr += "\n%s: '%s'" % (str(sys.exc_info()[0].__name__), str(sys.exc_info()[1]))
-            for n in xrange(len(tb) - 1, -1, -1):
+            for n in range(len(tb) - 1, -1, -1):
                 locationInfo = tb[n]
                 errStr += "\n @ %s:%s:%d" % (
                     os.path.basename(locationInfo[0]), locationInfo[2], locationInfo[1])

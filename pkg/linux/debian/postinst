@@ -4,7 +4,7 @@ set -e
  
 case "$1" in
    configure)
-      rm -rf ~/.horus/
+      rm -rf ~/.ferret/
    ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)

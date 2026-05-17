@@ -5,10 +5,10 @@ import sys
 from setuptools import setup, find_packages
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
-from horus import __version__
+from ferret import __version__
 
 
-def package_data_dirs(source, basedir='/usr/share/horus'):
+def package_data_dirs(source, basedir='/usr/share/ferret'):
     dirs = []
 
     for dirname, _, files in os.walk(source):
@@ -17,7 +17,7 @@ def package_data_dirs(source, basedir='/usr/share/horus'):
             dirs.append((os.path.join(basedir, dirname),
                          [os.path.join(source, dirname, f)]))
 
-    dirs.append(('/usr/share/applications', ['pkg/linux/horus.desktop']))
+    dirs.append(('/usr/share/applications', ['pkg/linux/ferret.desktop']))
 
     return dirs
 
@@ -27,15 +27,15 @@ setup(
     version=__version__,
     author='Jesús Arroyo Torrens, Mikhail Nikolaevich Klimushin, Benjamin Klop',
     author_email='jesus.arroyo@bq.com, gryphon@night-gryphon.ru',
-    description='Structured-light 3D scanning for CR-Scan Ferret (fork of Gryphon Scan / Horus)',
+    description='Structured-light 3D scanning for CR-Scan Ferret (fork of Gryphon Scan)',
 
     license='GPLv2',
-    keywords="ferret scan horus gryphon structured light 3d scanning",
+    keywords="ferret scan gryphon structured light 3d scanning",
     url='https://github.com/benklop/ferret-scan',
 
     packages=find_packages('src'),
     package_dir={'': 'src'},
 
-    scripts=['horus'],
+    scripts=['ferret'],
     data_files=package_data_dirs('res'),
 )

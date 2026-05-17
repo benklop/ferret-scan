@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+import six
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.util import profile, resources, system
+from ferret.util import profile, resources, system
 
-from horus.gui.engine import driver, scanner_autocheck, image_capture, image_detection
-from horus.gui.util.image_view import ImageView
-from horus.gui.wizard.wizard_page import WizardPage
+from ferret.gui.engine import driver, scanner_autocheck, image_capture, image_detection
+from ferret.gui.util.image_view import ImageView
+from ferret.gui.wizard.wizard_page import WizardPage
 
-from horus.engine.driver.board import WrongFirmware, BoardNotConnected, OldFirmware
-from horus.engine.driver.camera import WrongCamera, CameraNotConnected, InvalidVideo, \
+from ferret.engine.driver.board import WrongFirmware, BoardNotConnected, OldFirmware
+from ferret.engine.driver.camera import WrongCamera, CameraNotConnected, InvalidVideo, \
     WrongDriver
-from horus.engine.calibration.autocheck import PatternNotDetected, \
+from ferret.engine.calibration.autocheck import PatternNotDetected, \
     WrongMotorDirection, LaserNotDetected
 
 
@@ -71,7 +73,7 @@ class ConnectionPage(WizardPage):
         self.update_status(driver.is_connected)
 
     def on_show(self, event):
-        if event.GetShow():
+        if event.IsShown():
             driver.board.lasers_off()
             self.update_status(driver.is_connected)
         else:
@@ -104,8 +106,8 @@ class ConnectionPage(WizardPage):
             current_video_id = profile.settings['camera_id']
             if len(video_list) > 0:
                 if current_video_id not in video_list:
-                    profile.settings['camera_id'] = unicode(video_list[0])
-                    driver.camera.camera_id = int(profile.settings['camera_id'][-1:])
+                    profile.settings['camera_id'] = six.text_type(video_list[0])
+                    driver.camera.set_camera_id_from_settings(profile.settings['camera_id'])
 
             driver.set_callbacks(
                 lambda: wx.CallAfter(self.before_connect),

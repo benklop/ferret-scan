@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Horus
+Name=Ferret Scan
 Comment=3D Scanning Application
-Icon=/usr/share/horus/horus.ico
-Exec=horus
+Icon=/usr/share/ferret/ferret.ico
+Exec=ferret
 StartupNotify=true
 Terminal=false
 Categories=GNOME;GTK;Utility;Graphics;

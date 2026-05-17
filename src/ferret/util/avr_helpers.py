@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import os
-import resources
+from . import resources
 from subprocess import Popen, PIPE, STDOUT
 
 import logging
 logger = logging.getLogger(__name__)
 
-from horus.util import system as sys
+from ferret.util import system as sys
 
 
 class AvrError(Exception):
@@ -68,7 +70,7 @@ class AvrDude(object):
 
     def flash(self, hex_path=None, clear_eeprom=False, callback=None):
         if hex_path is None:
-            hex_path = resources.get_path_for_firmware("horus-fw.hex")
+            hex_path = resources.get_path_for_firmware("ferret-fw.hex")
         if clear_eeprom:
             hex_path = resources.get_path_for_firmware("eeprom_clear.hex")
         flags = ['-C', '%(avrconf)s', '-c', self.protocol, '-p', self.microcontroller,

@@ -14,15 +14,19 @@
 ----------------------------------------------------------------------------------~(*)
 '''
 
+from __future__ import absolute_import
+from __future__ import print_function
 from ctypes import *
-from cf_string import CFSTR, cfstring_to_string_release
+from .cf_string import CFSTR, cfstring_to_string_release
 import os,sys
 
 #logging
 import logging
+from six.moves import range
+from six.moves import zip
 logger = logging.getLogger(__name__)
 
-from horus.util import resources
+from ferret.util import resources
 
 dll_path = resources.get_path_for_tools('uvcc.so')
 
@@ -98,7 +102,7 @@ uvcc_controls = (
 '__UVCC_REQ_OUT_OF_RANGE'
 
                 )
-control_dict = dict(zip(uvcc_controls,range(len(uvcc_controls))))
+control_dict = dict(zip(uvcc_controls,list(range(len(uvcc_controls)))))
 
 
 
@@ -249,15 +253,15 @@ def uvccGetVal(control,camera):
 if __name__ == '__main__':
     uvccInit()
     cam_n,cam_list = uvccGetCamList()
-    print "detected cameras:",cam_n
+    print("detected cameras:",cam_n)
     for i in range(cam_n):
-        print "idVendor",hex(cam_list[i].contents.devDesc.idVendor)
-        print "idProduct",hex(cam_list[i].contents.devDesc.idProduct)
-        print "Location", cam_list[i].contents.idLocation
-        print "Product Name:",uvccCamProduct(cam_list[i].contents)
-        print "Product Serial:",uvccCamSerialNumber(cam_list[i].contents)
-        print "Manufacturer:", uvccCamManufacturer(cam_list[i].contents)
-        print "uId:",uvccCamQTUniqueID(cam_list[i].contents)
+        print("idVendor",hex(cam_list[i].contents.devDesc.idVendor))
+        print("idProduct",hex(cam_list[i].contents.devDesc.idProduct))
+        print("Location", cam_list[i].contents.idLocation)
+        print("Product Name:",uvccCamProduct(cam_list[i].contents))
+        print("Product Serial:",uvccCamSerialNumber(cam_list[i].contents))
+        print("Manufacturer:", uvccCamManufacturer(cam_list[i].contents))
+        print("uId:",uvccCamQTUniqueID(cam_list[i].contents))
         uid = uvccCamQTUniqueID(cam_list[i].contents)
         # manually construct uId: (it looks similar to this: 0x1a11000005ac8510)
         # uid = "0x%08x%04x%04x" %(cam_list[i].contents.idLocation,cam_list[i].contents.mId.contents.idVendor,cam_list[i].contents.mId.contents.idProduct)
@@ -270,9 +274,9 @@ if __name__ == '__main__':
     # # cam = uvccGetCamsWithModelID(mid)
     if cam:
         uvccOpenCam(cam)
-        print "Location", cam.contents.idLocation
-        print "Product Name:",uvccCamProduct(cam)
-        print uvccRequestInfo("UVCC_REQ_EXPOSURE_ABS",cam)
+        print("Location", cam.contents.idLocation)
+        print("Product Name:",uvccCamProduct(cam))
+        print(uvccRequestInfo("UVCC_REQ_EXPOSURE_ABS",cam))
         # val =  uvccGetVal("UVCC_REQ_BRIGHTNESS_ABS",cam)
         # print uvccSetVal(val-1,"UVCC_REQ_BRIGHTNESS_ABS",cam)
         uvccCloseCam(cam)

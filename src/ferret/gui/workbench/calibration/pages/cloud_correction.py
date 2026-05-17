@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,19 +10,19 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx._core
 import numpy as np
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import calibration_data, cloud_correction, image_capture, image_detection
-from horus.engine.calibration.cloud_correction import CloudCorrectionError
+from ferret.gui.engine import calibration_data, cloud_correction, image_capture, image_detection
+from ferret.engine.calibration.cloud_correction import CloudCorrectionError
 
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 
-from horus.gui.workbench.calibration.pages.page import Page
-from horus.gui.workbench.calibration.pages.video_page import VideoPage
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.workbench.calibration.pages.video_page import VideoPage
 
-from horus.util.gryphon_util import estimate_platform_angle_from_pattern
+from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
 class CloudCorrectionPages(wx.Panel):
 
@@ -32,9 +34,9 @@ class CloudCorrectionPages(wx.Panel):
 
         self.video_page = VideoPage(self, title=_('Cloud correction'),
                                     start_callback=self.on_start, cancel_callback=self.on_exit)
-	self.video_page.add_info(_("Estimate point cloud compensation."), "")
-	self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                             "picture and press \"Start\""), "pattern-position.png")
+        self.video_page.add_info(_("Estimate point cloud compensation."), "")
+        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
+                                 "picture and press \"Start\""), "pattern-position.png")
 
         self.result_page = ResultPage(self, exit_callback=self.on_exit)
 
@@ -202,7 +204,8 @@ class CloudCorrection3DPlot(wx.Panel):
         fig = Figure(facecolor=(0.7490196, 0.7490196, 0.7490196, 1), tight_layout=True)
         self.canvas = FigureCanvasWxAgg(self, -1, fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
-        self.ax = fig.gca(projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = fig.add_subplot(111, projection='3d',
+                                  facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.Bind(wx.EVT_SIZE, self.onSize)
         self.Layout()
@@ -216,13 +219,13 @@ class CloudCorrection3DPlot(wx.Panel):
         # self.corrections, err, self.p0_3d, self.angles, self.clouds
         M, err, p_center, angles, clouds = args
 
-        print(p_center[0].tolist())
-        print(p_center.shape)
+        print((p_center[0].tolist()))
+        print((p_center.shape))
         self.ax.scatter(p_center[0].tolist(), p_center[2].tolist(), p_center[1].tolist(), c='g', marker='o')
 
         for index, l in enumerate(angles):
             cloud = np.mean(clouds[index], axis = 0)
-            print(cloud[0])
+            print((cloud[0]))
             self.ax.scatter(cloud[0].tolist(), cloud[2].tolist(), cloud[1].tolist(), c='r', marker='.')
         
             # Rotate p_center to angle

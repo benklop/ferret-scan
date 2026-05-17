@@ -67,10 +67,25 @@ def main():
     w = depth_frame.get_width()
     h = depth_frame.get_height()
     depth = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(h, w)
-    color_data = np.frombuffer(color_frame.get_data(), dtype=np.uint8)
-    ch = color_frame.get_height()
+
+    color_fmt = color_frame.get_format()
     cw = color_frame.get_width()
-    color = color_data.reshape(ch, cw, 3)
+    ch = color_frame.get_height()
+    color_data = np.frombuffer(color_frame.get_data(), dtype=np.uint8)
+    mjpg = getattr(getattr(cv2, "OBFormat", object), "MJPG", None)
+    if mjpg is None:
+        try:
+            from pyorbbecsdk import OBFormat
+            mjpg = OBFormat.MJPG
+        except ImportError:
+            mjpg = None
+    if mjpg is not None and color_fmt == mjpg:
+        color = cv2.imdecode(color_data, cv2.IMREAD_COLOR)
+        if color is None:
+            print("failed to decode MJPG color frame", file=sys.stderr)
+            return 2
+    else:
+        color = color_data.reshape(ch, cw, 3)
 
     cv2.imwrite(os.path.join(out_dir, "color.png"), color)
     cv2.imwrite(os.path.join(out_dir, "depth.png"), depth)

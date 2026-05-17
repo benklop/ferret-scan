@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Ferret structured-light camera bridge (Python 2 Horus UI → Python 3 libferret snap).
 
-from horus.util import profile
+from __future__ import absolute_import
+from ferret.util import profile
 
 import json
 import os
@@ -12,7 +13,7 @@ import shutil
 import cv2
 import numpy as np
 
-from horus.engine.driver.camera import Camera, CameraNotConnected
+from ferret.engine.driver.camera import Camera, CameraNotConnected
 
 import logging
 logger = logging.getLogger(__name__)
@@ -53,8 +54,10 @@ class Camera_ferret(Camera):
                 "Missing scripts/ferret_snap_rgbd.py — clone libferret paths or set ferret_libferret_root")
         try:
             self._test_snap()
+        except FerretNotAvailable:
+            raise
         except subprocess.CalledProcessError as e:
-            raise FerretNotAvailable("Ferret snap failed: {0}".format(e))
+            raise FerretNotAvailable("Ferret connect test failed: {0}".format(e))
         self._is_connected = True
         logger.info("Ferret camera connected (snap bridge)")
 
@@ -65,16 +68,25 @@ class Camera_ferret(Camera):
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
-    def _run_snap(self, out_dir):
+    def _ferret_env(self):
         env = os.environ.copy()
         if self._libferret_root:
             env['FERRET_LIBFERRET_ROOT'] = self._libferret_root
-        sdk_root = os.path.join(self._libferret_root, 'OrbbecSDK_v2') if self._libferret_root else ''
-        if sdk_root and os.path.isdir(sdk_root):
-            env['LD_LIBRARY_PATH'] = os.path.join(
-                sdk_root, 'build', 'linux_x86_64', 'lib') + ':' + env.get('LD_LIBRARY_PATH', '')
+            sdk_lib = os.path.join(
+                self._libferret_root, 'OrbbecSDK_v2', 'build', 'linux_x86_64', 'lib')
+            if os.path.isdir(sdk_lib):
+                env['LD_LIBRARY_PATH'] = sdk_lib + ':' + env.get('LD_LIBRARY_PATH', '')
+        return env
+
+    def _run_snap(self, out_dir):
         cmd = [self._python3, self._snap_script, out_dir]
-        subprocess.check_call(cmd, env=env)
+        try:
+            subprocess.check_output(
+                cmd, env=self._ferret_env(), stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            detail = (e.output or b'').decode('utf-8', errors='replace').strip()
+            raise FerretNotAvailable(
+                "Ferret snap failed: {0}\n{1}".format(e, detail))
 
     def disconnect(self):
         self._is_connected = False
@@ -105,6 +117,9 @@ class Camera_ferret(Camera):
 
     def get_video_list(self):
         return ['CR-Scan Ferret']
+
+    def set_camera_id_from_settings(self, camera_id):
+        pass
 
     def set_resolution_supported(self):
         return False

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,13 +9,13 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx._core
 import numpy as np
 
-from horus.gui.engine import driver, pattern, calibration_data, laser_triangulation, \
+from ferret.gui.engine import driver, pattern, calibration_data, laser_triangulation, \
     platform_extrinsics, combo_calibration, image_capture
-from horus.util import profile, system as sys
-from horus.gui.util.custom_panels import ExpandablePanel, Slider, CheckBox, \
+from ferret.util import profile, system as sys
+from ferret.gui.util.custom_panels import ExpandablePanel, Slider, CheckBox, \
     FloatTextBox, FloatTextBoxArray, FloatLabel, FloatLabelArray, Button, \
     IntLabel, IntTextBox, ComboBox
-from horus.gui.util.gryphon_controls import Header
+from ferret.gui.util.gryphon_controls import Header
 
 
 class PatternSettings(ExpandablePanel):

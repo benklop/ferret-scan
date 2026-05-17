@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -10,13 +12,13 @@ import wx._core
 import cv2
 from distutils.version import StrictVersion, LooseVersion
 
-from horus.util import resources
-from horus.util.profile import get_base_path
+from ferret.util import resources
+from ferret.util.profile import get_base_path
 
-from horus.gui.engine import image_capture, image_detection, camera_intrinsics
-from horus.gui.workbench.calibration.pages.page import Page
-from horus.gui.util.image_view import ImageView
-from horus.gui.util.video_view import VideoView
+from ferret.gui.engine import image_capture, image_detection, camera_intrinsics
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.util.image_view import ImageView
+from ferret.gui.util.video_view import VideoView
 
 import logging
 logger = logging.getLogger(__name__)
@@ -45,7 +47,7 @@ class CapturePage(Page):
         self.current_grid = 0
         self.image_grid_panel = wx.Panel(self.panel)
         self.grid_sizer = wx.GridSizer(self.rows, self.columns, 3, 3)
-        for panel in xrange(self.rows * self.columns):
+        for panel in range(self.rows * self.columns):
             self.panel_grid.append(ImageView(self.image_grid_panel))
             self.panel_grid[panel].Bind(wx.EVT_KEY_DOWN, self.on_key_press)
             self.grid_sizer.Add(self.panel_grid[panel], 0, wx.ALL | wx.EXPAND)
@@ -69,7 +71,7 @@ class CapturePage(Page):
         self.current_grid = 0
         self.gauge.SetValue(0)
         camera_intrinsics.reset()
-        for panel in xrange(self.rows * self.columns):
+        for panel in range(self.rows * self.columns):
             self.panel_grid[panel].SetBackgroundColour((221, 221, 221))
             self.panel_grid[panel].set_image(wx.Image(resources.get_path_for_image("void.png")))
 

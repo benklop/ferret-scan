@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Depth map → 3D points for structured-light (Ferret / RGB-D) scanning.
 
+from __future__ import absolute_import
 import numpy as np
 
-from horus import Singleton
-from horus.engine.calibration.calibration_data import CalibrationData
+from ferret import Singleton
+from ferret.engine.calibration.calibration_data import CalibrationData
 
 
 @Singleton

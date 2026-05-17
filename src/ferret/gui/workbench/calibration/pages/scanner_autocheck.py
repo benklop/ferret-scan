@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.gui.engine import scanner_autocheck, image_capture
-from horus.engine.calibration.autocheck import PatternNotDetected, WrongMotorDirection, \
+from ferret.gui.engine import scanner_autocheck, image_capture
+from ferret.engine.calibration.autocheck import PatternNotDetected, WrongMotorDirection, \
     LaserNotDetected
 
-from horus.gui.workbench.calibration.pages.video_page import VideoPage
+from ferret.gui.workbench.calibration.pages.video_page import VideoPage
 
 
 class ScannerAutocheckPages(wx.Panel):
@@ -27,8 +28,8 @@ class ScannerAutocheckPages(wx.Panel):
                                     start_callback=self.on_start,
                                     cancel_callback=self.on_cancel)
 
-	self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                             "picture and press \"Start\""), "pattern-position.png")
+        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
+                                 "picture and press \"Start\""), "pattern-position.png")
 
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,15 +9,15 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import platform
 import threading
 
-from horus.engine.driver.driver import Driver
+from ferret.engine.driver.driver import Driver
 
-from horus.engine.calibration.pattern import Pattern
-from horus.engine.calibration.calibration_data import CalibrationData
+from ferret.engine.calibration.pattern import Pattern
+from ferret.engine.calibration.calibration_data import CalibrationData
 
-from horus.engine.algorithms.image_capture import ImageCapture
-from horus.engine.algorithms.image_detection import ImageDetection
-from horus.engine.algorithms.laser_segmentation import LaserSegmentation
-from horus.engine.algorithms.point_cloud_generation import PointCloudGeneration
+from ferret.engine.algorithms.image_capture import ImageCapture
+from ferret.engine.algorithms.image_detection import ImageDetection
+from ferret.engine.algorithms.laser_segmentation import LaserSegmentation
+from ferret.engine.algorithms.point_cloud_generation import PointCloudGeneration
 
 system = platform.system()
 

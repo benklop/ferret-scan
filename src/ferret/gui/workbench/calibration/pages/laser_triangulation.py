@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+import six
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,19 +10,19 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx._core
 import numpy as np
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import calibration_data, laser_triangulation, image_capture, image_detection
-from horus.engine.calibration.laser_triangulation import LaserTriangulationError
+from ferret.gui.engine import calibration_data, laser_triangulation, image_capture, image_detection
+from ferret.engine.calibration.laser_triangulation import LaserTriangulationError
 
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 
-from horus.gui.workbench.calibration.pages.page import Page
-from horus.gui.workbench.calibration.pages.video_page import VideoPage
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.workbench.calibration.pages.video_page import VideoPage
 
-from horus.util.gryphon_util import estimate_platform_angle_from_pattern
+from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
 class LaserTriangulationPages(wx.Panel):
 
@@ -32,9 +34,9 @@ class LaserTriangulationPages(wx.Panel):
 
         self.video_page = VideoPage(self, title=_('Laser triangulation'),
                                     start_callback=self.on_start, cancel_callback=self.on_exit)
-	self.video_page.add_info(_("Estimate lasers positions."), "")
-	self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                             "picture and press \"Start\""), "pattern-position.png")
+        self.video_page.add_info(_("Estimate lasers positions."), "")
+        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
+                                 "picture and press \"Start\""), "pattern-position.png")
 
         self.result_page = ResultPage(self, exit_callback=self.on_exit)
 
@@ -165,7 +167,7 @@ class ResultPage(Page):
 
             text = ""
             np.set_printoptions(formatter={'float': '{:g}'.format})
-            for i,p in result[0].iteritems():
+            for i,p in six.iteritems(result[0]):
                 text += ' L{0}: {1} {2} '.format(i, round(p[0], 3), np.round(p[1], 3))
             np.set_printoptions()
 
@@ -204,7 +206,8 @@ class LaserTriangulation3DPlot(wx.Panel):
         fig = Figure(facecolor=(0.7490196, 0.7490196, 0.7490196, 1), tight_layout=True)
         self.canvas = FigureCanvasWxAgg(self, -1, fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
-        self.ax = fig.gca(projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = fig.add_subplot(111, projection='3d',
+                                  facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.Bind(wx.EVT_SIZE, self.onSize)
         self.Layout()
@@ -219,11 +222,11 @@ class LaserTriangulation3DPlot(wx.Panel):
         colors = [(255,0,0), (0,255,255), (255,255,0), (0,0,255)]
         colors = (np.array(colors)/255).astype(np.float32).tolist()
 
-        for i,pts in points.iteritems():
+        for i,pts in six.iteritems(points):
             p = pts.vertexes[np.random.randint(pts.vertex_count, size=100), :]
             self.ax.scatter(p[:,0], p[:,2], p[:,1], c=[colors[i]], marker='.')
 
-        for i,plane in planes.iteritems():
+        for i,plane in six.iteritems(planes):
             r = np.cross(np.array([0, 0, 1]), plane[1])
             s = np.cross(r, plane[1])
             R = np.array([r, s, plane[1]])

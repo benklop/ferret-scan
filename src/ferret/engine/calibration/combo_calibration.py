@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,12 +12,12 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import math
 import numpy as np
 
-from horus import Singleton
-from horus.engine.calibration.calibration import CalibrationCancel
-from horus.engine.calibration.moving_calibration import MovingCalibration
-from horus.engine.calibration import laser_triangulation, platform_extrinsics
+from ferret import Singleton
+from ferret.engine.calibration.calibration import CalibrationCancel
+from ferret.engine.calibration.moving_calibration import MovingCalibration
+from ferret.engine.calibration import laser_triangulation, platform_extrinsics
 
-from horus.util import profile
+from ferret.util import profile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -80,7 +84,7 @@ class ComboCalibration(MovingCalibration):
                             (self._point_cloud[i], point_3d.T))
             else:
                 self.image = image
-                print("Skip laser calibration at "+str(alpha))
+                print(("Skip laser calibration at "+str(alpha)))
 
             # Platform extrinsics
             pp = (self.pattern.square_width * (self.pattern.rows-1)) * pose[0].T[1] + pose[1].T[0]
@@ -96,7 +100,7 @@ class ComboCalibration(MovingCalibration):
 
         # Laser triangulation
         # Save point clouds
-        for i in xrange(2):
+        for i in range(2):
             laser_triangulation.save_point_cloud('PC' + str(i) + '.ply', self._point_cloud[i])
 
         self.distance = [None, None]
@@ -104,7 +108,7 @@ class ComboCalibration(MovingCalibration):
         self.std = [None, None]
 
         # Compute planes
-        for i in xrange(2):
+        for i in range(2):
             if self._is_calibrating:
                 plane = laser_triangulation.compute_plane(i, self._point_cloud[i])
                 self.distance[i], self.normal[i], self.std[i] = plane
@@ -114,7 +118,7 @@ class ComboCalibration(MovingCalibration):
         self.x = np.array(self.x)
         self.y = np.array(self.y)
         self.z = np.array(self.z)
-        points = zip(self.x, self.y, self.z)
+        points = list(zip(self.x, self.y, self.z))
 
         if len(points) > 4:
             # Fitting a plane
@@ -161,7 +165,7 @@ class ComboCalibration(MovingCalibration):
         return response
 
     def accept(self):
-        for i in xrange(2):
+        for i in range(2):
             self.calibration_data.laser_planes[i].distance = self.distance[i]
             self.calibration_data.laser_planes[i].normal = self.normal[i]
         self.calibration_data.platform_rotation = self.R

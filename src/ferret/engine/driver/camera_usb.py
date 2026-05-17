@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>, Mikhail Klimushin <gryphon@night-gryphon.ru>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L., Copyright (C) 2018-2019 Mikhail Klimushin'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-from horus.util import profile
+from ferret.util import profile
 
 import cv2
 import math
@@ -14,7 +17,7 @@ import glob
 import platform
 import wx
 
-from horus.engine.driver.camera import Camera, WrongCamera, CameraNotConnected, InvalidVideo, \
+from ferret.engine.driver.camera import Camera, WrongCamera, CameraNotConnected, InvalidVideo, \
     WrongDriver
 
 from distutils.version import StrictVersion, LooseVersion
@@ -25,8 +28,8 @@ logger = logging.getLogger(__name__)
 system = platform.system()
 
 if system == 'Darwin':
-    import uvc
-    from uvc.mac import *
+    from . import uvc
+    from .uvc.mac import *
 
 
 class Camera_usb(Camera):
@@ -280,7 +283,7 @@ class Camera_usb(Camera):
                         c += 1
                         #print "     frame {1}: {0} ms".format(int((e - b) * 1000), c)
                 else:
-                    for i in xrange(flush+1):
+                    for i in range(flush+1):
                         #b = time.time()
                         ret, image = self._capture.read()
                         #e = time.time()
@@ -330,9 +333,9 @@ class Camera_usb(Camera):
             self._max_contrast   = self.DetectPropMax(0, 255, self.CV_CAP_PROP_CONTRAST)
             self._max_exposure   = self.DetectPropMax(-255, 255, self.CV_CAP_PROP_EXPOSURE)
             self._max_saturation = self.DetectPropMax(0, 255, self.CV_CAP_PROP_SATURATION)
-            print "Max Bri {0} Contr {1} Exp {2} Sat {3}".format(
+            print("Max Bri {0} Contr {1} Exp {2} Sat {3}".format(
                 self._max_brightness, self._max_contrast,
-                self._max_exposure, self._max_saturation)
+                self._max_exposure, self._max_saturation))
 
     # ------------- Brightness control ------------
     def get_brightness(self):
@@ -391,7 +394,7 @@ class Camera_usb(Camera):
                     value = value * self._max_saturation / 255.
                     ret = self._capture.set(self.CV_CAP_PROP_SATURATION, value)
                     if system == 'Windows' and not ret:
-                        print "ERROR Set Exposure {0}".format(value)
+                        print("ERROR Set Exposure {0}".format(value))
                     self._updating = False
                 return True
         return False
@@ -582,7 +585,7 @@ class Camera_usb(Camera):
         return ret
 
     def _count_cameras(self):
-        for i in xrange(5):
+        for i in range(5):
             cap = cv2.VideoCapture(i)
             res = not cap.isOpened()
             cap.release()
@@ -595,7 +598,7 @@ class Camera_usb(Camera):
         if system == 'Windows':
             if not self._is_connected:
                 count = self._count_cameras()
-                for i in xrange(count):
+                for i in range(count):
                     baselist.append(str(i))
                 self._video_list = baselist
         elif system == 'Darwin':

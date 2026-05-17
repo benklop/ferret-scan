@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -20,8 +25,8 @@ import struct
 import numpy as np
 import pickle
 
-from horus import __version__
-from horus.util import model
+from ferret import __version__
+from ferret.util import model
 
 import logging
 logger = logging.getLogger(__name__)
@@ -80,24 +85,24 @@ def _load_binary_vertex(mesh, stream, dtype, count):
     mesh.vertex_count = count
 
     if 'x' in fields:
-        mesh.vertexes = np.array(zip(data['x'], data['y'], data['z']))
+        mesh.vertexes = np.array(list(zip(data['x'], data['y'], data['z'])))
     else:
         mesh.vertexes = np.zeros((count, 3))
 
     if 'nx' in fields:
-        mesh.normal = np.array(zip(data['nx'], data['ny'], data['nz']))
+        mesh.normal = np.array(list(zip(data['nx'], data['ny'], data['nz'])))
     else:
         mesh.normal = np.zeros((count, 3))
 
     if 'red' in fields:
-        mesh.colors = np.array(zip(data['red'], data['green'], data['blue']))
+        mesh.colors = np.array(list(zip(data['red'], data['green'], data['blue'])))
     else:
         mesh.colors = 255 * np.ones((count, 3))
 
     if 'slice_index' in fields:
         slice_n = data['slice_index']
         slice_l = data['slice_angle']
-        slice_n, slice_l = zip(*map(lambda x,y: (-1,np.nan) if x<0 else (x,y), slice_n, slice_l))
+        slice_n, slice_l = list(zip(*list(map(lambda x,y: (-1,np.nan) if x<0 else (x,y), slice_n, slice_l))))
     else:
         slice_n = [-1]*count
         slice_l = [np.nan]*count
@@ -107,7 +112,7 @@ def _load_binary_vertex(mesh, stream, dtype, count):
     else:
         cloud_index = [-1]*count
 
-    mesh.vertexes_meta = np.array(zip(cloud_index, slice_n, slice_l), dtype=mesh.vertexes_meta.dtype)
+    mesh.vertexes_meta = np.array(list(zip(cloud_index, slice_n, slice_l)), dtype=mesh.vertexes_meta.dtype)
 
 
 # ------------ Mesh Metadata ---------------
@@ -122,11 +127,11 @@ def _load_binary_metadata(mesh, stream, dtype, count):
     data = np.fromfile(stream, dtype=dtype, count=count)
 
     mesh.metadata = pickle.loads(data.view('S{0}'.format(count))[0])
-    print mesh.metadata
+    print(mesh.metadata)
 
 # ======================================
 def _load_element(mesh, stream, format, element, dtype, count):
-    print "Load elements: '{0}' x {1} format {2} @ {3}".format(element,count,format,stream.tell())
+    print("Load elements: '{0}' x {1} format {2} @ {3}".format(element,count,format,stream.tell()))
                                                                       
     if len(dtype)<=0 or \
         element is None or \
@@ -135,7 +140,7 @@ def _load_element(mesh, stream, format, element, dtype, count):
         return
 
     dtype = np.dtype(dtype)
-    print "   Types: {0}".format(dtype.names)
+    print("   Types: {0}".format(dtype.names))
 
     if format == 'ascii':
         if element == 'vertex':
@@ -143,7 +148,7 @@ def _load_element(mesh, stream, format, element, dtype, count):
         elif element == 'metadata':
             _load_ascii_metadata(mesh, stream, dtype, count)
         else:
-            for i in xrange(count):
+            for i in range(count):
                 stream.readline()
 
     elif format == 'binary_big_endian' or format == 'binary_little_endian':
@@ -219,7 +224,7 @@ def load_scene(filename):
                         # property list <numerical-type size.type> <numerical-type element.type> <property-name>
                         logger.error("PLY load Error: 'list' not supported.")
                         if format == 'ascii':
-                            for i in xrange(count):
+                            for i in range(count):
                                 f.readline()
                         else:
                             return obj
@@ -246,7 +251,7 @@ def save_scene_stream(stream, _object):
     elif isinstance(_object, model.Mesh):
         m = _object
     else:
-        print "Unknown object type '{0}'. Unable to save".format(type(_object))
+        print("Unknown object type '{0}'. Unable to save".format(type(_object)))
         return
 
     binary = True
@@ -278,7 +283,7 @@ def save_scene_stream(stream, _object):
                 frame += "element metadata 1\n" # single line of data
                 frame += "property uchar data\n"
         else:
-            print "No metadata to save"
+            print("No metadata to save")
 
         frame += "element face 0\n"
         frame += "property list uchar int vertex_indices\n"
@@ -289,7 +294,7 @@ def save_scene_stream(stream, _object):
 
         if m.vertex_count > 0:
             if binary:
-                for i in xrange(m.vertex_count):
+                for i in range(m.vertex_count):
                     stream.write(struct.pack("<fffBBBBif",
                                              m.vertexes[i, 0], m.vertexes[i, 1], m.vertexes[i, 2],
                                              m.colors[i, 0], m.colors[i, 1], m.colors[i, 2],
@@ -297,7 +302,7 @@ def save_scene_stream(stream, _object):
                 if m.metadata is not None:
                     stream.write(metadata)
             else:
-                for i in xrange(m.vertex_count):
+                for i in range(m.vertex_count):
                     stream.write("{0} {1} {2} {3} {4} {5} {6} {7} {8}\n".format(
                                  m.vertexes[i, 0], m.vertexes[i, 1], m.vertexes[i, 2],
                                  m.colors[i, 0], m.colors[i, 1], m.colors[i, 2]),

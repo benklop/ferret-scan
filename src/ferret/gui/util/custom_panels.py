@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -10,7 +13,7 @@ import types
 import struct
 from collections import OrderedDict
 
-from horus.util import profile, resources, system as sys
+from ferret.util import profile, resources, system as sys
 
 
 class ExpandableCollection(wx.Panel):
@@ -34,7 +37,7 @@ class ExpandableCollection(wx.Panel):
         return panel
 
     def init_panels_layout(self):
-        values = self.expandable_panels.values()
+        values = list(self.expandable_panels.values())
         if len(values) > 0:
             self._expand_callback(values[0])
 

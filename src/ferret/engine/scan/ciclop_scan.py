@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import time
-import Queue
+import six.moves.queue
 import numpy as np
 import datetime
 import struct
 import os
 import threading
 
-from horus import Singleton
-from horus.engine.scan.scan import Scan, ScanError
-from horus.engine.scan.scan_capture import ScanCapture
-from horus.engine.scan.current_video import CurrentVideo
-from horus.engine.calibration.calibration_data import CalibrationData
-from horus.util.gryphon_util import decode_color
+from ferret import Singleton
+from ferret.engine.scan.scan import Scan, ScanError
+from ferret.engine.scan.scan_capture import ScanCapture
+from ferret.engine.scan.current_video import CurrentVideo
+from ferret.engine.calibration.calibration_data import CalibrationData
+from ferret.util.gryphon_util import decode_color
 
-from horus.util import profile
+from ferret.util import profile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -59,7 +62,7 @@ class CiclopScan(Scan):
         self._count = 0
         self._debug = False
         self._scan_sleep = 0.05
-        self._captures_queue = Queue.Queue(10)
+        self._captures_queue = six.moves.queue.Queue(10)
         self.point_cloud_callback = None
 
         self.ph_save_enable = False
@@ -152,10 +155,10 @@ class CiclopScan(Scan):
         logger.info("Start scan")
         if self._debug and system == 'Linux':
             string_time = str(datetime.datetime.now())[:-3] + " - "
-            print string_time + " elapsed progress: 0 %"
-            print string_time + " elapsed time: 0' 0\""
-            print string_time + " elapsed angle: 0º"
-            print string_time + " capture: 0 ms"
+            print(string_time + " elapsed progress: 0 %")
+            print(string_time + " elapsed time: 0' 0\"")
+            print(string_time + " elapsed angle: 0º")
+            print(string_time + " capture: 0 ms")
 
         # Setup scanner
         if not _is_ferret_mode():
@@ -173,7 +176,7 @@ class CiclopScan(Scan):
         self.ph_save_divider = profile.settings['ph_save_divider']
         if self.ph_save_enable:
             self.ph_save_folder = profile.settings['ph_save_folder'] + datetime.datetime.now().strftime("/scan%Y-%m-%d_%H-%M")
-            print self.ph_save_folder
+            print(self.ph_save_folder)
             os.makedirs(self.ph_save_folder)
 
     def _capture(self):
@@ -227,15 +230,15 @@ class CiclopScan(Scan):
                     if self._debug and system == 'Linux':
                         string_time = str(datetime.datetime.now())[:-3] + " - "
                         # Cursor up + remove lines
-                        print "\x1b[1A\x1b[1A\x1b[1A\x1b[1A\x1b[2K\x1b[1A"
-                        print string_time + " elapsed progress: {0} %".format(
-                            int(self._theta / 3.6))
-                        print string_time + " elapsed time: {0}".format(
-                            time.strftime("%M' %S\"", time.gmtime(self._end - self._begin)))
-                        print string_time + " elapsed angle: {0}º".format(
-                            float(self._theta))
-                        print string_time + " capture: {0} ms".format(
-                            int((self._end - begin) * 1000))
+                        print("\x1b[1A\x1b[1A\x1b[1A\x1b[1A\x1b[2K\x1b[1A")
+                        print(string_time + " elapsed progress: {0} %".format(
+                            int(self._theta / 3.6)))
+                        print(string_time + " elapsed time: {0}".format(
+                            time.strftime("%M' %S\"", time.gmtime(self._end - self._begin))))
+                        print(string_time + " elapsed angle: {0}º".format(
+                            float(self._theta)))
+                        print(string_time + " capture: {0} ms".format(
+                            int((self._end - begin) * 1000)))
             # Sleep
             time.sleep(self._scan_sleep)
 
@@ -264,7 +267,7 @@ class CiclopScan(Scan):
         if all(self.laser):
             capture.lasers = self.image_capture.capture_lasers()
         else:
-            for i in xrange(len(self.laser)):
+            for i in range(len(self.laser)):
                 if self.laser[i]:
                     # TODO Use previous captured background
                     capture.lasers[i],capture.lasers[-1] = self.image_capture.capture_laser(i)
@@ -316,7 +319,7 @@ class CiclopScan(Scan):
         # Cursor down
         # if self._debug and system == 'Linux':
         #     print "\x1b[1C"
-                                              	
+                                                  
         self.image_capture.stream = True
 
         progress = 0
@@ -358,7 +361,7 @@ class CiclopScan(Scan):
 
         #print("Process start: {0:f}".format(np.rad2deg(capture.theta)))
         # begin = time.time()
-        for i in xrange(2):
+        for i in range(2):
             if capture.lasers[i] is not None:
                 #print "Process image {0} at angle {1}".format(i,np.rad2deg(capture.theta))
                 if self.semaphore is not None:

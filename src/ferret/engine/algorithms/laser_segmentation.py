@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -10,13 +12,13 @@ import math
 import numpy as np
 import scipy.ndimage
 
-from horus import Singleton
-from horus.engine.calibration.calibration_data import CalibrationData
-from horus.engine.algorithms.point_cloud_roi import PointCloudROI
+from ferret import Singleton
+from ferret.engine.calibration.calibration_data import CalibrationData
+from ferret.engine.algorithms.point_cloud_roi import PointCloudROI
 
-from horus.gui.util.augmented_view import augmented_platform_mask
+from ferret.gui.util.augmented_view import augmented_platform_mask
 
-from horus.util import profile
+from ferret.util import profile
 
 @Singleton
 class LaserSegmentation(object):
@@ -174,7 +176,7 @@ class LaserSegmentation(object):
                 _min = peak - self.window_value
                 _max = peak + self.window_value + 1
                 mask = np.zeros_like(image)
-                for i in xrange(self.calibration_data.height):
+                for i in range(self.calibration_data.height):
                     mask[i, _min[i]:_max[i]] = 255
                 # Apply mask
                 image = cv2.bitwise_and(image, mask)
@@ -264,7 +266,7 @@ class LaserSegmentation(object):
         best_inlier_num = 0
         best_inliers = None
         data_idx = np.arange(data.shape[0])
-        for _ in xrange(max_trials):
+        for _ in range(max_trials):
             sample = data[np.random.randint(0, data.shape[0], 2)]
             if model_class.is_degenerate(sample):
                 continue

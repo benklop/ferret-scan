@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# This file is part of the Horus Project
+# This file is part of the Ferret Scan Project
 
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+
+# Python 2/3 compatibility (must run before other ferret imports)
+import sys
+import os
+os.environ.setdefault('WXSUPPRESS_SIZER_FLAGS_CHECK', '1')
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+from ferret.util import compat  # noqa: F401, E402
 
 # Check dependencies
 try:
@@ -19,17 +26,14 @@ try:
     import scipy
     import matplotlib
 except ImportError as e:
-    print(e.message)
+    print(e)
     exit(1)
 
-# Try first the sources
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
-
-from horus.util import resources
+from ferret.util import resources
 
 resdir = os.path.join(os.path.dirname(__file__), "res")
 if not os.path.exists(resdir):
-    resdir = "/usr/share/horus"
+    resdir = "/usr/share/ferret"
 
 resources.set_base_path(resdir)
 
@@ -45,8 +49,8 @@ def main():
     else:
         appdir = os.path.dirname(os.path.abspath(__file__))
 
-    from horus.gui import app
-    app.HorusApp().MainLoop()
+    from ferret.gui import app
+    app.FerretApp().MainLoop()
 
 if __name__ == '__main__':
     main()

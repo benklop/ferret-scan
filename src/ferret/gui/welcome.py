@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,10 +9,10 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import os
 import wx._core
 
-from horus.util import profile, resources
+from ferret.util import profile, resources
 
-from horus.gui.wizard.main import Wizard
-from horus.gui.util.image_view import ImageView
+from ferret.gui.wizard.main import Wizard
+from ferret.gui.util.image_view import ImageView
 
 
 class WelcomeDialog(wx.Dialog):

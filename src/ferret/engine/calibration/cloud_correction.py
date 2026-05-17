@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Gryphon Scan Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2018 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -15,15 +18,15 @@ from scipy.sparse import linalg as splinalg
 from scipy import sparse, linalg
 import numpy.linalg
 
-from horus import Singleton
-from horus.engine.calibration.calibration import CalibrationCancel
-from horus.engine.calibration.moving_calibration import MovingCalibration
+from ferret import Singleton
+from ferret.engine.calibration.calibration import CalibrationCancel
+from ferret.engine.calibration.moving_calibration import MovingCalibration
 
-from horus.gui.util.augmented_view import augmented_pattern_mask
-from horus.util.gryphon_util import rotatePoint2Plane, \
+from ferret.gui.util.augmented_view import augmented_pattern_mask
+from ferret.util.gryphon_util import rotatePoint2Plane, \
     rigid_transform_3D, PointOntoLine, capture_precise_corners
 
-from horus.util import profile
+from ferret.util import profile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -67,21 +70,21 @@ class CloudCorrection(MovingCalibration):
         if self._progress_callback is not None:
             self._progress_callback(100*progress/total_captures)
 
-        print("Capture STD: {0:f}".format(std))
+        print(("Capture STD: {0:f}".format(std)))
         pose    = self.image_detection.detect_pose_from_corners(corners)
         d0, n0, _ = self.image_detection.detect_pattern_plane(pose)
 
         # choose points for calibration. closest to the focal center are less distorted
         print("--- Points selection")
         corner_id = []
-        for y in xrange(self.pattern.rows):
-            for x in xrange(self.pattern.columns):
+        for y in range(self.pattern.rows):
+            for x in range(self.pattern.columns):
                 i = y*self.pattern.columns + x
                 if corners[i][0][0] > self.calibration_data.camera_matrix[0][2]:
                     if i>0:
                         corner_id += [i-1]
                     corner_id += [i]
-                    print ("%f - %f - %f" % (corners[i-1][0][0], self.calibration_data.camera_matrix[0][2], corners[i][0][0]) )
+                    print(("%f - %f - %f" % (corners[i-1][0][0], self.calibration_data.camera_matrix[0][2], corners[i][0][0]) ))
                     break
         print(corner_id)
 
@@ -90,7 +93,7 @@ class CloudCorrection(MovingCalibration):
         # reference point cloud
         #self.p0_3d = np.insert(self.point_cloud_generation.compute_platform_point_cloud(p0.T, None, d0, n0), 0, [0], axis=1)
         self.p0_3d = self.point_cloud_generation.compute_platform_point_cloud(p0.T, None, d0, n0)
-        print(self.p0_3d)
+        print((self.p0_3d))
 
         # calulate angles:
         #   - find center of mass in world coords
@@ -109,14 +112,14 @@ class CloudCorrection(MovingCalibration):
 
         # measure actual positions
         #self.clouds = np.empty((len(self.calibration_data.laser_planes),0))
-        for i in xrange(ncaptures):
+        for i in range(ncaptures):
             if not self._is_calibrating:
                 break
 
             #for index, laser in reversed(list(enumerate(self.calibration_data.laser_planes))):
             for index, l in enumerate(self.angles):
                 l = self.angles[index]
-                print("--- Measurement {0} Angle: {1:f}".format(i+1,l))
+                print(("--- Measurement {0} Angle: {1:f}".format(i+1,l)))
         
                 # measure real positions
                 self.driver.board.motor_move(-angle+l)
@@ -130,7 +133,7 @@ class CloudCorrection(MovingCalibration):
                 if self._progress_callback is not None:
                     self._progress_callback(100*progress/total_captures)
 
-                print("Capture STD: {0:f}".format(std))
+                print(("Capture STD: {0:f}".format(std)))
                 p = corners[tuple(corner_id),0]
                 pose    = self.image_detection.detect_pose_from_corners(corners)
                 d, n, _ = self.image_detection.detect_pattern_plane(pose)
@@ -154,8 +157,8 @@ class CloudCorrection(MovingCalibration):
         err = []
         for index, l in enumerate(self.angles):
             #l = self.angles[index]
-            print(">>> Laser {0}, Angle: {1:f}".format(index,l))
-            print("Points STD: {0:f}".format(np.max(np.std(self.clouds[index], axis=0)) ) )
+            print((">>> Laser {0}, Angle: {1:f}".format(index,l)))
+            print(("Points STD: {0:f}".format(np.max(np.std(self.clouds[index], axis=0)) ) ))
             cloud = np.mean(self.clouds[index], axis = 0)
         
             # calculate perfect point cloud
@@ -170,9 +173,9 @@ class CloudCorrection(MovingCalibration):
 
             #print( np.round(np.array(cloud - perfect_points), 3) )
             delta = np.linalg.norm(cloud - perfect_points, axis=0)
-            print( np.round(delta, 3) )
-            print( np.round(np.max(delta), 3) )
-            print( np.round(np.mean(delta), 3) )
+            print(( np.round(delta, 3) ))
+            print(( np.round(np.max(delta), 3) ))
+            print(( np.round(np.mean(delta), 3) ))
             '''
             ret, M, inliers = cv2.estimateAffine3D(cloud.T, perfect_points.T, None, None, \
                                     ransacThreshold = 0.1, confidence = 0.99)
@@ -199,14 +202,14 @@ class CloudCorrection(MovingCalibration):
             M,t,_,_ = rigid_transform_3D(cloud.T, perfect_points.T)
             print(M)
             print(t)
-            print(cloud.shape)
+            print((cloud.shape))
             corrected = [np.matmul(M,v) + t for v in cloud.T]
             print("With correction: ")
             print(corrected)
             delta = np.linalg.norm(M * cloud - perfect_points, axis=0)
-            print( np.round(delta, 3) )
-            print( np.round(np.max(delta), 3) )
-            print( np.round(np.mean(delta), 3) )
+            print(( np.round(delta, 3) ))
+            print(( np.round(np.max(delta), 3) ))
+            print(( np.round(np.mean(delta), 3) ))
             err += [np.mean(delta)]
 
 

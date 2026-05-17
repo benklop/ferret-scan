@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,10 +10,10 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import cv2
 import numpy as np
 
-from horus import Singleton
-from horus.engine.calibration.calibration_data import CalibrationData
+from ferret import Singleton
+from ferret.engine.calibration.calibration_data import CalibrationData
 
-from horus.util import profile
+from ferret.util import profile
 
 @Singleton
 class PointCloudROI(object):
@@ -41,9 +43,9 @@ class PointCloudROI(object):
         self._center_v = 0
         self._circle_resolution = 30
         self._circle_array = np.array([[np.cos(i * 2 * np.pi / self._circle_resolution)
-                                        for i in xrange(self._circle_resolution)],
+                                        for i in range(self._circle_resolution)],
                                        [np.sin(i * 2 * np.pi / self._circle_resolution)
-                                        for i in xrange(self._circle_resolution)],
+                                        for i in range(self._circle_resolution)],
                                        np.zeros(self._circle_resolution)])
 
     def read_profile(self):

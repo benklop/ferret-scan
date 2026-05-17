@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -10,16 +11,16 @@ import random
 import wx._core
 import numpy as np
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import camera_intrinsics, pattern
+from ferret.gui.engine import camera_intrinsics, pattern
 
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 
-from horus.gui.workbench.calibration.pages.page import Page
-from horus.gui.workbench.calibration.pages.capture_page import CapturePage
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.workbench.calibration.pages.capture_page import CapturePage
 
 
 class CameraIntrinsicsPages(wx.Panel):
@@ -157,7 +158,8 @@ class CameraIntrinsics3DPlot(wx.Panel):
         self.canvas = FigureCanvasWxAgg(self, -1, self.fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
 
-        self.ax = self.fig.gca(projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = self.fig.add_subplot(111, projection='3d',
+                                       facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.print_canvas()
 

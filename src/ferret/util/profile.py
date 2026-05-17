@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+import six
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>\
               Nicanor Romero Venier <nicanor.romerovenier@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
@@ -15,11 +18,21 @@ import json
 import types
 import numpy as np
 
-from horus import Singleton
+from ferret import Singleton
 import logging
 logger = logging.getLogger(__name__)
 
-from horus.util import resources, system
+from ferret.util import resources, system
+
+
+def default_libferret_root():
+    """Prefer vendored libferret submodule in a source checkout."""
+    repo_root = os.path.normpath(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+    vendored = os.path.join(repo_root, 'libferret')
+    if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
+        return vendored
+    return os.path.expanduser('~/repos/ferret')
 
 
 @Singleton
@@ -89,15 +102,15 @@ class Settings(collections.MutableMapping):
         #    return
         setting_type = self.get_setting(key)._type
         try:
-            if setting_type == types.BooleanType:
+            if setting_type == bool:
                 value = bool(value)
-            elif setting_type == types.IntType:
+            elif setting_type == int:
                 value = int(value)
-            elif setting_type == types.FloatType:
+            elif setting_type == float:
                 value = float(value)
-            elif setting_type == types.UnicodeType:
-                value = unicode(value)
-            elif setting_type == types.ListType:
+            elif setting_type == str:
+                value = six.text_type(value)
+            elif setting_type == list:
                 value = value
             elif setting_type == np.ndarray:
                 value = np.asarray(value)
@@ -194,38 +207,38 @@ class Settings(collections.MutableMapping):
         # ============== CONNECTION Preferences ========
 
         self._add_setting(
-            Setting('serial_name', _('Serial name'), 'preferences', unicode, u''))
+            Setting('serial_name', _('Serial name'), 'preferences', six.text_type, u''))
         self._add_setting(
             Setting('baud_rate', _('Baud rate'), 'preferences', int, 115200,
                     possible_values=(9600, 14400, 19200, 38400, 57600, 115200)))
         self._add_setting(
-            Setting('camera_id', _('Camera ID'), 'preferences', unicode, u''))
+            Setting('camera_id', _('Camera ID'), 'preferences', six.text_type, u''))
         self._add_setting(
-            Setting('scanner_mode', _('Scanner mode'), 'preferences', unicode,
+            Setting('scanner_mode', _('Scanner mode'), 'preferences', six.text_type,
                     u'Ferret structured light',
                     possible_values=(u'Ciclop laser', u'Ferret structured light'),
                     tooltip=_('Ciclop: webcam + line lasers. Ferret: CR-Scan Ferret depth/RGB-D.')))
         self._add_setting(
-            Setting('ferret_libferret_root', _('libferret path'), 'preferences', unicode,
-                    os.path.expanduser('~/repos/ferret'),
-                    tooltip=_('Path to libferret clone (Python 3 snap script + OrbbecSDK submodule).')))
+            Setting('ferret_libferret_root', _('libferret path'), 'preferences', six.text_type,
+                    default_libferret_root(),
+                    tooltip=_('Path to libferret (submodule or clone with OrbbecSDK_v2).')))
         self._add_setting(
-            Setting('ferret_python3', _('Python 3 for Ferret'), 'preferences', unicode, u'python3',
+            Setting('ferret_python3', _('Python 3 for Ferret'), 'preferences', six.text_type, u'python3',
                     tooltip=_('Interpreter used to run scripts/ferret_snap_rgbd.py')))
         self._add_setting(
             Setting('ferret_turntable_optional', _('Turntable optional (Ferret)'), 'preferences', bool, True,
                     tooltip=_('Allow Ferret connect when GRBL board is absent (manual rotation).')))
         self._add_setting(
-            Setting('board', _('Board'), 'preferences', unicode, u'BT ATmega328',
+            Setting('board', _('Board'), 'preferences', six.text_type, u'BT ATmega328',
                     possible_values=(u'Arduino Uno', u'BT ATmega328')))
         self._add_setting(
-            Setting('firmware_string', 'Firmware version string', 'preferences', unicode, u"Horus 0.2 ['$' for help]"))
+            Setting('firmware_string', 'Firmware version string', 'preferences', six.text_type, u"Horus 0.2 ['$' for help]"))
         self._add_setting(
-            Setting('init_string', 'Board init string', 'preferences', unicode, u''))
+            Setting('init_string', 'Board init string', 'preferences', six.text_type, u''))
         self._add_setting(
             Setting('invert_motor', _('Invert motor'), 'preferences', bool, False))
         self._add_setting(
-            Setting('language', _('Language'), 'preferences', unicode, u'English',
+            Setting('language', _('Language'), 'preferences', six.text_type, u'English',
                     possible_values=(u'English', u'Español', u'Français',
                                      u'Deutsch', u'Italiano', u'Português'),
                     tooltip=_('Change the language of Horus. '
@@ -242,7 +255,7 @@ class Settings(collections.MutableMapping):
         # ------- Control -----------
         self._add_setting(
             Setting('luminosity', _('Luminosity'), 'profile_settings',
-                    unicode, u'Medium', possible_values=(u'High', u'Medium', u'Low')))
+                    six.text_type, u'Medium', possible_values=(u'High', u'Medium', u'Low')))
         self._add_setting(
             Setting('brightness_control', _('Brightness'), 'profile_settings',
                     int, 128, min_value=0, max_value=255))
@@ -380,7 +393,7 @@ class Settings(collections.MutableMapping):
         # -------- Calibration --------
         self._add_setting(
             Setting('laser_color_detector_calibration', _('Laser color detector'), 'profile_settings',
-                    unicode, u'R (HSV)',
+                    six.text_type, u'R (HSV)',
                     possible_values=(u'R (RGB)', u'G (RGB)', u'B (RGB)', u'R (HSV)', u'Cr (YCrCb)', u'U (YUV)')))
         self._add_setting(
             Setting('threshold_enable_calibration', _('Enable threshold'),
@@ -402,13 +415,13 @@ class Settings(collections.MutableMapping):
                     int, 5, min_value=0, max_value=30))
         self._add_setting(
             Setting('refinement_calibration', _('Refinement'), 'profile_settings',
-                    unicode, u'RANSAC',
+                    six.text_type, u'RANSAC',
                     possible_values=(u'None', u'SGF', u'RANSAC')))
 
         # -------- Scanning --------
         self._add_setting(
             Setting('laser_color_detector_scanning', _('Laser color detector'), 'profile_settings',
-                    unicode, u'R (HSV)',
+                    six.text_type, u'R (HSV)',
                     possible_values=(u'R (RGB)', u'G (RGB)', u'B (RGB)', u'R (HSV)', u'Cr (YCrCb)', u'U (YUV)')))
         self._add_setting(
             Setting('threshold_enable_scanning', _('Enable threshold'),
@@ -430,7 +443,7 @@ class Settings(collections.MutableMapping):
                     int, 8, min_value=0, max_value=30))
         self._add_setting(
             Setting('refinement_scanning', _('Refinement'), 'profile_settings',
-                    unicode, u'SGF',
+                    six.text_type, u'SGF',
                     possible_values=(u'None', u'SGF')))
 
 
@@ -438,7 +451,7 @@ class Settings(collections.MutableMapping):
 
         self._add_setting(
             Setting('current_panel_control', u'camera_control', 'profile_settings',
-                    unicode, u'camera_control',
+                    six.text_type, u'camera_control',
                     possible_values=(u'camera_control', u'laser_control',
                                      u'ldr_value', u'motor_control', u'gcode_control')))
 
@@ -458,21 +471,21 @@ class Settings(collections.MutableMapping):
 
 
         self._add_setting(
-            Setting('save_image_button', _('Save image'), 'no_settings', unicode, u''))
+            Setting('save_image_button', _('Save image'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('left_button', _('Left'), 'no_settings', unicode, u''))
+            Setting('left_button', _('Left'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('right_button', _('Right'), 'no_settings', unicode, u''))
+            Setting('right_button', _('Right'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('move_button', _('Move'), 'no_settings', unicode, u''))
+            Setting('move_button', _('Move'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('enable_button', _('Enable'), 'no_settings', unicode, u''))
+            Setting('enable_button', _('Enable'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('reset_origin_button', _('Reset origin'), 'no_settings', unicode, u''))
+            Setting('reset_origin_button', _('Reset origin'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('gcode_gui', _('Send'), 'no_settings', unicode, u''))
+            Setting('gcode_gui', _('Send'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('ldr_value', _('Send'), 'no_settings', unicode, u''))
+            Setting('ldr_value', _('Send'), 'no_settings', six.text_type, u''))
 
 
 
@@ -480,24 +493,24 @@ class Settings(collections.MutableMapping):
 
         self._add_setting(
             Setting('current_panel_adjustment', u'scan_capture', 'profile_settings',
-                    unicode, u'scan_capture',
+                    six.text_type, u'scan_capture',
                     possible_values=(u'scan_capture', u'scan_segmentation',
                                      u'calibration_capture', u'calibration_segmentation')))
 
         self._add_setting(
             Setting('current_video_mode_adjustment', u'Texture', 'profile_settings',
-                    unicode, u'Texture',
+                    six.text_type, u'Texture',
                     possible_values=(u'Texture', u'Pattern', u'Laser', u'Gray')))
 
         self._add_setting(
             Setting('capture_mode_scanning', _('Capture mode'), 'profile_settings',
-                    unicode, u'Texture', possible_values=(u'Texture', u'Laser')))
+                    six.text_type, u'Texture', possible_values=(u'Texture', u'Laser')))
         self._add_setting(
             Setting('draw_line_scanning', _('Draw line'), 'profile_settings', bool, True))
 
         self._add_setting(
             Setting('capture_mode_calibration', _('Capture mode'), 'profile_settings',
-                    unicode, u'Pattern', possible_values=(u'Pattern', u'Laser')))
+                    six.text_type, u'Pattern', possible_values=(u'Pattern', u'Laser')))
         self._add_setting(
             Setting('draw_line_calibration', _('Draw line'), 'profile_settings', bool, True))
 
@@ -507,7 +520,7 @@ class Settings(collections.MutableMapping):
 
         self._add_setting(
             Setting('current_panel_calibration', u'pattern_settings', 'profile_settings',
-                    unicode, u'pattern_settings',
+                    six.text_type, u'pattern_settings',
                     possible_values=(u'pattern_settings', u'camera_intrinsics',
                                      u'scanner_autocheck', u'rotating_platform_settings',
                                      u'laser_triangulation', u'platform_extrinsics',
@@ -541,7 +554,7 @@ class Settings(collections.MutableMapping):
 
         # ----- Scanner Autocheck ---------
         self._add_setting(
-            Setting('autocheck_button', _('Perform autocheck'), 'no_settings', unicode, u''))
+            Setting('autocheck_button', _('Perform autocheck'), 'no_settings', six.text_type, u''))
 
         # ----- Rotating Platform ---------
         self._add_setting(
@@ -556,7 +569,7 @@ class Settings(collections.MutableMapping):
 
         self._add_setting(
             Setting('after_calibration_position', _('Platform position after calibration'), 'calibration_settings',
-                    unicode, u'Return', possible_values=(u'Keep', u'Return', u'Perpendicular')))
+                    six.text_type, u'Return', possible_values=(u'Keep', u'Return', u'Perpendicular')))
 
         # ----- Laser Triangulation ---------
         self._add_setting(
@@ -572,7 +585,7 @@ class Settings(collections.MutableMapping):
                     np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
 
         self._add_setting(
-            Setting('laser_triangulation_hash', '', 'calibration_settings', unicode, u''))
+            Setting('laser_triangulation_hash', '', 'calibration_settings', six.text_type, u''))
 
         self._add_setting(
             Setting('laser_calibration_angles', _('Laser on pattern visibility angle ranges'), 'calibration_settings',
@@ -590,7 +603,7 @@ class Settings(collections.MutableMapping):
                     np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
 
         self._add_setting(
-            Setting('platform_extrinsics_hash', '', 'calibration_settings', unicode, u''))
+            Setting('platform_extrinsics_hash', '', 'calibration_settings', six.text_type, u''))
 
         # ----- Video settings ---------
 
@@ -616,7 +629,7 @@ class Settings(collections.MutableMapping):
         self._add_setting(
             Setting('camera_vflip', _('Vertical flip'), 'calibration_settings', bool, False))
         self._add_setting(
-            Setting('set_resolution_button', _('Set resolution'), 'no_settings', unicode, u''))
+            Setting('set_resolution_button', _('Set resolution'), 'no_settings', six.text_type, u''))
         self._add_setting(
             Setting('auto_resolution', _('Use MAX resolution'), 'no_settings', bool, False))
 
@@ -644,14 +657,14 @@ class Settings(collections.MutableMapping):
         self._add_setting(
             Setting('new_camera_distance_v', _('Target vertical distance (mm)'), 'no_settings', float, 265.0))
         self._add_setting(
-            Setting('apply_new_camera_button', _('Apply calculated camera data'), 'no_settings', unicode, u''))
+            Setting('apply_new_camera_button', _('Apply calculated camera data'), 'no_settings', six.text_type, u''))
 
 
         # ==================== SCANNING workbench ================
 
         self._add_setting(
             Setting('current_panel_scanning', u'scan_parameters', 'profile_settings',
-                    unicode, u'scan_parameters',
+                    six.text_type, u'scan_parameters',
                     possible_values=(u'scan_parameters', u'rotating_platform',
                                      u'point_cloud_roi', u'point_cloud_color', 
                                      u'photogrammetry', u'mesh_correction')))
@@ -674,7 +687,7 @@ class Settings(collections.MutableMapping):
         _('Line')
         self._add_setting(
             Setting('video_scanning', _('Video'), 'profile_settings',
-                    unicode, u'Texture', possible_values=(u'Texture', u'Laser', u'Gray', u'Line')))
+                    six.text_type, u'Texture', possible_values=(u'Texture', u'Laser', u'Gray', u'Line')))
 
         # ----------- Scan parameters ----------
         # Hack to translate combo boxes:
@@ -683,7 +696,7 @@ class Settings(collections.MutableMapping):
         _('Both')
         self._add_setting(
             Setting('use_laser', _('Use laser'), 'profile_settings',
-                    unicode, u'Both', possible_values=(u'Left', u'Right', u'Both')))
+                    six.text_type, u'Both', possible_values=(u'Left', u'Right', u'Both')))
 
         # ----------- Rotating platform ----------
         self._add_setting(
@@ -710,9 +723,9 @@ class Settings(collections.MutableMapping):
 
         # ----------- Point cloud color ----------
         self._add_setting(
-            Setting('texture_mode', _('Texture'), 'profile_settings', 
-                    unicode, u'Texture',
-                    possible_values=(u'Flat color', u'Multi color', u'Capture', u'Laser BG')))
+            Setting('texture_mode', _('Texture'), 'profile_settings',
+                    six.text_type, u'Texture',
+                    possible_values=(u'Texture', u'Flat color', u'Multi color', u'Capture', u'Laser BG')))
 
         self._add_setting(
             Setting('point_cloud_color', _('Cloud color'), 'profile_settings',
@@ -728,7 +741,7 @@ class Settings(collections.MutableMapping):
         self._add_setting(
             Setting('ph_save_enable', _('Save photos'), 'preferences', bool, False))
         self._add_setting(
-            Setting('ph_save_folder', _('Images folder'), 'preferences', unicode, u'photo/' ))
+            Setting('ph_save_folder', _('Images folder'), 'preferences', six.text_type, u'photo/' ))
         self._add_setting(
             Setting('ph_save_divider', 'Save every N\'th frame', 'preferences', int, 2, min_value=1, max_value=9999))
 
@@ -739,9 +752,9 @@ class Settings(collections.MutableMapping):
                     np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
 
         self._add_setting(
-            Setting('mesh_correction_apply', _('Apply'), 'no_settings', unicode, u''))
+            Setting('mesh_correction_apply', _('Apply'), 'no_settings', six.text_type, u''))
         self._add_setting(
-            Setting('mesh_correction_reset', _('Reset'), 'no_settings', unicode, u''))
+            Setting('mesh_correction_reset', _('Reset'), 'no_settings', six.text_type, u''))
 
         # ----------- Engine ----------
         self._add_setting(
@@ -770,10 +783,10 @@ class Settings(collections.MutableMapping):
         _('Rectangular')
         self._add_setting(
             Setting('machine_shape', _('Machine shape'), 'machine_settings',
-                    unicode, u'Circular', possible_values=(u'Circular', u'Rectangular')))
+                    six.text_type, u'Circular', possible_values=(u'Circular', u'Rectangular')))
         self._add_setting(
             Setting('machine_model_path', _('Machine model'), 'machine_settings',
-                    unicode, unicode(resources.get_path_for_mesh('Gryphon_platform.stl')))) # ciclop_platform.stl
+                    six.text_type, six.text_type(resources.get_path_for_mesh('Gryphon_platform.stl')))) # ciclop_platform.stl
         self._add_setting(
             Setting('machine_model_diameter', _('Machine model diameter (-1 dont scale; 0 auto scale)'), 'machine_settings', int, 304))
         self._add_setting(
@@ -799,7 +812,7 @@ class Settings(collections.MutableMapping):
 
         # =============== GUI General ================
         self._add_setting(
-            Setting('workbench', _('Workbench'), 'preferences', unicode, u'scanning',
+            Setting('workbench', _('Workbench'), 'preferences', six.text_type, u'scanning',
                     possible_values=(u'control', u'adjustment', u'calibration', u'scanning')))
 
         self._add_setting(
@@ -835,14 +848,14 @@ class Settings(collections.MutableMapping):
             Setting('last_files', _('Last files'), 'preferences', list, []))
         # TODO: Set this default value
         self._add_setting(
-            Setting('last_file', _('Last file'), 'preferences', unicode, u''))
+            Setting('last_file', _('Last file'), 'preferences', six.text_type, u''))
         # TODO: Set this default value
         self._add_setting(
-            Setting('last_profile', _('Last profile'), 'preferences', unicode, u''))
+            Setting('last_profile', _('Last profile'), 'preferences', six.text_type, u''))
         self._add_setting(
-            Setting('model_color', _('Default model color'), 'preferences', unicode, u'888888'))
+            Setting('model_color', _('Default model color'), 'preferences', six.text_type, u'888888'))
         self._add_setting(
-            Setting('last_clear_log_date', _('Last clear log date'), 'preferences', unicode, u''))
+            Setting('last_clear_log_date', _('Last clear log date'), 'preferences', six.text_type, u''))
 
         # wizard
         self._add_setting(
@@ -914,7 +927,7 @@ class Setting(object):
     def _check_type(self, value):
         if not isinstance(value, self._type):
             logger.error("Error when setting %s.\n%s (%s) is not of type %s. "
-                         "Please remove current profile at ~/.horus" %
+                         "Please remove current profile at ~/.ferret" %
                          (self._id, value, type(value), self._type))
 
     def _check_range(self, value):
@@ -990,7 +1003,7 @@ def get_base_path():
         if hasattr(sys, 'frozen'):
             basePath = os.path.normpath(os.path.join(basePath, ".."))
     else:
-        basePath = os.path.expanduser('~/.horus/')
+        basePath = os.path.expanduser('~/.ferret/')
     if not os.path.isdir(basePath):
         try:
             os.makedirs(basePath)
@@ -1040,7 +1053,7 @@ def get_size_polygons(size, machine_shape):
     if machine_shape == 'Circular':
         circle = []
         steps = 32
-        for n in xrange(0, steps):
+        for n in range(0, steps):
             circle.append([math.cos(float(n) / steps * 2 * math.pi) * size[0] / 2,
                            math.sin(float(n) / steps * 2 * math.pi) * size[1] / 2])
         ret.append(np.array(circle, np.float32))

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+import six
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -13,29 +16,29 @@ import datetime
 import webbrowser
 from collections import OrderedDict
 
-from horus import __version__, __datetime__, __commit__
-from horus.gui.engine import driver, image_capture, ciclop_scan, scanner_autocheck, \
+from ferret import __version__, __datetime__, __commit__
+from ferret.gui.engine import driver, image_capture, ciclop_scan, scanner_autocheck, \
     laser_triangulation, platform_extrinsics
 
-from horus.gui.welcome import WelcomeDialog
-from horus.gui.util.preferences import PreferencesDialog
-# from horus.gui.util.machine_settings import MachineSettingsDialog  # add in future version
+from ferret.gui.welcome import WelcomeDialog
+from ferret.gui.util.preferences import PreferencesDialog
+# from ferret.gui.util.machine_settings import MachineSettingsDialog  # add in future version
 
-from horus.gui.workbench.toolbar import MainToolbar
-from horus.gui.workbench.control.main import ControlWorkbench
-from horus.gui.workbench.adjustment.main import AdjustmentWorkbench
-from horus.gui.workbench.calibration.main import CalibrationWorkbench
-from horus.gui.workbench.scanning.main import ScanningWorkbench
+from ferret.gui.workbench.toolbar import MainToolbar
+from ferret.gui.workbench.control.main import ControlWorkbench
+from ferret.gui.workbench.adjustment.main import AdjustmentWorkbench
+from ferret.gui.workbench.calibration.main import CalibrationWorkbench
+from ferret.gui.workbench.scanning.main import ScanningWorkbench
 
-from horus.gui.wizard.main import Wizard
-from horus.gui.util.version_window import VersionWindow
+from ferret.gui.wizard.main import Wizard
+from ferret.gui.util.version_window import VersionWindow
 
-from horus.util import profile, resources, mesh_loader, version, system as sys
+from ferret.util import profile, resources, mesh_loader, version, system as sys
 
 import logging
 logger = logging.getLogger(__name__)
 
-__title__ = "Horus / Gryphon Scan " + __version__
+__title__ = "Ferret Scan " + __version__
 
 
 class MainWindow(wx.Frame):
@@ -58,7 +61,7 @@ class MainWindow(wx.Frame):
         x, y, w, h = wx.Display(0).GetGeometry()
         self.SetMinSize((600, 450))
         self.SetPosition((x + (w - ws) / 2., y + (h - hs) / 2.))
-        self.SetIcon(wx.Icon(resources.get_path_for_image("horus.ico"), wx.BITMAP_TYPE_ICO))
+        self.SetIcon(wx.Icon(resources.get_path_for_image("ferret.ico"), wx.BITMAP_TYPE_ICO))
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
@@ -193,9 +196,9 @@ class MainWindow(wx.Frame):
         last_file = os.path.split(profile.settings['last_file'])[0]
         dlg = wx.FileDialog(
             self, _("Open 3D model"), last_file, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-        wildcard_list = ';'.join(map(lambda s: '*' + s, mesh_loader.load_supported_extensions()))
+        wildcard_list = ';'.join(['*' + s for s in mesh_loader.load_supported_extensions()])
         wildcard_filter = "All (%s)|%s;%s" % (wildcard_list, wildcard_list, wildcard_list.upper())
-        wildcard_list = ';'.join(map(lambda s: '*' + s, mesh_loader.load_supported_extensions()))
+        wildcard_list = ';'.join(['*' + s for s in mesh_loader.load_supported_extensions()])
         wildcard_filter += "|Mesh files (%s)|%s;%s" % (wildcard_list, wildcard_list,
                                                        wildcard_list.upper())
         dlg.SetWildcard(wildcard_filter)
@@ -213,7 +216,7 @@ class MainWindow(wx.Frame):
         dlg = wx.FileDialog(self, _("Save 3D model"), os.path.split(
             profile.settings['last_file'])[0], style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         file_extensions = mesh_loader.save_supported_extensions()
-        wildcard_list = ';'.join(map(lambda s: '*' + s, file_extensions))
+        wildcard_list = ';'.join(['*' + s for s in file_extensions])
         wildcard_filter = "Mesh files (%s)|%s;%s" % (wildcard_list, wildcard_list,
                                                      wildcard_list.upper())
         dlg.SetWildcard(wildcard_filter)
@@ -281,7 +284,7 @@ class MainWindow(wx.Frame):
         result = dlg.ShowModal() == wx.ID_YES
         dlg.Destroy()
         if result:
-            with open('horus.log', 'w'):
+            with open('ferret.log', 'w'):
                 pass
             date_format = '%Y-%m-%d %H:%M:%S'
             current_log_date = datetime.datetime.now()
@@ -298,7 +301,7 @@ class MainWindow(wx.Frame):
                     log_file += '.log'
 
             with open(log_file, 'w') as _file:
-                with open('horus.log', 'r') as _log:
+                with open('ferret.log', 'r') as _log:
                     _file.write(_log.read())
             log_file
         dlg.Destroy()
@@ -326,13 +329,13 @@ class MainWindow(wx.Frame):
             self.toolbar.toolbar_connect.Enable()
             self.toolbar.toolbar_control.Enable()
             self.toolbar.combo.Enable()
-            for i in xrange(self.menu_bar.GetMenuCount()):
+            for i in range(self.menu_bar.GetMenuCount()):
                 self.menu_bar.EnableTop(i, True)
         else:
             self.toolbar.toolbar_connect.Disable()
             self.toolbar.toolbar_control.Disable()
             self.toolbar.combo.Disable()
-            for i in xrange(self.menu_bar.GetMenuCount()):
+            for i in range(self.menu_bar.GetMenuCount()):
                 self.menu_bar.EnableTop(i, False)
 
     def append_last_file(self, last_file):
@@ -469,18 +472,18 @@ class MainWindow(wx.Frame):
         self.wait_cursor = wx.BusyCursor()
         self.toolbar.combo.SetValue(name)
         if sys.is_windows():
-            for key, wb in self.workbench.iteritems():
+            for key, wb in six.iteritems(self.workbench):
                 if wb.name == name:
                     wb.Show()
                     profile.settings['workbench'] = key
-            for key, wb in self.workbench.iteritems():
+            for key, wb in six.iteritems(self.workbench):
                 if wb.name != name:
                     wb.Hide()
         else:
-            for key, wb in self.workbench.iteritems():
+            for key, wb in six.iteritems(self.workbench):
                 if wb.name != name:
                     wb.Hide()
-            for key, wb in self.workbench.iteritems():
+            for key, wb in six.iteritems(self.workbench):
                 if wb.name == name:
                     wb.Show()
                     profile.settings['workbench'] = key
@@ -497,7 +500,7 @@ class MainWindow(wx.Frame):
 
     def on_about(self, event):
         info = wx.AboutDialogInfo()
-        icon = wx.Icon(resources.get_path_for_image("horus.ico"), wx.BITMAP_TYPE_ICO)
+        icon = wx.Icon(resources.get_path_for_image("ferret.ico"), wx.BITMAP_TYPE_ICO)
         info.SetIcon(icon)
         info.SetName(u'Horus / Gryphon Scan')
         info.SetVersion(__version__)
@@ -568,7 +571,7 @@ class MainWindow(wx.Frame):
         dlg.Destroy()
 
     def update_profile_to_all_controls(self):
-        for _, w in self.workbench.iteritems():
+        for _, w in six.iteritems(self.workbench):
             w.update_controls()
         self.workbench[profile.settings['workbench']].update_controls()
 
@@ -624,10 +627,10 @@ class MainWindow(wx.Frame):
         current_video_id = profile.settings['camera_id']
         if len(video_list) > 0:
             if current_video_id not in video_list:
-                profile.settings['camera_id'] = unicode(video_list[0])
+                profile.settings['camera_id'] = six.text_type(video_list[0])
 
         if len(profile.settings['camera_id']):
-            driver.camera.camera_id = int(profile.settings['camera_id'][-1:])
+            driver.camera.set_camera_id_from_settings(profile.settings['camera_id'])
 
         driver.board.serial_name = profile.settings['serial_name']
         driver.board.baud_rate = profile.settings['baud_rate']

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,17 +10,17 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import struct
 import wx._core
 
-from horus.util import resources, profile
+from ferret.util import resources, profile
 
-from horus.engine.driver.camera import InputOutputError
+from ferret.engine.driver.camera import InputOutputError
 
-from horus.gui.engine import driver, image_capture, laser_segmentation, calibration_data, \
+from ferret.gui.engine import driver, image_capture, laser_segmentation, calibration_data, \
     ciclop_scan, current_video, point_cloud_roi
-from horus.gui.workbench.workbench import Workbench
-from horus.gui.workbench.scanning.view_page import ViewPage
-from horus.gui.workbench.scanning.panels import ScanParameters, RotatingPlatform, \
+from ferret.gui.workbench.workbench import Workbench
+from ferret.gui.workbench.scanning.view_page import ViewPage
+from ferret.gui.workbench.scanning.panels import ScanParameters, RotatingPlatform, \
     PointCloudROI
-from horus.gui.workbench.scanning.gryphon_panels import PointCloudColor, Photogrammetry, \
+from ferret.gui.workbench.scanning.gryphon_panels import PointCloudColor, Photogrammetry, \
     MeshCorrection
 
 
@@ -228,7 +230,7 @@ class ScanningWorkbench(Workbench):
                 'rotation_matrix', 'translation_vector']
         for n in meta_names:
             obj._mesh.metadata[n] = profile.settings[n]
-        print "Metadata created: {0}".format(obj._mesh.metadata)
+        print("Metadata created: {0}".format(obj._mesh.metadata))
         self.gauge.SetValue(0)
         self.gauge.Show()
         self.scene_panel.Layout()

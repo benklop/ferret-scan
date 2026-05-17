@@ -1,4 +1,7 @@
 # This file is part of the Gryphon Scan Project
+from __future__ import absolute_import
+import six
+from six.moves import map
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2019 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -7,10 +10,19 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx._core
 import types
 import struct
+import binascii
 from collections import OrderedDict
 
-from horus.util import profile, resources, system as sys
-from horus.gui.util.custom_panels import ControlPanel
+
+def _rgb_list_to_hex(rgb):
+    return binascii.hexlify(bytes(b & 0xFF for b in rgb)).decode('ascii')
+
+
+def _hex_to_rgb_list(hex_str):
+    return list(binascii.unhexlify(hex_str))
+
+from ferret.util import profile, resources, system as sys
+from ferret.gui.util.custom_panels import ControlPanel
 
 
 class Header(ControlPanel):
@@ -132,8 +144,8 @@ class ColorPicker(ControlPanel):
             self.set_engine(value)
 
     def decode_color(self, value):
-        if isinstance(value, basestring):
-            ret = struct.unpack('BBB', value.decode('hex'))
+        if isinstance(value, six.string_types):
+            ret = _hex_to_rgb_list(value)
         elif isinstance(value, (tuple,list)) and \
              len(value) == 3 and \
              all(isinstance(x, int) for x in value):
@@ -144,8 +156,8 @@ class ColorPicker(ControlPanel):
 
 
     def update_to_profile(self, value):
-        if issubclass(self.setting._type, basestring):
-            profile.settings[self.name] = unicode("".join(map(chr, value)).encode('hex'))
+        if issubclass(self.setting._type, six.string_types):
+            profile.settings[self.name] = six.text_type(_rgb_list_to_hex(value))
         elif issubclass(self.setting._type, list):
             profile.settings[self.name] = value
         elif issubclass(self.setting._type, tuple):
@@ -154,8 +166,9 @@ class ColorPicker(ControlPanel):
 
     def set_control_value(self, value):
         self.control.SetBackgroundColour(wx.Colour(value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF))
-        self.control.SetLabel( "#{0}\n{1} {2} {3}".format("".join(map(chr, value)).encode('hex'), \
-                  value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF ) )
+        self.control.SetLabel("#{0}\n{1} {2} {3}".format(
+            _rgb_list_to_hex(value),
+            value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF))
 
     def _on_btn_click(self, event):
         v = self.pick_color()

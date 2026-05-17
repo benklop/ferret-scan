@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import map
+import six
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,11 +12,11 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx._core
 import numpy as np
 
-from horus.util import profile
-from horus.gui.engine import driver, ciclop_scan, point_cloud_roi
-from horus.gui.util.custom_panels import ExpandablePanel, Slider, CheckBox, ComboBox, \
+from ferret.util import profile
+from ferret.gui.engine import driver, ciclop_scan, point_cloud_roi
+from ferret.gui.util.custom_panels import ExpandablePanel, Slider, CheckBox, ComboBox, \
     Button, FloatTextBox
-from horus.util import model
+from ferret.util import model
 
 
 class ScanParameters(ExpandablePanel):
@@ -148,7 +151,8 @@ class PointCloudColor(ExpandablePanel):
             data = dialog.GetColourData()
             color = data.GetColour().Get()
             ciclop_scan.color = color
-            profile.settings['point_cloud_color'] = unicode("".join(map(chr, color)).encode('hex'))
+            from ferret.gui.util.gryphon_controls import _rgb_list_to_hex
+            profile.settings['point_cloud_color'] = six.text_type(_rgb_list_to_hex(color))
         dialog.Destroy()
 
     def on_selected(self):

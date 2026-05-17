@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Gryphon Scan Project
 
+from __future__ import absolute_import
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2018 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,10 +9,10 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import cv2
 import numpy as np
 import math
-from horus.util import profile
-from horus.util.gryphon_util import pos2nd, plane_cross, line_cross_sphere
-#from horus.gui.engine import platform_extrinsics, image_detection, pattern
-import horus.gui.engine
+from ferret.util import profile
+from ferret.util.gryphon_util import pos2nd, plane_cross, line_cross_sphere
+#from ferret.gui.engine import platform_extrinsics, image_detection, pattern
+import ferret.gui.engine
 
 
 #==========================================================

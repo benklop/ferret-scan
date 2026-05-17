@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
@@ -18,8 +20,8 @@ OpenGL.ERROR_CHECKING = False
 from OpenGL.GLU import *
 from OpenGL.GL import *
 
-from horus.util import profile, mesh_loader, model, system as sys
-from horus.gui.util import opengl_helpers, opengl_gui
+from ferret.util import profile, mesh_loader, model, system as sys
+from ferret.gui.util import opengl_helpers, opengl_gui
 
 class SceneView(opengl_gui.glGuiPanel):
 
@@ -69,7 +71,7 @@ class SceneView(opengl_gui.glGuiPanel):
         self.update_profile_to_controls()
 
     def on_show(self, event):
-        if event.GetShow():
+        if event.IsShown():
             self.GetParent().Layout()
             self.Layout()
 
@@ -595,7 +597,7 @@ class SceneView(opengl_gui.glGuiPanel):
                         obj._mesh.vertexes[:obj._mesh.vertex_count],
                         obj._mesh.normal[:obj._mesh.vertex_count])
                 if brightness != 0:
-                    glColor4fv(map(lambda idx: idx * brightness, self._obj_color))
+                    glColor4fv([idx * brightness for idx in self._obj_color])
                 obj._mesh.vbo.render()
         glPopMatrix()
 
@@ -648,7 +650,7 @@ class SceneView(opengl_gui.glGuiPanel):
 
             # Draw the sides of the build volume.
             glBegin(GL_QUADS)
-            for n in xrange(0, len(polys[0])):
+            for n in range(0, len(polys[0])):
                 if machine_shape == 'Rectangular':
                     if n % 2 == 0:
                         glColor4ub(5, 171, 231, 96)

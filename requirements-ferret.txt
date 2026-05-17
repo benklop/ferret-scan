@@ -1,0 +1,9 @@
+# Ferret RGB-D capture (used by scripts/ferret_snap_rgbd.py via libferret)
+# Install the GUI stack first: pip install -r requirements.txt
+#
+# Then run scripts/setup_ferret_hw.sh with libferret built, or manually:
+#   pip install -e /path/to/libferret
+#   (build pyorbbecsdk against libferret/OrbbecSDK_v2 — see scripts/setup_ferret_hw.sh)
+
+-r requirements.txt
+pybind11>=2.10

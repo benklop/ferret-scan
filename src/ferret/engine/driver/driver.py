@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import threading
 
-from horus import Singleton
-from horus.util import profile
-from horus.engine.driver.board import Board
-from horus.engine.driver.camera_usb import Camera_usb
+from ferret import Singleton
+from ferret.util import profile
+from ferret.engine.driver.board import Board
+from ferret.engine.driver.camera_usb import Camera_usb
 
 import logging
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class Driver(object):
     def _create_camera(self):
         mode = profile.settings.get('scanner_mode', 'Ciclop laser')
         if mode == 'Ferret structured light':
-            from horus.engine.driver.camera_ferret import Camera_ferret
+            from ferret.engine.driver.camera_ferret import Camera_ferret
             return Camera_ferret(self)
         return Camera_usb(self)
 

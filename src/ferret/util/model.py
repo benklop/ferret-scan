@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
+from __future__ import absolute_import
 from numpy.core._multiarray_umath import ndarray
+from six.moves import range
 
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
@@ -53,7 +55,7 @@ class Model(object):
             vertexes = self._mesh.vertexes
             vmin = vertexes.min(0)
             vmax = vertexes.max(0)
-            for n in xrange(0, 3):
+            for n in range(0, 3):
                 self._min[n] = min(vmin[n], self._min[n])
                 self._max[n] = max(vmax[n], self._max[n])
 

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 
-import md5
+import hashlib
 import cv2
 import numpy as np
 
-from horus import Singleton
+from ferret import Singleton
 
-from horus.util import profile
-from horus.engine.driver.driver import Driver
+from ferret.util import profile
+from ferret.engine.driver.driver import Driver
 
 class LaserPlane(object):
 
@@ -64,7 +66,7 @@ class CalibrationData(object):
     def read_profile_camera(self):
         driver = Driver() # load driver singleton
         width, height = driver.camera.get_resolution()
-        print("calibration_data.read_profile_camera: camera res = "+str(driver.camera.get_resolution()))
+        print(("calibration_data.read_profile_camera: camera res = "+str(driver.camera.get_resolution())))
         self.set_resolution(width, height)
         self.camera_matrix = profile.settings['camera_matrix']
         self.distortion_vector = profile.settings['distortion_vector']
@@ -133,10 +135,10 @@ class CalibrationData(object):
             self._dist_camera_matrix, self._roi = cv2.getOptimalNewCameraMatrix(
                 self._camera_matrix, self._distortion_vector,
                 (int(self.width), int(self.height)), alpha=1)
-            self._md5_hash = md5.new()
-            self._md5_hash.update(self._camera_matrix)
-            self._md5_hash.update(self._distortion_vector)
-            self._md5_hash = self._md5_hash.hexdigest()
+            h = hashlib.md5()
+            h.update(np.ascontiguousarray(self._camera_matrix).tobytes())
+            h.update(np.ascontiguousarray(self._distortion_vector).tobytes())
+            self._md5_hash = h.hexdigest()
 
     def _compute_weight_matrix(self):
         self._weight_matrix = np.array((np.matrix(np.linspace(0, self.width - 1, self.width)).T *

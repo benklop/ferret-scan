@@ -1,5 +1,5 @@
 import unittest
-from horus.engine.driver.board import Board
+from ferret.engine.driver.board import Board
 
 
 class BoardTest(unittest.TestCase):

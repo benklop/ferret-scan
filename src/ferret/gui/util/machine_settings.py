@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Nicanor Romero Venier <nicanor.romerovenier@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,7 +10,7 @@ import os
 import wx._core
 import wx.lib.intctrl
 
-from horus.util import profile
+from ferret.util import profile
 
 # TODO: refactor PEP8
 

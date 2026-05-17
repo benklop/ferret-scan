@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.util import profile, resources
+from ferret.util import profile, resources
 
-from horus.engine.calibration.combo_calibration import ComboCalibrationError
-from horus.gui.engine import driver, calibration_data, image_capture, \
+from ferret.engine.calibration.combo_calibration import ComboCalibrationError
+from ferret.gui.engine import driver, calibration_data, image_capture, \
     image_detection, combo_calibration
-from horus.gui.util.image_view import ImageView
-from horus.gui.util.pattern_distance_window import PatternDistanceWindow
-from horus.gui.wizard.wizard_page import WizardPage
+from ferret.gui.util.image_view import ImageView
+from ferret.gui.util.pattern_distance_window import PatternDistanceWindow
+from ferret.gui.wizard.wizard_page import WizardPage
 
-from horus.util.gryphon_util import estimate_platform_angle_from_pattern
+from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
 
 class CalibrationPage(WizardPage):
@@ -65,7 +66,7 @@ class CalibrationPage(WizardPage):
         self.video_view.set_callback(self.get_image)
 
     def on_show(self, event):
-        if event.GetShow():
+        if event.IsShown():
             driver.board.lasers_off()
             self.update_status(driver.is_connected)
         else:

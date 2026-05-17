@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,11 +9,11 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import cv2
 import numpy as np
 
-from horus import Singleton
-from horus.engine.calibration.pattern import pattern
-from horus.engine.calibration.calibration_data import calibration_data
+from ferret import Singleton
+from ferret.engine.calibration.pattern import pattern
+from ferret.engine.calibration.calibration_data import calibration_data
 
-from horus.gui.util.augmented_view import augmented_pattern_mask
+from ferret.gui.util.augmented_view import augmented_pattern_mask
 
 @Singleton
 class ImageDetection(object):

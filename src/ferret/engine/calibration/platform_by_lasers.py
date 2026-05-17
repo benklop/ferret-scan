@@ -8,9 +8,9 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import cv2
 import numpy as np
 
-from horus import Singleton
-from horus.engine.calibration.calibration import Calibration
-from horus.util.gryphon_util import apply_mask
+from ferret import Singleton
+from ferret.engine.calibration.calibration import Calibration
+from ferret.util.gryphon_util import apply_mask
 
 class PlatformByLasersError(Exception):
 
@@ -80,9 +80,9 @@ class PlatformByLasers(Calibration):
                 dist, norm, std = compute_plane(i, point_cloud)
 
                 if std < 1.0 and norm is not None:
-                response = (True, (dist, norm, std))
-            else:
-                response = (False, PlatformByLasersError())
+                    response = (True, (dist, norm, std))
+                else:
+                    response = (False, PlatformByLasersError())
 
             self._is_calibrating = False
 

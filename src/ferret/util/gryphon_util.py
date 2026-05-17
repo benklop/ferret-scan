@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Gryphon Scan Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+import six
+from six.moves import range
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2018 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -10,8 +14,8 @@ import numpy as np
 import math
 from scipy import optimize
 
-from horus.util import profile
-import horus.gui.engine
+from ferret.util import profile
+import ferret.gui.engine
 
 # ================================================
 # Apply mask to image
@@ -40,14 +44,14 @@ def overlay_mask(image, mask, color=(255,0,0)):
 
 def capture_precise_corners(steps = 3):
     corners = []
-    image_capture = horus.gui.engine.image_capture
+    image_capture = ferret.gui.engine.image_capture
     stream_save = image_capture.stream
     image_capture.stream = False
-    for i in xrange(steps):
+    for i in range(steps):
         print(i)
         image = image_capture.capture_pattern()
         if image is not None:
-            c = horus.gui.engine.image_detection.detect_corners(image)
+            c = ferret.gui.engine.image_detection.detect_corners(image)
             if c is not None:
                 corners += [c] # [c.reshape(-1,2)]
             elif i>=1 and len(corners) == 0:
@@ -64,9 +68,10 @@ def capture_precise_corners(steps = 3):
 # check and decode color setting to RGB 
 
 def decode_color(value, default=(0,0,0)):
+    import binascii
     ret = default
-    if isinstance(value, basestring):
-        ret = struct.unpack('BBB', value.decode('hex'))
+    if isinstance(value, six.string_types):
+        ret = struct.unpack('BBB', binascii.unhexlify(value))
     elif isinstance(value, (tuple,list)) and \
          len(value) == 3 and \
          all(isinstance(x, int) for x in value):
@@ -79,8 +84,8 @@ def decode_color(value, default=(0,0,0)):
 # estimate platform rotate angle to to make pattern on platform perpendicular to camera
 
 def estimate_platform_angle_from_pattern(pose, use_camera_space = False):
-#	pose = horus.gui.engine.image_detection.detect_pose_from_corners(corners)
-    calibration = horus.gui.engine.platform_extrinsics.calibration_data
+#    pose = ferret.gui.engine.image_detection.detect_pose_from_corners(corners)
+    calibration = ferret.gui.engine.platform_extrinsics.calibration_data
     if pose is not None:
         if calibration.platform_rotation is not None and \
            np.count_nonzero(calibration.platform_rotation) > 0 and \
@@ -168,7 +173,7 @@ def line_cross_sphere(vec, pt, center, radius):
 # return - platform angle movement to rotate point on to plane
 
 def rotatePoint2Plane(A,n,d):
-    calibration_data = horus.gui.engine.platform_extrinsics.calibration_data
+    calibration_data = ferret.gui.engine.platform_extrinsics.calibration_data
     P = calibration_data.platform_translation # platform center
     M = calibration_data.platform_rotation    # platform to world matrix
 
@@ -228,7 +233,7 @@ def rotatePoint2Plane(A,n,d):
 def rigid_transform_3D(A, B):
     assert len(A) == len(B)
     N = A.shape[0]; # total points
-    print("Arr len: "+str(N))
+    print(("Arr len: "+str(N)))
     centroid_A = np.mean(A, axis=0)
     centroid_B = np.mean(B, axis=0)
     print(centroid_A)
@@ -247,7 +252,7 @@ def rigid_transform_3D(A, B):
 
     # special reflection case
     if np.linalg.det(R) < 0:
-       print "Reflection detected"
+       print("Reflection detected")
        Vt[2,:] *= -1
        R = np.matmul(Vt.T, U.T)
 

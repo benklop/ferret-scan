@@ -1,0 +1,3 @@
+# Ferret Scan GUI + libferret/pyorbbecsdk (see requirements.txt)
+# pyorbbecsdk v2 documents support through Python 3.13
+python 3.13.7

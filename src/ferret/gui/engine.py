@@ -1,29 +1,30 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-#from horus.engine.driver.driver import Driver
-from horus.engine.driver.driver import driver
-from horus.engine.scan.ciclop_scan import CiclopScan
-from horus.engine.scan.current_video import CurrentVideo
-from horus.engine.calibration.pattern import pattern
-from horus.engine.calibration.calibration_data import calibration_data
-from horus.engine.calibration.camera_intrinsics import CameraIntrinsics
-from horus.engine.calibration.autocheck import Autocheck
-from horus.engine.calibration.laser_triangulation import LaserTriangulation
-from horus.engine.calibration.platform_extrinsics import PlatformExtrinsics
-from horus.engine.calibration.combo_calibration import ComboCalibration
-#from horus.engine.calibration.cloud_correction import CloudCorrection
+#from ferret.engine.driver.driver import Driver
+from ferret.engine.driver.driver import driver
+from ferret.engine.scan.ciclop_scan import CiclopScan
+from ferret.engine.scan.current_video import CurrentVideo
+from ferret.engine.calibration.pattern import pattern
+from ferret.engine.calibration.calibration_data import calibration_data
+from ferret.engine.calibration.camera_intrinsics import CameraIntrinsics
+from ferret.engine.calibration.autocheck import Autocheck
+from ferret.engine.calibration.laser_triangulation import LaserTriangulation
+from ferret.engine.calibration.platform_extrinsics import PlatformExtrinsics
+from ferret.engine.calibration.combo_calibration import ComboCalibration
+#from ferret.engine.calibration.cloud_correction import CloudCorrection
 
-from horus.engine.algorithms.image_capture import ImageCapture
-from horus.engine.algorithms.image_detection import ImageDetection
-from horus.engine.algorithms.aruco_detection import aruco_detection
-from horus.engine.algorithms.laser_segmentation import LaserSegmentation
-from horus.engine.algorithms.point_cloud_generation import PointCloudGeneration
-from horus.engine.algorithms.point_cloud_roi import PointCloudROI
+from ferret.engine.algorithms.image_capture import ImageCapture
+from ferret.engine.algorithms.image_detection import ImageDetection
+from ferret.engine.algorithms.aruco_detection import aruco_detection
+from ferret.engine.algorithms.laser_segmentation import LaserSegmentation
+from ferret.engine.algorithms.point_cloud_generation import PointCloudGeneration
+from ferret.engine.algorithms.point_cloud_roi import PointCloudROI
 
 
 # Instances of engine modules

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,11 +11,11 @@ import cv2
 import numpy as np
 import time
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus import Singleton
-from horus.engine.driver.driver import Driver
-from horus.engine.calibration.calibration_data import CalibrationData
+from ferret import Singleton
+from ferret.engine.driver.driver import Driver
+from ferret.engine.calibration.calibration_data import CalibrationData
 
 import logging
 logger = logging.getLogger(__name__)
@@ -138,10 +140,11 @@ class ImageCapture(object):
                 flush = self._flush_stream_mode
             else:
                 flush = self._flush_mode
-            if flush > 0:
-                self.capture_image(flush-1)
-            else:
-                self.capture_image(flush)
+            if self.driver.is_connected:
+                if flush > 0:
+                    self.capture_image(flush-1)
+                else:
+                    self.capture_image(flush)
             self._updating = False
 
     def set_mode_texture(self):
@@ -289,6 +292,8 @@ class ImageCapture(object):
         return image
 
     def capture_image(self, flush=0):
+        if not self.driver.is_connected:
+            return None
         image = self.driver.camera.capture_image(flush=flush)
         return image
 

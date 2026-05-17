@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+import six
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,13 +13,13 @@ import numpy as np
 from scipy import optimize
 import cv2
 
-from horus import Singleton
-from horus.engine.calibration.calibration import CalibrationCancel
-from horus.engine.calibration.moving_calibration import MovingCalibration
-from horus.gui.util.augmented_view import augmented_draw_pattern
-from horus.util.gryphon_util import rigid_transform_3D, PointOntoLine, capture_precise_corners
-#from horus.engine.calibration.calibration_data import calibration_data
-from horus.engine.algorithms.aruco_detection import aruco_detection
+from ferret import Singleton
+from ferret.engine.calibration.calibration import CalibrationCancel
+from ferret.engine.calibration.moving_calibration import MovingCalibration
+from ferret.gui.util.augmented_view import augmented_draw_pattern
+from ferret.util.gryphon_util import rigid_transform_3D, PointOntoLine, capture_precise_corners
+#from ferret.engine.calibration.calibration_data import calibration_data
+from ferret.engine.algorithms.aruco_detection import aruco_detection
 
 import logging
 logger = logging.getLogger(__name__)
@@ -72,7 +76,7 @@ class MarkerData(object):
         self.x = np.array(self.x)
         self.y = np.array(self.y)
         self.z = np.array(self.z)
-        points = zip(self.x, self.y, self.z)
+        points = list(zip(self.x, self.y, self.z))
 
         if len(points) > 4:
             # Fitting a plane
@@ -132,10 +136,10 @@ class MarkerData(object):
 
     def getError(self, R, t):
         if len(self.x) > 2:
-            v = zip( self.x, self.y, self.z ) - t
+            v = list(zip( self.x, self.y, self.z )) - t
             v = np.dot(R.T, v.T)
             dz = np.mean(np.abs(v[2] - np.mean(v[2])))
-            dr = np.linalg.norm(zip(v[0], v[1]), axis=1)
+            dr = np.linalg.norm(list(zip(v[0], v[1])), axis=1)
             r = np.mean(dr)
             dr = np.mean(np.abs(dr - r))
             return [dz,dr,r]
@@ -144,12 +148,12 @@ class MarkerData(object):
     def getDelta(self, R, t, bestIndex=0, radius = None):
         if len(self.x) > 2:
             # v - data points in R,t coords system
-            v = zip( self.x, self.y, self.z ) - t
+            v = list(zip( self.x, self.y, self.z )) - t
             v = np.dot(R.T, v.T)
 
             # if not specified set radius to mean distance
             if radius is None:
-                radius = np.mean( np.linalg.norm(zip(v[0], v[1]), axis=1) )
+                radius = np.mean( np.linalg.norm(list(zip(v[0], v[1])), axis=1) )
 
             # build first vector for average height cylinder with radius 'r'
             v0 = [v[0][bestIndex], v[1][bestIndex]] # Best data point on XY plane vector
@@ -182,7 +186,7 @@ class NormalData(MarkerData):
         self.x = np.array(self.x)
         self.y = np.array(self.y)
         self.z = np.array(self.z)
-        points = zip(self.x, self.y, self.z)
+        points = list(zip(self.x, self.y, self.z))
 
         if len(points) > 3:
             # Fitting rotation axis for normals
@@ -253,7 +257,7 @@ class PlatformExtrinsics(MovingCalibration):
             # TODO: Move all visualizaton AFTER detection
             image = augmented_draw_pattern(image, corners)
 
-            print("\n---- platform_extrinsics --- "+str(angle))
+            print(("\n---- platform_extrinsics --- "+str(angle)))
 
             # ----- Points from pattern pose -----
             # detect_pose() uses distortion while estimate pattern pose
@@ -333,7 +337,7 @@ class PlatformExtrinsics(MovingCalibration):
             image, rvecs, tvecs = aruco_detection.aruco_draw_markers(image, corners, ids)
             #print(rvecs.shape)
             tvecs = np.squeeze(tvecs, axis=1)
-            print(tvecs.shape)
+            print((tvecs.shape))
             #print(tvecs)
             for i, id in enumerate(ids):
                if 'ar'+str(id) not in self.data:
@@ -363,7 +367,7 @@ class PlatformExtrinsics(MovingCalibration):
         t_avg_n = 0
 
         # calibrate each data set and calculate average results
-        for i,d in self.data.iteritems():
+        for i,d in six.iteritems(self.data):
             d.calibrate()
             if d.n is not None:
                 normal_avg += d.n
@@ -402,15 +406,15 @@ class PlatformExtrinsics(MovingCalibration):
             logger.info(" Translation: " + str(t_avg))
 
             err0 = self.data['c0'].getDelta(R_avg, t_avg, bestIndex=int(len(self.data['c0'].x)/2) )
-            print("Delta c0: "+ str( err0 ) )
+            print(("Delta c0: "+ str( err0 ) ))
             t_avg = t_avg-err0
             err0 = self.data['c0'].getDelta(R_avg, t_avg, bestIndex=int(len(self.data['c0'].x)/2))
-            print("New Translation: "+ str(np.round(t_avg,4)) )
-            print("New Delta c0: "+ str( err0 ) )
+            print(("New Translation: "+ str(np.round(t_avg,4)) ))
+            print(("New Delta c0: "+ str( err0 ) ))
 
             err1 = self.data['c1'].getDelta(R_avg, t_avg, bestIndex=int(len(self.data['c0'].x)/2))
-            print("Delta c1: "+ str( err1 ) )
-            print("New Delta c1: "+ str(self.data['c1'].getDelta(R_avg, t_avg-err0)) )
+            print(("Delta c1: "+ str( err1 ) ))
+            print(("New Delta c1: "+ str(self.data['c1'].getDelta(R_avg, t_avg-err0)) ))
             #print( self.data['c1'].getError(R_avg, t_avg) )
 
             # Try to estimate rotation with SWD
@@ -424,8 +428,8 @@ class PlatformExtrinsics(MovingCalibration):
             # TODO Check missed during measurement points
 
             rsteps = 3
-            data = zip( zip(self.data['c0'].x, self.data['c0'].y, self.data['c0'].z),
-                        zip(self.data['c1'].x, self.data['c1'].y, self.data['c1'].z) )
+            data = list(zip( list(zip(self.data['c0'].x, self.data['c0'].y, self.data['c0'].z)),
+                        list(zip(self.data['c1'].x, self.data['c1'].y, self.data['c1'].z)) ))
             data1 = np.array(data[:-rsteps]).reshape(-1,3)
             data2 = np.array(data[rsteps:]).reshape(-1,3)
             R, t, centroid_A, centroid_B = rigid_transform_3D(data1, data2)
@@ -435,7 +439,7 @@ class PlatformExtrinsics(MovingCalibration):
             Rv = Rv.flatten()/l
             l = np.rad2deg(l)
             print(R)
-            print("Rv: %s alpha: %s" % (str(Rv), str(l/rsteps)) )
+            print(("Rv: %s alpha: %s" % (str(Rv), str(l/rsteps)) ))
             #tr = PointOntoLine(t, Rv, centroid_A)
             print(centroid_A)
             print(t)

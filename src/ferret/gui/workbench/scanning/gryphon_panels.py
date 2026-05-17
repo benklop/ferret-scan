@@ -1,4 +1,5 @@
 # This file is part of the Gryphon Scan Project
+from __future__ import absolute_import
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2019 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -6,12 +7,12 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 
 import numpy as np
 
-from horus.util import profile
-from horus.util import model
-from horus.gui.engine import ciclop_scan, calibration_data
-from horus.gui.util.custom_panels import ExpandablePanel, ComboBox, \
+from ferret.util import profile
+from ferret.util import model
+from ferret.gui.engine import ciclop_scan, calibration_data
+from ferret.gui.util.custom_panels import ExpandablePanel, ComboBox, \
      CheckBox, IntTextBox, Button, FloatTextBoxArray
-from horus.gui.util.gryphon_controls import DirPicker, ColorPicker
+from ferret.gui.util.gryphon_controls import DirPicker, ColorPicker
 
 
 class PointCloudColor(ExpandablePanel):
@@ -113,7 +114,7 @@ class MeshCorrection(ExpandablePanel):
         mesh = self.main.scene_view._object._mesh
 
         if mesh.metadata is None or \
-           'rotation_matrix' not in mesh.metadata.keys():
+           'rotation_matrix' not in list(mesh.metadata.keys()):
             return
 
         if self.mesh is None or \

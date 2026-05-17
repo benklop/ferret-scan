@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import driver, pattern, calibration_data, image_capture, \
+from ferret.gui.engine import driver, pattern, calibration_data, image_capture, \
     image_detection, laser_segmentation, laser_triangulation, platform_extrinsics, \
     combo_calibration #, cloud_correction
-from horus.gui.util.video_view import VideoView
-from horus.gui.workbench.workbench import Workbench
-from horus.gui.workbench.calibration.panels import PatternSettings, CameraIntrinsics, \
+from ferret.gui.util.video_view import VideoView
+from ferret.gui.workbench.workbench import Workbench
+from ferret.gui.workbench.calibration.panels import PatternSettings, CameraIntrinsics, \
     ScannerAutocheck, RotatingPlatform, LaserTriangulationPanel, PlatformExtrinsics, VideoSettings
 #    CloudCorrectionPanel
 
-from horus.gui.workbench.calibration.pages.camera_intrinsics import CameraIntrinsicsPages
-from horus.gui.workbench.calibration.pages.scanner_autocheck import ScannerAutocheckPages
-from horus.gui.workbench.calibration.pages.laser_triangulation import LaserTriangulationPages
-from horus.gui.workbench.calibration.pages.platform_extrinsics import PlatformExtrinsicsPages
-from horus.gui.workbench.calibration.pages.pattern_settings import PatternSettingsPages
-#from horus.gui.workbench.calibration.pages.cloud_correction import CloudCorrectionPages
+from ferret.gui.workbench.calibration.pages.camera_intrinsics import CameraIntrinsicsPages
+from ferret.gui.workbench.calibration.pages.scanner_autocheck import ScannerAutocheckPages
+from ferret.gui.workbench.calibration.pages.laser_triangulation import LaserTriangulationPages
+from ferret.gui.workbench.calibration.pages.platform_extrinsics import PlatformExtrinsicsPages
+from ferret.gui.workbench.calibration.pages.pattern_settings import PatternSettingsPages
+#from ferret.gui.workbench.calibration.pages.cloud_correction import CloudCorrectionPages
 
 
 class CalibrationWorkbench(Workbench):

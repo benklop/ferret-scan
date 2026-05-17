@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+import six
+from six.moves import range
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -13,17 +16,17 @@ from scipy import sparse, linalg
 import numpy.linalg
 import cv2
 
-from horus import Singleton
-from horus.engine.calibration.calibration import CalibrationCancel
-from horus.engine.calibration.moving_calibration import MovingCalibration
-from horus.engine.calibration.calibration_data import CalibrationData
-from horus.util.model import Mesh
-from horus.util.mesh_loaders import ply
+from ferret import Singleton
+from ferret.engine.calibration.calibration import CalibrationCancel
+from ferret.engine.calibration.moving_calibration import MovingCalibration
+from ferret.engine.calibration.calibration_data import CalibrationData
+from ferret.util.model import Mesh
+from ferret.util.mesh_loaders import ply
 
-from horus.gui.util.augmented_view import augmented_pattern_mask
-from horus.util.gryphon_util import apply_mask
+from ferret.gui.util.augmented_view import augmented_pattern_mask
+from ferret.util.gryphon_util import apply_mask
 
-from horus.util import profile
+from ferret.util import profile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -120,20 +123,20 @@ class LaserTriangulation(MovingCalibration):
         self.image_capture.stream = True
 
         # Save point clouds
-        for i,mesh in self._point_cloud.iteritems():
+        for i,mesh in six.iteritems(self._point_cloud):
             ply.save_scene('laser_triangulation' + str(i) + '.ply', self._point_cloud[i])
 
         self.planes = {}
 
         # Compute planes
-        for i,mesh in self._point_cloud.iteritems():
+        for i,mesh in six.iteritems(self._point_cloud):
             if self._is_calibrating:
                 # distance, normal, std
                 self.planes[i] = compute_plane(i, mesh.get_vertexes())
 
         if self._is_calibrating:
-            if all(np.array(self.planes.values())[:,2] < 1.0) and \
-               all(np.array(self.planes.values())[:,0]):
+            if all(np.array(list(self.planes.values()))[:,2] < 1.0) and \
+               all(np.array(list(self.planes.values()))[:,0]):
                 response = (True, (self.planes, self._point_cloud))
             else:
                 response = (False, LaserTriangulationError())
@@ -146,7 +149,7 @@ class LaserTriangulation(MovingCalibration):
         return response
 
     def accept(self):
-        for i,p in self.planes.iteritems():
+        for i,p in six.iteritems(self.planes):
             self.calibration_data.laser_planes[i].distance = p[0]
             self.calibration_data.laser_planes[i].normal = p[1]
 
@@ -217,7 +220,7 @@ def ransac(data, model_class, min_samples, threshold, max_trials=500):
     best_inlier_num = 0
     best_inliers = None
     data_idx = np.arange(data.shape[0])
-    for _ in xrange(max_trials):
+    for _ in range(max_trials):
         sample = data[np.random.randint(0, data.shape[0], 3)]
         if model_class.is_degenerate(sample):
             continue

@@ -1,15 +1,35 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-from horus.util import profile
+from ferret.util import profile
 
+import re
 import cv2
 import logging
 logger = logging.getLogger(__name__)
+
+
+def parse_usb_camera_index(camera_id):
+    """Extract OpenCV device index from a profile camera_id string."""
+    if camera_id is None:
+        return None
+    text = str(camera_id).strip()
+    if not text:
+        return None
+    match = re.search(r'video(\d+)', text, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+    match = re.search(r'(\d+)\s*$', text)
+    if match:
+        return int(match.group(1))
+    if text[-1].isdigit():
+        return int(text[-1])
+    return None
 
 class WrongCamera(Exception):
 
@@ -165,3 +185,8 @@ class Camera(object):
 
     def focus_supported(self):
         return False
+
+    def set_camera_id_from_settings(self, camera_id):
+        index = parse_usb_camera_index(camera_id)
+        if index is not None:
+            self.camera_id = index

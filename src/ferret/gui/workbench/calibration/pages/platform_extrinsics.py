@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from __future__ import print_function
+import six
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -8,20 +11,20 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import wx._core
 import numpy as np
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import pattern, calibration_data, platform_extrinsics, image_capture, image_detection, aruco_detection
-from horus.gui.util.pattern_distance_window import PatternDistanceWindow
-from horus.engine.calibration.platform_extrinsics import PlatformExtrinsicsError
+from ferret.gui.engine import pattern, calibration_data, platform_extrinsics, image_capture, image_detection, aruco_detection
+from ferret.gui.util.pattern_distance_window import PatternDistanceWindow
+from ferret.engine.calibration.platform_extrinsics import PlatformExtrinsicsError
 
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 
-from horus.gui.workbench.calibration.pages.page import Page
-from horus.gui.workbench.calibration.pages.video_page import VideoPage
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.workbench.calibration.pages.video_page import VideoPage
 
-from horus.util.gryphon_util import estimate_platform_angle_from_pattern
+from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
 
 class PlatformExtrinsicsPages(wx.Panel):
@@ -34,9 +37,9 @@ class PlatformExtrinsicsPages(wx.Panel):
 
         self.video_page = VideoPage(self, title=_('Platform extrinsics'),
                                     start_callback=self.on_start, cancel_callback=self.on_exit)
-	self.video_page.add_info(_("Estimate platform position."), "")
-	self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                             "picture and press \"Start\""), "pattern-position.png")
+        self.video_page.add_info(_("Estimate platform position."), "")
+        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
+                                 "picture and press \"Start\""), "pattern-position.png")
 
         self.result_page = ResultPage(self, exit_callback=self.on_exit)
 
@@ -102,13 +105,13 @@ class PlatformExtrinsicsPages(wx.Panel):
                     platform_extrinsics.angle_offset = estimate_platform_angle_from_pattern(pose)
                 else:
                     platform_extrinsics.angle_offset = -90
-                print(platform_extrinsics.angle_offset)
+                print((platform_extrinsics.angle_offset))
                 # full circle for ARUCO markers
                 if corners:
                     platform_extrinsics.angle_target = 360
                 else:
                     platform_extrinsics.angle_target = 180
-                print(platform_extrinsics.angle_target)
+                print((platform_extrinsics.angle_target))
 
                 platform_extrinsics.set_callbacks(lambda: wx.CallAfter(self.before_calibration),
                                                   lambda p: wx.CallAfter(self.progress_calibration, p),
@@ -218,7 +221,8 @@ class PlatformExtrinsics3DPlot(wx.Panel):
         fig = Figure(facecolor=(0.7490196, 0.7490196, 0.7490196, 1), tight_layout=True)
         self.canvas = FigureCanvasWxAgg(self, -1, fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
-        self.ax = fig.gca(projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = fig.add_subplot(111, projection='3d',
+                                  facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Layout()
@@ -231,7 +235,7 @@ class PlatformExtrinsics3DPlot(wx.Panel):
     def add(self, args):
         R, t, data = args
 
-        for idx, dat in data.iteritems():
+        for idx, dat in six.iteritems(data):
             # plot the surface, data, and synthetic circle
             # data poits
             self.ax.scatter(dat.x, dat.z, dat.y, c='b', marker='o')

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.util import resources
+from ferret.util import resources
 
 
 class ImageView(wx.Panel):
@@ -22,11 +23,11 @@ class ImageView(wx.Panel):
 
         self.default_image = wx.Image(resources.get_path_for_image("nusb.png"))
         self.image = self.default_image
-        self.bitmap = wx.BitmapFromImage(self.default_image)
+        self.bitmap = wx.Bitmap(self.default_image)
 
         self.black = black
         self.frame = None
-        self.current_size = self.GetSizeTuple()
+        self.current_size = self.GetSize()
         self.SetDoubleBuffered(True)
 
         self.Bind(wx.EVT_SHOW, self.on_show)
@@ -37,7 +38,7 @@ class ImageView(wx.Panel):
         self.hide = False
 
     def on_show(self, event):
-        if event.GetShow():
+        if event.IsShown():
             self.GetParent().Layout()
             self.Layout()
 
@@ -71,14 +72,14 @@ class ImageView(wx.Panel):
         self.frame = frame
         if frame is not None:
             height, width = frame.shape[:2]
-            self.set_image(wx.ImageFromBuffer(width, height, frame))
+            self.set_image(wx.Image(width, height, frame))
 
     def refresh_bitmap(self):
         if self.image is None:
             return
         (w, h, self.x_offset, self.y_offset) = self.get_best_size()
         if w > 0 and h > 0:
-            self.bitmap = wx.BitmapFromImage(self.image.Scale(w, h, self.quality))
+            self.bitmap = wx.Bitmap(self.image.Scale(int(w), int(h), self.quality))
             self.Refresh()
 
     def get_best_size(self):

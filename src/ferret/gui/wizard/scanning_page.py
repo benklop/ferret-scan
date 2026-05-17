@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.gui.wizard.wizard_page import WizardPage
+from ferret.gui.wizard.wizard_page import WizardPage
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import driver, ciclop_scan, image_capture
+from ferret.gui.engine import driver, ciclop_scan, image_capture
 
 
 class ScanningPage(WizardPage):
@@ -83,7 +85,7 @@ class ScanningPage(WizardPage):
         self.video_view.set_callback(self.get_image)
 
     def on_show(self, event):
-        if event.GetShow():
+        if event.IsShown():
             self.update_status(driver.is_connected)
         else:
             try:

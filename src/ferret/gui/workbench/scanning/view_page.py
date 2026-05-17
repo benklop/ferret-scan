@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.util import profile
+from ferret.util import profile
 
-from horus.gui.engine import driver, current_video
+from ferret.gui.engine import driver, current_video
 
-from horus.gui.util.video_view import VideoView
-from horus.gui.util.scene_view import SceneView
+from ferret.gui.util.video_view import VideoView
+from ferret.gui.util.scene_view import SceneView
 
 
 class ViewPage(wx.SplitterWindow):
@@ -55,7 +57,7 @@ class ViewPage(wx.SplitterWindow):
         self.video_view.Bind(wx.EVT_SHOW, self.on_show)
 
     def on_show(self, event):
-        if event.GetShow():
+        if event.IsShown():
             if driver.is_connected and profile.settings['workbench'] == 'scanning':
                 self.video_view.play()
         else:

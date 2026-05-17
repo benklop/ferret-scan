@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+import six
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
@@ -9,7 +11,7 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import os
 import gettext
 
-from horus.util import system
+from ferret.util import system
 
 resource_base_path = ''
 
@@ -61,8 +63,11 @@ def setup_localization(selected_language=None):
                 languages = [item[0]]
 
     locale_path = os.path.normpath(os.path.join(resource_base_path, 'locale'))
-    translation = gettext.translation('horus', locale_path, languages, fallback=True)
-    translation.install(unicode=True)
+    translation = gettext.translation('ferret', locale_path, languages, fallback=True)
+    if six.PY3:
+        translation.install()
+    else:
+        translation.install(unicode=True)
 
 
 def get_language_options():

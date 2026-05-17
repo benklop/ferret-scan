@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.util import resources
+from ferret.util import resources
 import numpy as np
 import cv2
 
-from horus.gui.engine import image_capture, image_detection, aruco_detection, scanner_autocheck, \
+from ferret.gui.engine import image_capture, image_detection, aruco_detection, scanner_autocheck, \
     laser_triangulation, platform_extrinsics, calibration_data
 
-from horus.gui.workbench.calibration.pages.page import Page
-from horus.gui.util.image_view import ImageView
-from horus.gui.util.video_view import VideoView
-from horus.gui.util.augmented_view import augmented_draw_platform, augmented_draw_lasers_on_platform, \
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.util.image_view import ImageView
+from ferret.gui.util.video_view import VideoView
+from ferret.gui.util.augmented_view import augmented_draw_platform, augmented_draw_lasers_on_platform, \
     augmented_draw_lasers_on_pattern
-from horus.util.gryphon_util  import rotatePoint2Plane
+from ferret.util.gryphon_util  import rotatePoint2Plane
 
 
 class VideoPage(Page):
@@ -37,7 +38,7 @@ class VideoPage(Page):
         # Elements
         self.video_view = VideoView(self.panel, self.get_image)
 
-        self.info_panel = wx.Panel(self)
+        self.info_panel = wx.Panel(self.panel)
         title_text = wx.StaticText(self.info_panel, label=title)
         title_font = title_text.GetFont()
         title_font.SetWeight(wx.BOLD)
@@ -54,7 +55,7 @@ class VideoPage(Page):
 
         self.Layout()
 
-#	self.add_info(_("Put the pattern on the platform as shown in the "
+#    self.add_info(_("Put the pattern on the platform as shown in the "
 #                             "picture and press \"Start\""), "pattern-position.png")
 
     def add_info(self, desc, picture):

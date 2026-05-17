@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from horus.util import profile, system as sys
+from ferret.util import profile, system as sys
 
-from horus.gui.engine import driver
-from horus.gui.util.custom_panels import ExpandablePanel, ControlPanel, Slider, \
+from ferret.gui.engine import driver
+from ferret.gui.util.custom_panels import ExpandablePanel, ControlPanel, Slider, \
     ToggleButton, Button, CallbackButton, FloatTextBox
 
 
@@ -54,7 +55,7 @@ class CameraControl(ExpandablePanel):
     def _save_image(self):
         image = driver.camera.capture_image()
         dlg = wx.FileDialog(self, _("Save image"), style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
-        wildcard_list = ';'.join(map(lambda s: '*' + s, ['.png']))
+        wildcard_list = ';'.join(['*' + s for s in ['.png']])
         wildcard_filter = "Image files (%s)|%s;%s" % (wildcard_list, wildcard_list,
                                                       wildcard_list.upper())
         dlg.SetWildcard(wildcard_filter)
@@ -224,7 +225,7 @@ class GcodeSection(ControlPanel):
         self.Layout()
 
         # Events
-        self.request.Bind(wx.wx.EVT_KEY_DOWN, self.on_key_pressed)
+        self.request.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
         self.control.Bind(wx.EVT_BUTTON, self.on_button_clicked)
 
     def on_key_pressed(self, event):

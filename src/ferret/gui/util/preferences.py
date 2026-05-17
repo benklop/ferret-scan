@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
+from __future__ import absolute_import
+from six.moves import zip
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -9,9 +11,9 @@ import time
 import wx._core
 import threading
 
-from horus.gui.engine import driver
-from horus.util import profile, resources
-from horus.util.avr_helpers import AvrDude, AvrError
+from ferret.gui.engine import driver
+from ferret.util import profile, resources
+from ferret.util.avr_helpers import AvrDude, AvrError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -289,7 +291,7 @@ class PreferencesDialog(wx.Dialog):
                 profile.settings['language'] = self.language_combo.GetValue()
         profile.settings.save_settings(categories=["preferences"])
         # Update engine
-        driver.camera.camera_id = int(profile.settings['camera_id'][-1:])
+        driver.camera.set_camera_id_from_settings(profile.settings['camera_id'])
         driver.board.serial_name = profile.settings['serial_name']
         driver.board.baud_rate = profile.settings['baud_rate']
         driver.board.motor_invert(profile.settings['invert_motor'])
