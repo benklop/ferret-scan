@@ -1,30 +1,25 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import cv2
 import random
-import wx._core
-import numpy as np
 
-from ferret.util import profile
+import cv2
+import numpy as np
+import wx._core
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from matplotlib.figure import Figure
 
 from ferret.gui.engine import camera_intrinsics, pattern
-
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
-
-from ferret.gui.workbench.calibration.pages.page import Page
 from ferret.gui.workbench.calibration.pages.capture_page import CapturePage
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.util import profile
 
 
 class CameraIntrinsicsPages(wx.Panel):
-
     def __init__(self, parent, start_callback=None, exit_callback=None):
         wx.Panel.__init__(self, parent)
 
@@ -77,9 +72,9 @@ class CameraIntrinsicsPages(wx.Panel):
             del self.wait_cursor
 
     def on_start(self):
-        camera_intrinsics.set_callbacks(lambda: wx.CallAfter(self.before_calibration),
-                                        None,
-                                        lambda r: wx.CallAfter(self.after_calibration, r))
+        camera_intrinsics.set_callbacks(
+            lambda: wx.CallAfter(self.before_calibration), None, lambda r: wx.CallAfter(self.after_calibration, r)
+        )
         camera_intrinsics.start()
 
     def on_exit(self):
@@ -89,15 +84,17 @@ class CameraIntrinsicsPages(wx.Panel):
 
 
 class ResultPage(Page):
-
     def __init__(self, parent, exit_callback=None):
-        Page.__init__(self, parent,
-                      title=_('Camera intrinsics result'),
-                      desc='.',
-                      left=_('Reject'),
-                      right=_('Accept'),
-                      button_left_callback=self.on_reject,
-                      button_right_callback=self.on_accept)
+        Page.__init__(
+            self,
+            parent,
+            title=_('Camera intrinsics result'),
+            desc='.',
+            left=_('Reject'),
+            right=_('Accept'),
+            button_left_callback=self.on_reject,
+            button_right_callback=self.on_accept,
+        )
 
         self.result = None
         self.exit_callback = exit_callback
@@ -128,10 +125,7 @@ class ResultPage(Page):
 
         if ret:
             error, mtx, dist, rvecs, tvecs = result
-            text = ' fx: {0}  fy: {1}  cx: {2}  cy: {3}  dist: {4}'.format(
-                round(mtx[0][0], 3), round(mtx[1][1], 3),
-                round(mtx[0][2], 3), round(mtx[1][2], 3),
-                np.round(dist, 2))
+            text = f' fx: {round(mtx[0][0], 3)}  fy: {round(mtx[1][1], 3)}  cx: {round(mtx[0][2], 3)}  cy: {round(mtx[1][2], 3)}  dist: {np.round(dist, 2)}'
             self.result = (mtx, dist)
             self.desc_text.SetLabel(text)
             self.plot_panel.add(error, rvecs, tvecs)
@@ -140,14 +134,16 @@ class ResultPage(Page):
         else:
             if isinstance(result, CameraIntrinsicsError):
                 dlg = wx.MessageDialog(
-                    self, _("Camera intrinsics calibration has failed. Please try again"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _('Camera intrinsics calibration has failed. Please try again'),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
 
 
 class CameraIntrinsics3DPlot(wx.Panel):
-
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -158,8 +154,7 @@ class CameraIntrinsics3DPlot(wx.Panel):
         self.canvas = FigureCanvasWxAgg(self, -1, self.fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
 
-        self.ax = self.fig.add_subplot(111, projection='3d',
-                                       facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = self.fig.add_subplot(111, projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.print_canvas()
 
@@ -198,7 +193,6 @@ class CameraIntrinsics3DPlot(wx.Panel):
         self.ax.text(-100, 200, 0, str(round(error, 5)), fontsize=15)
 
         for ind, transvector in enumerate(rvecs):
-
             R = cv2.Rodrigues(transvector)[0]
             t = tvecs[ind]
 
@@ -219,12 +213,9 @@ class CameraIntrinsics3DPlot(wx.Panel):
 
             self.ax.plot_surface(X, Z, Y, linewidth=0, color=color)
 
-            self.ax.plot([t[0][0], CX[0]], [t[2][0], CZ[0]],
-                         [t[1][0], CY[0]], linewidth=1.0, color='green')
-            self.ax.plot([t[0][0], CX[1]], [t[2][0], CZ[1]],
-                         [t[1][0], CY[1]], linewidth=1.0, color='red')
-            self.ax.plot([t[0][0], CX[2]], [t[2][0], CZ[2]],
-                         [t[1][0], CY[2]], linewidth=1.0, color='blue')
+            self.ax.plot([t[0][0], CX[0]], [t[2][0], CZ[0]], [t[1][0], CY[0]], linewidth=1.0, color='green')
+            self.ax.plot([t[0][0], CX[1]], [t[2][0], CZ[1]], [t[1][0], CY[1]], linewidth=1.0, color='red')
+            self.ax.plot([t[0][0], CX[2]], [t[2][0], CZ[2]], [t[1][0], CY[2]], linewidth=1.0, color='blue')
             self.canvas.draw()
 
         self.Layout()

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
@@ -23,6 +22,7 @@ http://en.wikipedia.org/wiki/STL_(file_format)
 
 import os
 import struct
+
 import numpy as np
 
 from ferret.util import model
@@ -44,9 +44,17 @@ def _load_ascii(mesh, stream):
                 data[cnt] = line.split()[1:]
                 cnt += 1
                 if cnt == 3:
-                    mesh._add_face(float(data[0][0]), float(data[0][1]), float(data[0][2]),
-                                   float(data[1][0]), float(data[1][1]), float(data[1][2]),
-                                   float(data[2][0]), float(data[2][1]), float(data[2][2]))
+                    mesh._add_face(
+                        float(data[0][0]),
+                        float(data[0][1]),
+                        float(data[0][2]),
+                        float(data[1][0]),
+                        float(data[1][1]),
+                        float(data[1][2]),
+                        float(data[2][0]),
+                        float(data[2][1]),
+                        float(data[2][2]),
+                    )
                     cnt = 0
 
 
@@ -55,15 +63,12 @@ def _load_binary(mesh, stream):
     stream.read(80 - 5)
     count = struct.unpack('<I', stream.read(4))[0]
 
-    dtype = np.dtype([
-                    ('n', np.float32, (3,)),
-                    ('v', np.float32, (9,)),
-                    ('atttr', '<i2', (1,))])
+    dtype = np.dtype([('n', np.float32, (3,)), ('v', np.float32, (9,)), ('atttr', '<i2', (1,))])
 
     data = np.fromfile(stream, dtype=dtype, count=count)
 
     mesh.vertex_count = 3 * count
-    n = np.zeros((mesh.vertex_count / 3, 9), np.float32)
+    n = np.zeros((mesh.vertex_count // 3, 9), np.float32)
     n[:, 0:3] = n[:, 3:6] = n[:, 6:9] = data['n']
     mesh.normal = n.reshape(mesh.vertex_count, 3)
     mesh.vertexes = np.reshape(data['v'], (mesh.vertex_count, 3))
@@ -72,8 +77,8 @@ def _load_binary(mesh, stream):
 def load_scene(filename):
     obj = model.Model(filename)
     m = obj._add_mesh()
-    with open(filename, "rb") as f:
-        if f.read(5).lower() == "solid":
+    with open(filename, 'rb') as f:
+        if f.read(5).lower() == 'solid':
             _load_ascii(m, f)
         else:
             _load_binary(m, f)

@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 # Depth map → 3D points for structured-light (Ferret / RGB-D) scanning.
 
-from __future__ import absolute_import
 import numpy as np
 
 from ferret import Singleton
@@ -9,8 +7,7 @@ from ferret.engine.calibration.calibration_data import CalibrationData
 
 
 @Singleton
-class DepthToPointCloud(object):
-
+class DepthToPointCloud:
     def __init__(self):
         self.calibration_data = CalibrationData()
         self.stride = 2

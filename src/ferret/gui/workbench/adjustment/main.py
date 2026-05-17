@@ -1,23 +1,24 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-from ferret.util import profile
-
-from ferret.gui.engine import driver, pattern, calibration_data, image_capture
+from ferret.gui.engine import calibration_data, driver, pattern
 from ferret.gui.util.video_view import VideoView
-from ferret.gui.workbench.workbench import Workbench
 from ferret.gui.workbench.adjustment.current_video import CurrentVideo
-from ferret.gui.workbench.adjustment.panels import ScanCapturePanel, ScanSegmentationPanel, \
-    CalibrationCapturePanel, CalibrationSegmentationPanel
+from ferret.gui.workbench.adjustment.panels import (
+    CalibrationCapturePanel,
+    CalibrationSegmentationPanel,
+    ScanCapturePanel,
+    ScanSegmentationPanel,
+)
+from ferret.gui.workbench.workbench import Workbench
+from ferret.util import profile
 
 
 class AdjustmentWorkbench(Workbench):
-
     def __init__(self, parent):
         Workbench.__init__(self, parent, name=_('Adjustment workbench'))
 
@@ -31,8 +32,7 @@ class AdjustmentWorkbench(Workbench):
 
     def add_pages(self):
         self.add_page('video_view', VideoView(self, self._video_frame, wxtimer=False))
-        self.panels_collection.expandable_panels[
-            profile.settings['current_panel_adjustment']].on_title_clicked(None)
+        self.panels_collection.expandable_panels[profile.settings['current_panel_adjustment']].on_title_clicked(None)
 
     def _video_frame(self):
         return self.current_video.get_frame()
@@ -40,7 +40,8 @@ class AdjustmentWorkbench(Workbench):
     def on_open(self):
         current_video_mode = profile.settings['current_video_mode_adjustment']
         self.pages_collection['video_view'].play(
-            flush=not (current_video_mode == 'Laser' or current_video_mode == 'Gray'))
+            flush=not (current_video_mode == 'Laser' or current_video_mode == 'Gray')
+        )
 
     def on_close(self):
         try:
@@ -57,6 +58,4 @@ class AdjustmentWorkbench(Workbench):
         pattern.read_profile()
         calibration_data.read_profile_camera()
         calibration_data.read_profile_calibration()
-        self.panels_collection.expandable_panels[
-            profile.settings['current_panel_adjustment']].on_title_clicked(None)
-
+        self.panels_collection.expandable_panels[profile.settings['current_panel_adjustment']].on_title_clicked(None)

@@ -1,25 +1,25 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 import six
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>\
               Nicanor Romero Venier <nicanor.romerovenier@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import os
-import math
-import sys
 import collections
 import json
-import types
+import logging
+import math
+import os
+import sys
+
 import numpy as np
 
 from ferret import Singleton
-import logging
+
 logger = logging.getLogger(__name__)
 
 from ferret.util import resources, system
@@ -27,8 +27,7 @@ from ferret.util import resources, system
 
 def default_libferret_root():
     """Prefer vendored libferret submodule in a source checkout."""
-    repo_root = os.path.normpath(os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+    repo_root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
     vendored = os.path.join(repo_root, 'libferret')
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
         return vendored
@@ -37,7 +36,6 @@ def default_libferret_root():
 
 @Singleton
 class Settings(collections.MutableMapping):
-
     def __init__(self):
         self._settings_dict = dict()
         self.settings_version = 1
@@ -115,7 +113,7 @@ class Settings(collections.MutableMapping):
             elif setting_type == np.ndarray:
                 value = np.asarray(value)
         except:
-            logger.error("Unable to cast setting %s to type %s" % (key, setting_type))
+            logger.error('Unable to cast setting %s to type %s' % (key, setting_type))
         else:
             self.get_setting(key).value = value
 
@@ -124,12 +122,12 @@ class Settings(collections.MutableMapping):
     def load_settings(self, filepath=None, categories=None):
         if filepath is None:
             filepath = os.path.join(get_base_path(), 'settings.json')
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             self._load_json_dict(json.loads(f.read()), categories)
 
     def _load_json_dict(self, json_dict, categories):
         for category in json_dict.keys():
-            if category == "settings_version":
+            if category == 'settings_version':
                 continue
             if categories is None or category in categories:
                 for key in json_dict[category]:
@@ -148,15 +146,14 @@ class Settings(collections.MutableMapping):
         # If trying to overwrite some categories of settings.json, first load it
         # to preserve the other values
         if categories is not None and filepath == os.path.join(get_base_path(), 'settings.json'):
-            with open(filepath, 'r') as f:
+            with open(filepath) as f:
                 initial_json = json.loads(f.read())
         else:
             initial_json = None
 
         with open(filepath, 'w') as f:
-            f.write(
-                json.dumps(self._to_json_dict(categories, initial_json), sort_keys=True, indent=4))
-        logger.info("Saving settings to {0}".format(filepath))
+            f.write(json.dumps(self._to_json_dict(categories, initial_json), sort_keys=True, indent=4))
+        logger.info(f'Saving settings to {filepath}')
 
     def _to_json_dict(self, categories, initial_json=None):
         if initial_json is None:
@@ -164,7 +161,7 @@ class Settings(collections.MutableMapping):
         else:
             json_dict = initial_json.copy()
 
-        json_dict["settings_version"] = self.settings_version
+        json_dict['settings_version'] = self.settings_version
         for key in self._settings_dict.keys():
             cur_setting = self.get_setting(key)
             if categories is not None and cur_setting._category not in categories:
@@ -174,7 +171,7 @@ class Settings(collections.MutableMapping):
                 continue
             if cur_setting._category not in json_dict:
                 json_dict[cur_setting._category] = dict()
-                #print "Profile category {0}".format(cur_setting._category)
+                # print "Profile category {0}".format(cur_setting._category)
             json_dict[cur_setting._category][key] = cur_setting._to_json_dict()
         return json_dict
 
@@ -199,51 +196,94 @@ class Settings(collections.MutableMapping):
                 self.__setitem__(key, self.get_default(key))
 
     def _add_setting(self, setting):
-        if not setting._id in self._settings_dict:
+        if setting._id not in self._settings_dict:
             self._settings_dict[setting._id] = setting
 
     def _initialize_settings(self):
 
         # ============== CONNECTION Preferences ========
 
+        self._add_setting(Setting('serial_name', _('Serial name'), 'preferences', six.text_type, ''))
         self._add_setting(
-            Setting('serial_name', _('Serial name'), 'preferences', six.text_type, u''))
+            Setting(
+                'baud_rate',
+                _('Baud rate'),
+                'preferences',
+                int,
+                115200,
+                possible_values=(9600, 14400, 19200, 38400, 57600, 115200),
+            )
+        )
+        self._add_setting(Setting('camera_id', _('Camera ID'), 'preferences', six.text_type, ''))
         self._add_setting(
-            Setting('baud_rate', _('Baud rate'), 'preferences', int, 115200,
-                    possible_values=(9600, 14400, 19200, 38400, 57600, 115200)))
+            Setting(
+                'scanner_mode',
+                _('Scanner mode'),
+                'preferences',
+                six.text_type,
+                'Ferret structured light',
+                possible_values=('Ciclop laser', 'Ferret structured light'),
+                tooltip=_('Ciclop: webcam + line lasers. Ferret: CR-Scan Ferret depth/RGB-D.'),
+            )
+        )
         self._add_setting(
-            Setting('camera_id', _('Camera ID'), 'preferences', six.text_type, u''))
+            Setting(
+                'ferret_libferret_root',
+                _('libferret path'),
+                'preferences',
+                six.text_type,
+                default_libferret_root(),
+                tooltip=_('Path to libferret (submodule or clone with OrbbecSDK_v2).'),
+            )
+        )
         self._add_setting(
-            Setting('scanner_mode', _('Scanner mode'), 'preferences', six.text_type,
-                    u'Ferret structured light',
-                    possible_values=(u'Ciclop laser', u'Ferret structured light'),
-                    tooltip=_('Ciclop: webcam + line lasers. Ferret: CR-Scan Ferret depth/RGB-D.')))
+            Setting(
+                'ferret_python3',
+                _('Python 3 for Ferret'),
+                'preferences',
+                six.text_type,
+                'python3',
+                tooltip=_('Interpreter used to run scripts/ferret_snap_rgbd.py'),
+            )
+        )
         self._add_setting(
-            Setting('ferret_libferret_root', _('libferret path'), 'preferences', six.text_type,
-                    default_libferret_root(),
-                    tooltip=_('Path to libferret (submodule or clone with OrbbecSDK_v2).')))
+            Setting(
+                'ferret_turntable_optional',
+                _('Turntable optional (Ferret)'),
+                'preferences',
+                bool,
+                True,
+                tooltip=_('Allow Ferret connect when GRBL board is absent (manual rotation).'),
+            )
+        )
         self._add_setting(
-            Setting('ferret_python3', _('Python 3 for Ferret'), 'preferences', six.text_type, u'python3',
-                    tooltip=_('Interpreter used to run scripts/ferret_snap_rgbd.py')))
+            Setting(
+                'board',
+                _('Board'),
+                'preferences',
+                six.text_type,
+                'BT ATmega328',
+                possible_values=('Arduino Uno', 'BT ATmega328'),
+            )
+        )
         self._add_setting(
-            Setting('ferret_turntable_optional', _('Turntable optional (Ferret)'), 'preferences', bool, True,
-                    tooltip=_('Allow Ferret connect when GRBL board is absent (manual rotation).')))
+            Setting(
+                'firmware_string', 'Firmware version string', 'preferences', six.text_type, "Horus 0.2 ['$' for help]"
+            )
+        )
+        self._add_setting(Setting('init_string', 'Board init string', 'preferences', six.text_type, ''))
+        self._add_setting(Setting('invert_motor', _('Invert motor'), 'preferences', bool, False))
         self._add_setting(
-            Setting('board', _('Board'), 'preferences', six.text_type, u'BT ATmega328',
-                    possible_values=(u'Arduino Uno', u'BT ATmega328')))
-        self._add_setting(
-            Setting('firmware_string', 'Firmware version string', 'preferences', six.text_type, u"Horus 0.2 ['$' for help]"))
-        self._add_setting(
-            Setting('init_string', 'Board init string', 'preferences', six.text_type, u''))
-        self._add_setting(
-            Setting('invert_motor', _('Invert motor'), 'preferences', bool, False))
-        self._add_setting(
-            Setting('language', _('Language'), 'preferences', six.text_type, u'English',
-                    possible_values=(u'English', u'Español', u'Français',
-                                     u'Deutsch', u'Italiano', u'Português'),
-                    tooltip=_('Change the language of Horus. '
-                              'Switching language will require a program restart')))
-
+            Setting(
+                'language',
+                _('Language'),
+                'preferences',
+                six.text_type,
+                'English',
+                possible_values=('English', 'Español', 'Français', 'Deutsch', 'Italiano', 'Português'),
+                tooltip=_('Change the language of Horus. Switching language will require a program restart'),
+            )
+        )
 
         # ========== Camera profiles ===========
         # Hack to translate combo boxes:
@@ -254,427 +294,688 @@ class Settings(collections.MutableMapping):
 
         # ------- Control -----------
         self._add_setting(
-            Setting('luminosity', _('Luminosity'), 'profile_settings',
-                    six.text_type, u'Medium', possible_values=(u'High', u'Medium', u'Low')))
+            Setting(
+                'luminosity',
+                _('Luminosity'),
+                'profile_settings',
+                six.text_type,
+                'Medium',
+                possible_values=('High', 'Medium', 'Low'),
+            )
+        )
         self._add_setting(
-            Setting('brightness_control', _('Brightness'), 'profile_settings',
-                    int, 128, min_value=0, max_value=255))
+            Setting('brightness_control', _('Brightness'), 'profile_settings', int, 128, min_value=0, max_value=255)
+        )
         self._add_setting(
-            Setting('contrast_control', _('Contrast'), 'profile_settings',
-                    int, 32, min_value=0, max_value=255))
+            Setting('contrast_control', _('Contrast'), 'profile_settings', int, 32, min_value=0, max_value=255)
+        )
         self._add_setting(
-            Setting('saturation_control', _('Saturation'), 'profile_settings',
-                    int, 32, min_value=0, max_value=255))
+            Setting('saturation_control', _('Saturation'), 'profile_settings', int, 32, min_value=0, max_value=255)
+        )
         self._add_setting(
-            Setting('exposure_control', _('Exposure'), 'profile_settings',
-                    int, 16, min_value=1, max_value=64))
+            Setting('exposure_control', _('Exposure'), 'profile_settings', int, 16, min_value=1, max_value=64)
+        )
         self._add_setting(
-            Setting('light1_control', _('Lamp 1 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting('light1_control', _('Lamp 1 brightness'), 'profile_settings', int, 0, min_value=0, max_value=255)
+        )
         self._add_setting(
-            Setting('light2_control', _('Lamp 2 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting('light2_control', _('Lamp 2 brightness'), 'profile_settings', int, 0, min_value=0, max_value=255)
+        )
 
         # -------- Calibration --------
         self._add_setting(
-            Setting('brightness_pattern_calibration', _('Brightness'), 'profile_settings',
-                    int, 128, min_value=0, max_value=255))
+            Setting(
+                'brightness_pattern_calibration',
+                _('Brightness'),
+                'profile_settings',
+                int,
+                128,
+                min_value=0,
+                max_value=255,
+            )
+        )
         self._add_setting(
-            Setting('contrast_pattern_calibration', _('Contrast'), 'profile_settings',
-                    int, 32, min_value=0, max_value=255))
+            Setting(
+                'contrast_pattern_calibration', _('Contrast'), 'profile_settings', int, 32, min_value=0, max_value=255
+            )
+        )
         self._add_setting(
-            Setting('saturation_pattern_calibration', _('Saturation'), 'profile_settings',
-                    int, 32, min_value=0, max_value=255))
+            Setting(
+                'saturation_pattern_calibration',
+                _('Saturation'),
+                'profile_settings',
+                int,
+                32,
+                min_value=0,
+                max_value=255,
+            )
+        )
         self._add_setting(
-            Setting('exposure_pattern_calibration', _('Exposure'), 'profile_settings',
-                    int, 16, min_value=1, max_value=64))
+            Setting(
+                'exposure_pattern_calibration', _('Exposure'), 'profile_settings', int, 16, min_value=1, max_value=64
+            )
+        )
         self._add_setting(
-            Setting('light1_pattern_calibration', _('Lamp 1 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'light1_pattern_calibration',
+                _('Lamp 1 brightness'),
+                'profile_settings',
+                int,
+                0,
+                min_value=0,
+                max_value=255,
+            )
+        )
         self._add_setting(
-            Setting('light2_pattern_calibration', _('Lamp 2 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'light2_pattern_calibration',
+                _('Lamp 2 brightness'),
+                'profile_settings',
+                int,
+                0,
+                min_value=0,
+                max_value=255,
+            )
+        )
 
         self._add_setting(
-            Setting('brightness_laser_calibration', _('Brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'brightness_laser_calibration', _('Brightness'), 'profile_settings', int, 0, min_value=0, max_value=255
+            )
+        )
         self._add_setting(
-            Setting('contrast_laser_calibration', _('Contrast'), 'profile_settings',
-                    int, 100, min_value=0, max_value=255))
+            Setting(
+                'contrast_laser_calibration', _('Contrast'), 'profile_settings', int, 100, min_value=0, max_value=255
+            )
+        )
         self._add_setting(
-            Setting('saturation_laser_calibration', _('Saturation'), 'profile_settings',
-                    int, 100, min_value=0, max_value=255))
+            Setting(
+                'saturation_laser_calibration',
+                _('Saturation'),
+                'profile_settings',
+                int,
+                100,
+                min_value=0,
+                max_value=255,
+            )
+        )
         self._add_setting(
-            Setting('exposure_laser_calibration', _('Exposure'), 'profile_settings',
-                    int, 8, min_value=1, max_value=64))
+            Setting('exposure_laser_calibration', _('Exposure'), 'profile_settings', int, 8, min_value=1, max_value=64)
+        )
         self._add_setting(
-            Setting('light1_laser_calibration', _('Lamp 1 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'light1_laser_calibration',
+                _('Lamp 1 brightness'),
+                'profile_settings',
+                int,
+                0,
+                min_value=0,
+                max_value=255,
+            )
+        )
         self._add_setting(
-            Setting('light2_laser_calibration', _('Lamp 2 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'light2_laser_calibration',
+                _('Lamp 2 brightness'),
+                'profile_settings',
+                int,
+                0,
+                min_value=0,
+                max_value=255,
+            )
+        )
 
         self._add_setting(
-            Setting('remove_background_calibration', _('Remove background'),
-                    'profile_settings', bool, True))
+            Setting('remove_background_calibration', _('Remove background'), 'profile_settings', bool, True)
+        )
 
         # ------- Scanning ------
         self._add_setting(
-            Setting('brightness_texture_scanning', _('Brightness'), 'profile_settings',
-                    int, 128, min_value=0, max_value=255))
+            Setting(
+                'brightness_texture_scanning', _('Brightness'), 'profile_settings', int, 128, min_value=0, max_value=255
+            )
+        )
         self._add_setting(
-            Setting('contrast_texture_scanning', _('Contrast'), 'profile_settings',
-                    int, 32, min_value=0, max_value=255))
+            Setting('contrast_texture_scanning', _('Contrast'), 'profile_settings', int, 32, min_value=0, max_value=255)
+        )
         self._add_setting(
-            Setting('saturation_texture_scanning', _('Saturation'), 'profile_settings',
-                    int, 50, min_value=0, max_value=255))
+            Setting(
+                'saturation_texture_scanning', _('Saturation'), 'profile_settings', int, 50, min_value=0, max_value=255
+            )
+        )
         self._add_setting(
-            Setting('exposure_texture_scanning', _('Exposure'), 'profile_settings',
-                    int, 16, min_value=1, max_value=64))
+            Setting('exposure_texture_scanning', _('Exposure'), 'profile_settings', int, 16, min_value=1, max_value=64)
+        )
         self._add_setting(
-            Setting('light1_texture_scanning', _('Lamp 1 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'light1_texture_scanning',
+                _('Lamp 1 brightness'),
+                'profile_settings',
+                int,
+                0,
+                min_value=0,
+                max_value=255,
+            )
+        )
         self._add_setting(
-            Setting('light2_texture_scanning', _('Lamp 2 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting(
+                'light2_texture_scanning',
+                _('Lamp 2 brightness'),
+                'profile_settings',
+                int,
+                0,
+                min_value=0,
+                max_value=255,
+            )
+        )
 
+        self._add_setting(
+            Setting(
+                'brightness_laser_scanning', _('Brightness'), 'profile_settings', int, 0, min_value=0, max_value=255
+            )
+        )
+        self._add_setting(
+            Setting('contrast_laser_scanning', _('Contrast'), 'profile_settings', int, 100, min_value=0, max_value=255)
+        )
+        self._add_setting(
+            Setting(
+                'saturation_laser_scanning', _('Saturation'), 'profile_settings', int, 100, min_value=0, max_value=255
+            )
+        )
+        self._add_setting(
+            Setting('exposure_laser_scanning', _('Exposure'), 'profile_settings', int, 8, min_value=1, max_value=64)
+        )
+        self._add_setting(
+            Setting(
+                'light1_laser_scanning', _('Lamp 1 brightness'), 'profile_settings', int, 0, min_value=0, max_value=255
+            )
+        )
+        self._add_setting(
+            Setting(
+                'light2_laser_scanning', _('Lamp 2 brightness'), 'profile_settings', int, 0, min_value=0, max_value=255
+            )
+        )
 
-        self._add_setting(
-            Setting('brightness_laser_scanning', _('Brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
-        self._add_setting(
-            Setting('contrast_laser_scanning', _('Contrast'), 'profile_settings',
-                    int, 100, min_value=0, max_value=255))
-        self._add_setting(
-            Setting('saturation_laser_scanning', _('Saturation'), 'profile_settings',
-                    int, 100, min_value=0, max_value=255))
-        self._add_setting(
-            Setting('exposure_laser_scanning', _('Exposure'), 'profile_settings',
-                    int, 8, min_value=1, max_value=64))
-        self._add_setting(
-            Setting('light1_laser_scanning', _('Lamp 1 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
-        self._add_setting(
-            Setting('light2_laser_scanning', _('Lamp 2 brightness'), 'profile_settings',
-                    int, 0, min_value=0, max_value=255))
-
-        self._add_setting(
-            Setting('remove_background_scanning', _('Remove background'),
-                    'profile_settings', bool, True))
-
+        self._add_setting(Setting('remove_background_scanning', _('Remove background'), 'profile_settings', bool, True))
 
         # ============ Video flush profiles ==============
         # [ texture, laser, pattern, change mode ]
         # - Linux
         self._add_setting(
-            Setting('flush_linux', 'Flush Linux', 'preferences',
-                    np.ndarray, np.ndarray(shape=(4,), dtype=int, buffer=np.array([3, 2, 3, 0]))))
+            Setting(
+                'flush_linux',
+                'Flush Linux',
+                'preferences',
+                np.ndarray,
+                np.ndarray(shape=(4,), dtype=int, buffer=np.array([3, 2, 3, 0])),
+            )
+        )
         self._add_setting(
-            Setting('flush_stream_linux', 'Flush stream Linux', 'preferences',
-                    np.ndarray, np.ndarray(shape=(4,), dtype=int, buffer=np.array([0, 3, 3, 0]))))
+            Setting(
+                'flush_stream_linux',
+                'Flush stream Linux',
+                'preferences',
+                np.ndarray,
+                np.ndarray(shape=(4,), dtype=int, buffer=np.array([0, 3, 3, 0])),
+            )
+        )
         # - Darwin
         self._add_setting(
-            Setting('flush_darwin', 'Flush Darwin', 'preferences',
-                    np.ndarray, np.ndarray(shape=(4,), dtype=int, buffer=np.array([4, 3, 4, 0]))))
+            Setting(
+                'flush_darwin',
+                'Flush Darwin',
+                'preferences',
+                np.ndarray,
+                np.ndarray(shape=(4,), dtype=int, buffer=np.array([4, 3, 4, 0])),
+            )
+        )
         self._add_setting(
-            Setting('flush_stream_darwin', 'Flush stream Darwin', 'preferences',
-                    np.ndarray, np.ndarray(shape=(4,), dtype=int, buffer=np.array([0, 3, 3, 0]))))
+            Setting(
+                'flush_stream_darwin',
+                'Flush stream Darwin',
+                'preferences',
+                np.ndarray,
+                np.ndarray(shape=(4,), dtype=int, buffer=np.array([0, 3, 3, 0])),
+            )
+        )
         # - Windows
         self._add_setting(
-            Setting('flush_windows', 'Flush Windows', 'preferences',
-                    np.ndarray, np.ndarray(shape=(4,), dtype=int, buffer=np.array([4, 3, 4, 0]))))
+            Setting(
+                'flush_windows',
+                'Flush Windows',
+                'preferences',
+                np.ndarray,
+                np.ndarray(shape=(4,), dtype=int, buffer=np.array([4, 3, 4, 0])),
+            )
+        )
         self._add_setting(
-            Setting('flush_stream_windows', 'Flush stream Windows', 'preferences',
-                    np.ndarray, np.ndarray(shape=(4,), dtype=int, buffer=np.array([0, 3, 3, 0]))))
-
+            Setting(
+                'flush_stream_windows',
+                'Flush stream Windows',
+                'preferences',
+                np.ndarray,
+                np.ndarray(shape=(4,), dtype=int, buffer=np.array([0, 3, 3, 0])),
+            )
+        )
 
         # ========== Segmentation profiles ===========
 
         # -------- Calibration --------
         self._add_setting(
-            Setting('laser_color_detector_calibration', _('Laser color detector'), 'profile_settings',
-                    six.text_type, u'R (HSV)',
-                    possible_values=(u'R (RGB)', u'G (RGB)', u'B (RGB)', u'R (HSV)', u'Cr (YCrCb)', u'U (YUV)')))
+            Setting(
+                'laser_color_detector_calibration',
+                _('Laser color detector'),
+                'profile_settings',
+                six.text_type,
+                'R (HSV)',
+                possible_values=('R (RGB)', 'G (RGB)', 'B (RGB)', 'R (HSV)', 'Cr (YCrCb)', 'U (YUV)'),
+            )
+        )
         self._add_setting(
-            Setting('threshold_enable_calibration', _('Enable threshold'),
-                    'profile_settings', bool, True))
+            Setting('threshold_enable_calibration', _('Enable threshold'), 'profile_settings', bool, True)
+        )
         self._add_setting(
-            Setting('threshold_value_calibration', _('Threshold'), 'profile_settings',
-                    int, 50, min_value=0, max_value=255))
+            Setting(
+                'threshold_value_calibration', _('Threshold'), 'profile_settings', int, 50, min_value=0, max_value=255
+            )
+        )
+        self._add_setting(Setting('blur_enable_calibration', _('Enable blur'), 'profile_settings', bool, False))
         self._add_setting(
-            Setting('blur_enable_calibration', _('Enable blur'),
-                    'profile_settings', bool, False))
+            Setting('blur_value_calibration', _('Blur'), 'profile_settings', int, 2, min_value=0, max_value=10)
+        )
+        self._add_setting(Setting('window_enable_calibration', _('Enable window'), 'profile_settings', bool, True))
         self._add_setting(
-            Setting('blur_value_calibration', _('Blur'), 'profile_settings',
-                    int, 2, min_value=0, max_value=10))
+            Setting('window_value_calibration', _('Window'), 'profile_settings', int, 5, min_value=0, max_value=30)
+        )
         self._add_setting(
-            Setting('window_enable_calibration', _('Enable window'),
-                    'profile_settings', bool, True))
-        self._add_setting(
-            Setting('window_value_calibration', _('Window'), 'profile_settings',
-                    int, 5, min_value=0, max_value=30))
-        self._add_setting(
-            Setting('refinement_calibration', _('Refinement'), 'profile_settings',
-                    six.text_type, u'RANSAC',
-                    possible_values=(u'None', u'SGF', u'RANSAC')))
+            Setting(
+                'refinement_calibration',
+                _('Refinement'),
+                'profile_settings',
+                six.text_type,
+                'RANSAC',
+                possible_values=('None', 'SGF', 'RANSAC'),
+            )
+        )
 
         # -------- Scanning --------
         self._add_setting(
-            Setting('laser_color_detector_scanning', _('Laser color detector'), 'profile_settings',
-                    six.text_type, u'R (HSV)',
-                    possible_values=(u'R (RGB)', u'G (RGB)', u'B (RGB)', u'R (HSV)', u'Cr (YCrCb)', u'U (YUV)')))
+            Setting(
+                'laser_color_detector_scanning',
+                _('Laser color detector'),
+                'profile_settings',
+                six.text_type,
+                'R (HSV)',
+                possible_values=('R (RGB)', 'G (RGB)', 'B (RGB)', 'R (HSV)', 'Cr (YCrCb)', 'U (YUV)'),
+            )
+        )
+        self._add_setting(Setting('threshold_enable_scanning', _('Enable threshold'), 'profile_settings', bool, True))
         self._add_setting(
-            Setting('threshold_enable_scanning', _('Enable threshold'),
-                    'profile_settings', bool, True))
+            Setting('threshold_value_scanning', _('Threshold'), 'profile_settings', int, 50, min_value=0, max_value=255)
+        )
+        self._add_setting(Setting('blur_enable_scanning', _('Enable blur'), 'profile_settings', bool, True))
         self._add_setting(
-            Setting('threshold_value_scanning', _('Threshold'), 'profile_settings',
-                    int, 50, min_value=0, max_value=255))
+            Setting('blur_value_scanning', _('Blur'), 'profile_settings', int, 2, min_value=0, max_value=10)
+        )
+        self._add_setting(Setting('window_enable_scanning', _('Enable window'), 'profile_settings', bool, True))
         self._add_setting(
-            Setting('blur_enable_scanning', _('Enable blur'),
-                    'profile_settings', bool, True))
+            Setting('window_value_scanning', _('Window'), 'profile_settings', int, 8, min_value=0, max_value=30)
+        )
         self._add_setting(
-            Setting('blur_value_scanning', _('Blur'), 'profile_settings',
-                    int, 2, min_value=0, max_value=10))
-        self._add_setting(
-            Setting('window_enable_scanning', _('Enable window'),
-                    'profile_settings', bool, True))
-        self._add_setting(
-            Setting('window_value_scanning', _('Window'), 'profile_settings',
-                    int, 8, min_value=0, max_value=30))
-        self._add_setting(
-            Setting('refinement_scanning', _('Refinement'), 'profile_settings',
-                    six.text_type, u'SGF',
-                    possible_values=(u'None', u'SGF')))
-
+            Setting(
+                'refinement_scanning',
+                _('Refinement'),
+                'profile_settings',
+                six.text_type,
+                'SGF',
+                possible_values=('None', 'SGF'),
+            )
+        )
 
         # ==================== CONTROL workbench ================
 
         self._add_setting(
-            Setting('current_panel_control', u'camera_control', 'profile_settings',
-                    six.text_type, u'camera_control',
-                    possible_values=(u'camera_control', u'laser_control',
-                                     u'ldr_value', u'motor_control', u'gcode_control')))
+            Setting(
+                'current_panel_control',
+                'camera_control',
+                'profile_settings',
+                six.text_type,
+                'camera_control',
+                possible_values=('camera_control', 'laser_control', 'ldr_value', 'motor_control', 'gcode_control'),
+            )
+        )
 
         self._add_setting(
-            Setting('frame_rate', _('Frame rate'), 'profile_settings',
-                    int, 30, possible_values=(30, 25, 20, 15, 10, 5)))
+            Setting('frame_rate', _('Frame rate'), 'profile_settings', int, 30, possible_values=(30, 25, 20, 15, 10, 5))
+        )
 
+        self._add_setting(Setting('motor_step_control', _('Step (º)'), 'profile_settings', float, 90.0))
         self._add_setting(
-            Setting('motor_step_control', _(u'Step (º)'), 'profile_settings',
-                    float, 90.0))
+            Setting(
+                'motor_speed_control',
+                _('Speed (º/s)'),
+                'profile_settings',
+                float,
+                200.0,
+                min_value=1.0,
+                max_value=1000.0,
+            )
+        )
         self._add_setting(
-            Setting('motor_speed_control', _(u'Speed (º/s)'), 'profile_settings',
-                    float, 200.0, min_value=1.0, max_value=1000.0))
-        self._add_setting(
-            Setting('motor_acceleration_control', _(u'Acceleration (º/s²)'), 'profile_settings',
-                    float, 200.0, min_value=1.0, max_value=1000.0))
+            Setting(
+                'motor_acceleration_control',
+                _('Acceleration (º/s²)'),
+                'profile_settings',
+                float,
+                200.0,
+                min_value=1.0,
+                max_value=1000.0,
+            )
+        )
 
-
-        self._add_setting(
-            Setting('save_image_button', _('Save image'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('left_button', _('Left'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('right_button', _('Right'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('move_button', _('Move'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('enable_button', _('Enable'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('reset_origin_button', _('Reset origin'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('gcode_gui', _('Send'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('ldr_value', _('Send'), 'no_settings', six.text_type, u''))
-
-
+        self._add_setting(Setting('save_image_button', _('Save image'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('left_button', _('Left'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('right_button', _('Right'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('move_button', _('Move'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('enable_button', _('Enable'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('reset_origin_button', _('Reset origin'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('gcode_gui', _('Send'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('ldr_value', _('Send'), 'no_settings', six.text_type, ''))
 
         # ==================== ADJUSTMENT workbench ================
 
         self._add_setting(
-            Setting('current_panel_adjustment', u'scan_capture', 'profile_settings',
-                    six.text_type, u'scan_capture',
-                    possible_values=(u'scan_capture', u'scan_segmentation',
-                                     u'calibration_capture', u'calibration_segmentation')))
+            Setting(
+                'current_panel_adjustment',
+                'scan_capture',
+                'profile_settings',
+                six.text_type,
+                'scan_capture',
+                possible_values=(
+                    'scan_capture',
+                    'scan_segmentation',
+                    'calibration_capture',
+                    'calibration_segmentation',
+                ),
+            )
+        )
 
         self._add_setting(
-            Setting('current_video_mode_adjustment', u'Texture', 'profile_settings',
-                    six.text_type, u'Texture',
-                    possible_values=(u'Texture', u'Pattern', u'Laser', u'Gray')))
+            Setting(
+                'current_video_mode_adjustment',
+                'Texture',
+                'profile_settings',
+                six.text_type,
+                'Texture',
+                possible_values=('Texture', 'Pattern', 'Laser', 'Gray'),
+            )
+        )
 
         self._add_setting(
-            Setting('capture_mode_scanning', _('Capture mode'), 'profile_settings',
-                    six.text_type, u'Texture', possible_values=(u'Texture', u'Laser')))
-        self._add_setting(
-            Setting('draw_line_scanning', _('Draw line'), 'profile_settings', bool, True))
+            Setting(
+                'capture_mode_scanning',
+                _('Capture mode'),
+                'profile_settings',
+                six.text_type,
+                'Texture',
+                possible_values=('Texture', 'Laser'),
+            )
+        )
+        self._add_setting(Setting('draw_line_scanning', _('Draw line'), 'profile_settings', bool, True))
 
         self._add_setting(
-            Setting('capture_mode_calibration', _('Capture mode'), 'profile_settings',
-                    six.text_type, u'Pattern', possible_values=(u'Pattern', u'Laser')))
-        self._add_setting(
-            Setting('draw_line_calibration', _('Draw line'), 'profile_settings', bool, True))
-
-
+            Setting(
+                'capture_mode_calibration',
+                _('Capture mode'),
+                'profile_settings',
+                six.text_type,
+                'Pattern',
+                possible_values=('Pattern', 'Laser'),
+            )
+        )
+        self._add_setting(Setting('draw_line_calibration', _('Draw line'), 'profile_settings', bool, True))
 
         # ==================== CALIBRATION workbench ================
 
         self._add_setting(
-            Setting('current_panel_calibration', u'pattern_settings', 'profile_settings',
-                    six.text_type, u'pattern_settings',
-                    possible_values=(u'pattern_settings', u'camera_intrinsics',
-                                     u'scanner_autocheck', u'rotating_platform_settings',
-                                     u'laser_triangulation', u'platform_extrinsics',
-                                     u'video_settings'))) #, u'cloud_correction')))
+            Setting(
+                'current_panel_calibration',
+                'pattern_settings',
+                'profile_settings',
+                six.text_type,
+                'pattern_settings',
+                possible_values=(
+                    'pattern_settings',
+                    'camera_intrinsics',
+                    'scanner_autocheck',
+                    'rotating_platform_settings',
+                    'laser_triangulation',
+                    'platform_extrinsics',
+                    'video_settings',
+                ),
+            )
+        )  # , u'cloud_correction')))
 
         # ----- Pattern Settings ---------
         self._add_setting(
-            Setting('pattern_rows', _('Pattern rows'), 'calibration_settings',
-                    int, 6, min_value=2, max_value=50))
+            Setting('pattern_rows', _('Pattern rows'), 'calibration_settings', int, 6, min_value=2, max_value=50)
+        )
         self._add_setting(
-            Setting('pattern_columns', _('Pattern columns'), 'calibration_settings',
-                    int, 11, min_value=2, max_value=50))
+            Setting('pattern_columns', _('Pattern columns'), 'calibration_settings', int, 11, min_value=2, max_value=50)
+        )
         self._add_setting(
-            Setting('pattern_square_width', _('Square width (mm)'), 'calibration_settings',
-                    float, 13.0, min_value=1.0))
+            Setting('pattern_square_width', _('Square width (mm)'), 'calibration_settings', float, 13.0, min_value=1.0)
+        )
         self._add_setting(
-            Setting('pattern_origin_distance', _('Origin distance (mm)'), 'calibration_settings',
-                    float, 0.0, min_value=0.0))
+            Setting(
+                'pattern_origin_distance', _('Origin distance (mm)'), 'calibration_settings', float, 0.0, min_value=0.0
+            )
+        )
         self._add_setting(
-            Setting('pattern_border_l', _('Border Left (mm)'), 'calibration_settings',
-                    float, 5.0, min_value=0.0))
+            Setting('pattern_border_l', _('Border Left (mm)'), 'calibration_settings', float, 5.0, min_value=0.0)
+        )
         self._add_setting(
-            Setting('pattern_border_r', _('Border Right (mm)'), 'calibration_settings',
-                    float, 5.0, min_value=0.0))
+            Setting('pattern_border_r', _('Border Right (mm)'), 'calibration_settings', float, 5.0, min_value=0.0)
+        )
         self._add_setting(
-            Setting('pattern_border_t', _('Border Top (mm)'), 'calibration_settings',
-                    float, 5.0, min_value=0.0))
+            Setting('pattern_border_t', _('Border Top (mm)'), 'calibration_settings', float, 5.0, min_value=0.0)
+        )
         self._add_setting(
-            Setting('pattern_border_b', _('Border Bottom (mm)'), 'calibration_settings',
-                    float, 5.0, min_value=0.0))
+            Setting('pattern_border_b', _('Border Bottom (mm)'), 'calibration_settings', float, 5.0, min_value=0.0)
+        )
 
         # ----- Scanner Autocheck ---------
-        self._add_setting(
-            Setting('autocheck_button', _('Perform autocheck'), 'no_settings', six.text_type, u''))
+        self._add_setting(Setting('autocheck_button', _('Perform autocheck'), 'no_settings', six.text_type, ''))
 
         # ----- Rotating Platform ---------
+        self._add_setting(Setting('motor_step_calibration', _('Step (º)'), 'calibration_settings', float, 4.5))
         self._add_setting(
-            Setting('motor_step_calibration', _(u'Step (º)'), 'calibration_settings',
-                    float, 4.5))
+            Setting(
+                'motor_speed_calibration',
+                _('Speed (º/s)'),
+                'calibration_settings',
+                float,
+                200.0,
+                min_value=1.0,
+                max_value=1000.0,
+            )
+        )
         self._add_setting(
-            Setting('motor_speed_calibration', _(u'Speed (º/s)'), 'calibration_settings',
-                    float, 200.0, min_value=1.0, max_value=1000.0))
-        self._add_setting(
-            Setting('motor_acceleration_calibration', _(u'Acceleration (º/s²)'),
-                    'calibration_settings', float, 200.0, min_value=1.0, max_value=1000.0))
+            Setting(
+                'motor_acceleration_calibration',
+                _('Acceleration (º/s²)'),
+                'calibration_settings',
+                float,
+                200.0,
+                min_value=1.0,
+                max_value=1000.0,
+            )
+        )
 
         self._add_setting(
-            Setting('after_calibration_position', _('Platform position after calibration'), 'calibration_settings',
-                    six.text_type, u'Return', possible_values=(u'Keep', u'Return', u'Perpendicular')))
+            Setting(
+                'after_calibration_position',
+                _('Platform position after calibration'),
+                'calibration_settings',
+                six.text_type,
+                'Return',
+                possible_values=('Keep', 'Return', 'Perpendicular'),
+            )
+        )
 
         # ----- Laser Triangulation ---------
+        self._add_setting(Setting('distance_left', _('Distance left (mm)'), 'calibration_settings', float, 0.0))
         self._add_setting(
-            Setting('distance_left', _('Distance left (mm)'), 'calibration_settings', float, 0.0))
+            Setting(
+                'normal_left',
+                _('Normal left'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0])),
+            )
+        )
+
+        self._add_setting(Setting('distance_right', _('Distance right (mm)'), 'calibration_settings', float, 0.0))
         self._add_setting(
-            Setting('normal_left', _('Normal left'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
+            Setting(
+                'normal_right',
+                _('Normal right'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0])),
+            )
+        )
+
+        self._add_setting(Setting('laser_triangulation_hash', '', 'calibration_settings', six.text_type, ''))
 
         self._add_setting(
-            Setting('distance_right', _('Distance right (mm)'), 'calibration_settings', float, 0.0))
-        self._add_setting(
-            Setting('normal_right', _('Normal right'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
-
-        self._add_setting(
-            Setting('laser_triangulation_hash', '', 'calibration_settings', six.text_type, u''))
-
-        self._add_setting(
-            Setting('laser_calibration_angles', _('Laser on pattern visibility angle ranges'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(2, 2), buffer=np.array([[-90.0, 90.0],
-                                                                          [-90.0, 90.0]]))))
+            Setting(
+                'laser_calibration_angles',
+                _('Laser on pattern visibility angle ranges'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(shape=(2, 2), buffer=np.array([[-90.0, 90.0], [-90.0, 90.0]])),
+            )
+        )
 
         # ----- Platform extrinsics ---------
         self._add_setting(
-            Setting('rotation_matrix', _('Rotation matrix'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(3, 3), buffer=np.array([[0.0, 0.0, 0.0],
-                                                                          [0.0, 0.0, 0.0],
-                                                                          [0.0, 0.0, 0.0]]))))
+            Setting(
+                'rotation_matrix',
+                _('Rotation matrix'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(shape=(3, 3), buffer=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])),
+            )
+        )
         self._add_setting(
-            Setting('translation_vector', _('Translation vector (mm)'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
+            Setting(
+                'translation_vector',
+                _('Translation vector (mm)'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0])),
+            )
+        )
 
-        self._add_setting(
-            Setting('platform_extrinsics_hash', '', 'calibration_settings', six.text_type, u''))
+        self._add_setting(Setting('platform_extrinsics_hash', '', 'calibration_settings', six.text_type, ''))
 
         # ----- Video settings ---------
 
         # some cameras like "Lenovo EasyCamera" require to grab frame before update settings
         self._add_setting(
-            Setting('camera_capture_before_set', _('Capture a frame right after connect before setting camera'), 'profile_settings', bool, False))
+            Setting(
+                'camera_capture_before_set',
+                _('Capture a frame right after connect before setting camera'),
+                'profile_settings',
+                bool,
+                False,
+            )
+        )
 
         self._add_setting(
-            Setting('camera_width', _('Width'), 'calibration_settings',
-                    int, -1, min_value=-1, max_value=10000))
+            Setting('camera_width', _('Width'), 'calibration_settings', int, -1, min_value=-1, max_value=10000)
+        )
         self._add_setting(
-            Setting('camera_height', _('Height'), 'calibration_settings',
-                    int, -1, min_value=-1, max_value=10000))
+            Setting('camera_height', _('Height'), 'calibration_settings', int, -1, min_value=-1, max_value=10000)
+        )
 
         self._add_setting(
-            Setting('camera_focus', _('Manual focus'), 'calibration_settings',
-                    int, 0, min_value=0, max_value=255))
+            Setting('camera_focus', _('Manual focus'), 'calibration_settings', int, 0, min_value=0, max_value=255)
+        )
 
-        self._add_setting(
-            Setting('camera_rotate', _('Rotate'), 'calibration_settings', bool, True))
-        self._add_setting(
-            Setting('camera_hflip', _('Horizontal flip'), 'calibration_settings', bool, True))
-        self._add_setting(
-            Setting('camera_vflip', _('Vertical flip'), 'calibration_settings', bool, False))
-        self._add_setting(
-            Setting('set_resolution_button', _('Set resolution'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('auto_resolution', _('Use MAX resolution'), 'no_settings', bool, False))
+        self._add_setting(Setting('camera_rotate', _('Rotate'), 'calibration_settings', bool, True))
+        self._add_setting(Setting('camera_hflip', _('Horizontal flip'), 'calibration_settings', bool, True))
+        self._add_setting(Setting('camera_vflip', _('Vertical flip'), 'calibration_settings', bool, False))
+        self._add_setting(Setting('set_resolution_button', _('Set resolution'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('auto_resolution', _('Use MAX resolution'), 'no_settings', bool, False))
 
         # ----- Camera intrinsics ---------
         self._add_setting(
-            Setting('camera_matrix', _('Camera matrix'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(3, 3), buffer=np.array([[1430.0, 0.0, 480.0],
-                                                                          [0.0, 1430.0, 640.0],
-                                                                          [0.0, 0.0, 1.0]]))))
+            Setting(
+                'camera_matrix',
+                _('Camera matrix'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(
+                    shape=(3, 3), buffer=np.array([[1430.0, 0.0, 480.0], [0.0, 1430.0, 640.0], [0.0, 0.0, 1.0]])
+                ),
+            )
+        )
         self._add_setting(
-            Setting('distortion_vector', _('Distortion vector'), 'calibration_settings',
-                    np.ndarray, np.ndarray(shape=(5,),
-                                           buffer=np.array([0.0, 0.0, 0.0, 0.0, 0.0]))))
+            Setting(
+                'distortion_vector',
+                _('Distortion vector'),
+                'calibration_settings',
+                np.ndarray,
+                np.ndarray(shape=(5,), buffer=np.array([0.0, 0.0, 0.0, 0.0, 0.0])),
+            )
+        )
 
         # new camera calculator
         self._add_setting(
-            Setting('new_camera_matrix', _('Initial new camera matrix'), 'no_settings',
-                    np.ndarray, np.ndarray(shape=(3, 3), buffer=np.array([[0.0, 0.0, 0.0],
-                                                                          [0.0, 0.0, 0.0],
-                                                                          [0.0, 0.0, 0.0]]))))
+            Setting(
+                'new_camera_matrix',
+                _('Initial new camera matrix'),
+                'no_settings',
+                np.ndarray,
+                np.ndarray(shape=(3, 3), buffer=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])),
+            )
+        )
+        self._add_setting(Setting('new_camera_ruler', _('Target length (mm)'), 'no_settings', float, 325.0))
         self._add_setting(
-            Setting('new_camera_ruler', _('Target length (mm)'), 'no_settings', float, 325.0))
+            Setting('new_camera_distance_h', _('Target horizontal distance (mm)'), 'no_settings', float, 480.0)
+        )
         self._add_setting(
-            Setting('new_camera_distance_h', _('Target horizontal distance (mm)'), 'no_settings', float, 480.0))
+            Setting('new_camera_distance_v', _('Target vertical distance (mm)'), 'no_settings', float, 265.0)
+        )
         self._add_setting(
-            Setting('new_camera_distance_v', _('Target vertical distance (mm)'), 'no_settings', float, 265.0))
-        self._add_setting(
-            Setting('apply_new_camera_button', _('Apply calculated camera data'), 'no_settings', six.text_type, u''))
-
+            Setting('apply_new_camera_button', _('Apply calculated camera data'), 'no_settings', six.text_type, '')
+        )
 
         # ==================== SCANNING workbench ================
 
         self._add_setting(
-            Setting('current_panel_scanning', u'scan_parameters', 'profile_settings',
-                    six.text_type, u'scan_parameters',
-                    possible_values=(u'scan_parameters', u'rotating_platform',
-                                     u'point_cloud_roi', u'point_cloud_color', 
-                                     u'photogrammetry', u'mesh_correction')))
+            Setting(
+                'current_panel_scanning',
+                'scan_parameters',
+                'profile_settings',
+                six.text_type,
+                'scan_parameters',
+                possible_values=(
+                    'scan_parameters',
+                    'rotating_platform',
+                    'point_cloud_roi',
+                    'point_cloud_color',
+                    'photogrammetry',
+                    'mesh_correction',
+                ),
+            )
+        )
 
-        self._add_setting(
-            Setting('view_scanning_panel', _('View scanning panel'), 'preferences', bool, False))
-        self._add_setting(
-            Setting('view_scanning_video', _('View scanning video'), 'preferences', bool, False))
-        self._add_setting(
-            Setting('view_scanning_scene', _('View scanning scene'), 'preferences', bool, True))
+        self._add_setting(Setting('view_scanning_panel', _('View scanning panel'), 'preferences', bool, False))
+        self._add_setting(Setting('view_scanning_video', _('View scanning video'), 'preferences', bool, False))
+        self._add_setting(Setting('view_scanning_scene', _('View scanning scene'), 'preferences', bool, True))
 
         # Hack to translate combo boxes:
         _('Open')
@@ -686,8 +987,15 @@ class Settings(collections.MutableMapping):
         _('Gray')
         _('Line')
         self._add_setting(
-            Setting('video_scanning', _('Video'), 'profile_settings',
-                    six.text_type, u'Texture', possible_values=(u'Texture', u'Laser', u'Gray', u'Line')))
+            Setting(
+                'video_scanning',
+                _('Video'),
+                'profile_settings',
+                six.text_type,
+                'Texture',
+                possible_values=('Texture', 'Laser', 'Gray', 'Line'),
+            )
+        )
 
         # ----------- Scan parameters ----------
         # Hack to translate combo boxes:
@@ -695,178 +1003,219 @@ class Settings(collections.MutableMapping):
         _('Right')
         _('Both')
         self._add_setting(
-            Setting('use_laser', _('Use laser'), 'profile_settings',
-                    six.text_type, u'Both', possible_values=(u'Left', u'Right', u'Both')))
+            Setting(
+                'use_laser',
+                _('Use laser'),
+                'profile_settings',
+                six.text_type,
+                'Both',
+                possible_values=('Left', 'Right', 'Both'),
+            )
+        )
 
         # ----------- Rotating platform ----------
+        self._add_setting(Setting('motor_step_scanning', _('Step (º)'), 'profile_settings', float, 0.45))
         self._add_setting(
-            Setting('motor_step_scanning', _(u'Step (º)'), 'profile_settings',
-                    float, 0.45))
+            Setting(
+                'motor_speed_scanning',
+                _('Speed (º/s)'),
+                'profile_settings',
+                float,
+                200.0,
+                min_value=1.0,
+                max_value=1000.0,
+            )
+        )
         self._add_setting(
-            Setting('motor_speed_scanning', _(u'Speed (º/s)'), 'profile_settings',
-                    float, 200.0, min_value=1.0, max_value=1000.0))
-        self._add_setting(
-            Setting('motor_acceleration_scanning', _(u'Acceleration (º/s²)'), 'profile_settings',
-                    float, 200.0, min_value=1.0, max_value=1000.0))
+            Setting(
+                'motor_acceleration_scanning',
+                _('Acceleration (º/s²)'),
+                'profile_settings',
+                float,
+                200.0,
+                min_value=1.0,
+                max_value=1000.0,
+            )
+        )
 
         # ----------- Point cloud ROI ----------
+        self._add_setting(Setting('show_center', _('Show center'), 'profile_settings', bool, True))
+        self._add_setting(Setting('use_roi', _('Use ROI'), 'profile_settings', bool, False))
         self._add_setting(
-            Setting('show_center', _('Show center'), 'profile_settings', bool, True))
+            Setting('roi_diameter', _('Diameter (mm)'), 'profile_settings', int, 300, min_value=0, max_value=350)
+        )
         self._add_setting(
-            Setting('use_roi', _('Use ROI'), 'profile_settings', bool, False))
-        self._add_setting(
-            Setting('roi_diameter', _('Diameter (mm)'), 'profile_settings',
-                    int, 300, min_value=0, max_value=350))
-        self._add_setting(
-            Setting('roi_height', _('Height (mm)'), 'profile_settings',
-                    int, 400, min_value=0, max_value=350))
+            Setting('roi_height', _('Height (mm)'), 'profile_settings', int, 400, min_value=0, max_value=350)
+        )
 
         # ----------- Point cloud color ----------
         self._add_setting(
-            Setting('texture_mode', _('Texture'), 'profile_settings',
-                    six.text_type, u'Texture',
-                    possible_values=(u'Texture', u'Flat color', u'Multi color', u'Capture', u'Laser BG')))
+            Setting(
+                'texture_mode',
+                _('Texture'),
+                'profile_settings',
+                six.text_type,
+                'Texture',
+                possible_values=('Texture', 'Flat color', 'Multi color', 'Capture', 'Laser BG'),
+            )
+        )
 
-        self._add_setting(
-            Setting('point_cloud_color', _('Cloud color'), 'profile_settings',
-                    list, [170,170,170]))
-        self._add_setting(
-            Setting('point_cloud_color_l', _('Left color'), 'profile_settings',
-                    list, [255,0,0]))
-        self._add_setting(
-            Setting('point_cloud_color_r', _('Right color'), 'profile_settings',
-                    list, [0,255,255]))
+        self._add_setting(Setting('point_cloud_color', _('Cloud color'), 'profile_settings', list, [170, 170, 170]))
+        self._add_setting(Setting('point_cloud_color_l', _('Left color'), 'profile_settings', list, [255, 0, 0]))
+        self._add_setting(Setting('point_cloud_color_r', _('Right color'), 'profile_settings', list, [0, 255, 255]))
 
         # ------------- Photogrammetry ---------------
+        self._add_setting(Setting('ph_save_enable', _('Save photos'), 'preferences', bool, False))
+        self._add_setting(Setting('ph_save_folder', _('Images folder'), 'preferences', six.text_type, 'photo/'))
         self._add_setting(
-            Setting('ph_save_enable', _('Save photos'), 'preferences', bool, False))
-        self._add_setting(
-            Setting('ph_save_folder', _('Images folder'), 'preferences', six.text_type, u'photo/' ))
-        self._add_setting(
-            Setting('ph_save_divider', 'Save every N\'th frame', 'preferences', int, 2, min_value=1, max_value=9999))
-
+            Setting('ph_save_divider', "Save every N'th frame", 'preferences', int, 2, min_value=1, max_value=9999)
+        )
 
         # ------------- Mesh Correction ---------------
         self._add_setting(
-            Setting('mesh_correction_offset', _('Center Offset (model space)'), 'no_settings',
-                    np.ndarray, np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0]))))
+            Setting(
+                'mesh_correction_offset',
+                _('Center Offset (model space)'),
+                'no_settings',
+                np.ndarray,
+                np.ndarray(shape=(3,), buffer=np.array([0.0, 0.0, 0.0])),
+            )
+        )
 
-        self._add_setting(
-            Setting('mesh_correction_apply', _('Apply'), 'no_settings', six.text_type, u''))
-        self._add_setting(
-            Setting('mesh_correction_reset', _('Reset'), 'no_settings', six.text_type, u''))
+        self._add_setting(Setting('mesh_correction_apply', _('Apply'), 'no_settings', six.text_type, ''))
+        self._add_setting(Setting('mesh_correction_reset', _('Reset'), 'no_settings', six.text_type, ''))
 
         # ----------- Engine ----------
         self._add_setting(
-            Setting('scan_sleep', _(u'Wait milliseconds after each scan capture step'), 'profile_settings',
-                    float, 0.0, min_value=0.0, max_value=1000.0))
+            Setting(
+                'scan_sleep',
+                _('Wait milliseconds after each scan capture step'),
+                'profile_settings',
+                float,
+                0.0,
+                min_value=0.0,
+                max_value=1000.0,
+            )
+        )
 
         self._add_setting(
-            Setting('scan_sync_threads', _('Synchronize capture and process threads'),
-                    'profile_settings', bool, False))
-
-
+            Setting('scan_sync_threads', _('Synchronize capture and process threads'), 'profile_settings', bool, False)
+        )
 
         # ========== MACHINE Profile ==============
 
-        self._add_setting(
-            Setting('machine_diameter', _('Machine diameter'), 'machine_settings', int, 304))
-        self._add_setting(
-            Setting('machine_width', _('Machine width'), 'machine_settings', int, 200))
-        self._add_setting(
-            Setting('machine_height', _('Machine height'), 'machine_settings', int, 200))
-        self._add_setting(
-            Setting('machine_depth', _('Machine depth'), 'machine_settings', int, 200))
+        self._add_setting(Setting('machine_diameter', _('Machine diameter'), 'machine_settings', int, 304))
+        self._add_setting(Setting('machine_width', _('Machine width'), 'machine_settings', int, 200))
+        self._add_setting(Setting('machine_height', _('Machine height'), 'machine_settings', int, 200))
+        self._add_setting(Setting('machine_depth', _('Machine depth'), 'machine_settings', int, 200))
 
         # Hack to translate combo boxes:
         _('Circular')
         _('Rectangular')
         self._add_setting(
-            Setting('machine_shape', _('Machine shape'), 'machine_settings',
-                    six.text_type, u'Circular', possible_values=(u'Circular', u'Rectangular')))
+            Setting(
+                'machine_shape',
+                _('Machine shape'),
+                'machine_settings',
+                six.text_type,
+                'Circular',
+                possible_values=('Circular', 'Rectangular'),
+            )
+        )
         self._add_setting(
-            Setting('machine_model_path', _('Machine model'), 'machine_settings',
-                    six.text_type, six.text_type(resources.get_path_for_mesh('Gryphon_platform.stl')))) # ciclop_platform.stl
+            Setting(
+                'machine_model_path',
+                _('Machine model'),
+                'machine_settings',
+                six.text_type,
+                six.text_type(resources.get_path_for_mesh('Gryphon_platform.stl')),
+            )
+        )  # ciclop_platform.stl
         self._add_setting(
-            Setting('machine_model_diameter', _('Machine model diameter (-1 dont scale; 0 auto scale)'), 'machine_settings', int, 304))
+            Setting(
+                'machine_model_diameter',
+                _('Machine model diameter (-1 dont scale; 0 auto scale)'),
+                'machine_settings',
+                int,
+                304,
+            )
+        )
+        self._add_setting(Setting('machine_model_offset_x', 'Machine model offset X', 'machine_settings', float, 0.00))
+        self._add_setting(Setting('machine_model_offset_y', 'Machine model offset Y', 'machine_settings', float, 0.00))
         self._add_setting(
-            Setting('machine_model_offset_x', 'Machine model offset X', 'machine_settings',
-                    float, 0.00))
+            Setting('machine_model_offset_z', 'Machine model offset Z', 'machine_settings', float, 0.00)
+        )  # 8.05 for Ciclop
+        self._add_setting(Setting('platform_border_z', 'Platform border draw z offset', 'machine_settings', int, 0))
         self._add_setting(
-            Setting('machine_model_offset_y', 'Machine model offset Y', 'machine_settings',
-                    float, 0.00))
-        self._add_setting(
-            Setting('machine_model_offset_z', 'Machine model offset Z', 'machine_settings',
-                    float, 0.00)) # 8.05 for Ciclop
-        self._add_setting(
-            Setting('platform_border_z', 'Platform border draw z offset', 'machine_settings', int, 0))
-        self._add_setting(
-            Setting('platform_markers_diameter', 'Platform markers diameter', 'machine_settings', int, 276))
-        self._add_setting(
-            Setting('platform_markers_z', 'Platform markers draw z offset', 'machine_settings', int, 0))
+            Setting('platform_markers_diameter', 'Platform markers diameter', 'machine_settings', int, 276)
+        )
+        self._add_setting(Setting('platform_markers_z', 'Platform markers draw z offset', 'machine_settings', int, 0))
 
-
-        self._add_setting(
-            Setting('point_size', 'Point size', 'preferences', int, 2, min_value=1, max_value=4))
-
+        self._add_setting(Setting('point_size', 'Point size', 'preferences', int, 2, min_value=1, max_value=4))
 
         # =============== GUI General ================
         self._add_setting(
-            Setting('workbench', _('Workbench'), 'preferences', six.text_type, u'scanning',
-                    possible_values=(u'control', u'adjustment', u'calibration', u'scanning')))
+            Setting(
+                'workbench',
+                _('Workbench'),
+                'preferences',
+                six.text_type,
+                'scanning',
+                possible_values=('control', 'adjustment', 'calibration', 'scanning'),
+            )
+        )
 
-        self._add_setting(
-            Setting('show_welcome', _('Show welcome'), 'preferences', bool, True))
-        self._add_setting(
-            Setting('check_for_updates', _('Check for updates'), 'preferences', bool, True))
+        self._add_setting(Setting('show_welcome', _('Show welcome'), 'preferences', bool, True))
+        self._add_setting(Setting('check_for_updates', _('Check for updates'), 'preferences', bool, True))
 
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('basic_mode', _('Basic mode'), 'preferences', bool, False))
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('view_control_panel', _('View control panel'), 'preferences', bool, True))
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('view_control_video', _('View control panel'), 'preferences', bool, True))
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('view_adjustment_panel', _('View adjustment panel'),
         #            'preferences', bool, True))
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('view_adjustment_video', _('View adjustment video'),
         #            'preferences', bool, True))
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('view_calibration_panel', _('View calibration panel'),
         #            'preferences', bool, True))
-        #self._add_setting(
+        # self._add_setting(
         #    Setting('view_calibration_video', _('View calibration video'),
         #            'preferences', bool, True))
 
-        self._add_setting(
-            Setting('view_mode_advanced', _('Advanced mode'), 'preferences', bool, True))
-        self._add_setting(
-            Setting('view_hide_help', _('Hide directions'), 'preferences', bool, False))
+        self._add_setting(Setting('view_mode_advanced', _('Advanced mode'), 'preferences', bool, True))
+        self._add_setting(Setting('view_hide_help', _('Hide directions'), 'preferences', bool, False))
 
-        self._add_setting(
-            Setting('last_files', _('Last files'), 'preferences', list, []))
+        self._add_setting(Setting('last_files', _('Last files'), 'preferences', list, []))
         # TODO: Set this default value
-        self._add_setting(
-            Setting('last_file', _('Last file'), 'preferences', six.text_type, u''))
+        self._add_setting(Setting('last_file', _('Last file'), 'preferences', six.text_type, ''))
         # TODO: Set this default value
-        self._add_setting(
-            Setting('last_profile', _('Last profile'), 'preferences', six.text_type, u''))
-        self._add_setting(
-            Setting('model_color', _('Default model color'), 'preferences', six.text_type, u'888888'))
-        self._add_setting(
-            Setting('last_clear_log_date', _('Last clear log date'), 'preferences', six.text_type, u''))
+        self._add_setting(Setting('last_profile', _('Last profile'), 'preferences', six.text_type, ''))
+        self._add_setting(Setting('model_color', _('Default model color'), 'preferences', six.text_type, '888888'))
+        self._add_setting(Setting('last_clear_log_date', _('Last clear log date'), 'preferences', six.text_type, ''))
 
         # wizard
-        self._add_setting(
-            Setting('adjust_laser', _('Adjust laser'), 'calibration_settings', bool, True))
+        self._add_setting(Setting('adjust_laser', _('Adjust laser'), 'calibration_settings', bool, True))
 
 
-
-class Setting(object):
-
-    def __init__(self, setting_id, label, category, setting_type, default,
-                 min_value=None, max_value=None, possible_values=None, tooltip='', tag=None):
+class Setting:
+    def __init__(
+        self,
+        setting_id,
+        label,
+        category,
+        setting_type,
+        default,
+        min_value=None,
+        max_value=None,
+        possible_values=None,
+        tooltip='',
+        tag=None,
+    ):
         self._id = setting_id
         self._label = label
         self._category = category
@@ -926,25 +1275,26 @@ class Setting(object):
 
     def _check_type(self, value):
         if not isinstance(value, self._type):
-            logger.error("Error when setting %s.\n%s (%s) is not of type %s. "
-                         "Please remove current profile at ~/.ferret" %
-                         (self._id, value, type(value), self._type))
+            logger.error(
+                'Error when setting %s.\n%s (%s) is not of type %s. '
+                'Please remove current profile at %s' % (self._id, value, type(value), self._type, get_config_dir())
+            )
 
     def _check_range(self, value):
         if self.min_value is not None and value < self.min_value:
-            logger.warning('Warning: For setting %s, %s is below min value %s.' % (self._id, value,
-                           self.min_value))
+            logger.warning('Warning: For setting %s, %s is below min value %s.' % (self._id, value, self.min_value))
             return self.min_value
         if self.max_value is not None and value > self.max_value:
-            logger.warning('Warning: For setting %s.\n%s is above max value %s.' % (self._id, value,
-                           self.max_value))
+            logger.warning('Warning: For setting %s.\n%s is above max value %s.' % (self._id, value, self.max_value))
             return self.max_value
         return value
 
     def _check_possible_values(self, value):
         if self._possible_values is not None and value not in self._possible_values:
-            logger.error('Error when setting %s.\n%s is not within the possible values %s.' % (
-                self._id, value, self._possible_values))
+            logger.error(
+                'Error when setting %s.\n%s is not within the possible values %s.'
+                % (self._id, value, self._possible_values)
+            )
             if len(self._possible_values) > 0:
                 return self._possible_values[0]
         return value
@@ -982,8 +1332,10 @@ class Setting(object):
 # Define a fake _() function to fake the gettext tools in to generating
 # strings for the profile settings.
 
+
 def _(n):
     return n
+
 
 settings = Settings()
 settings._initialize_settings()
@@ -992,59 +1344,90 @@ settings._initialize_settings()
 del _
 
 
-def get_base_path():
-    """
-    :return: The path in which the current configuration files are stored.
-    This depends on the used OS.
-    """
-    if system.is_windows():
-        basePath = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-        # If we have a frozen python install, we need to step out of the library.zip
-        if hasattr(sys, 'frozen'):
-            basePath = os.path.normpath(os.path.join(basePath, ".."))
-    else:
-        basePath = os.path.expanduser('~/.ferret/')
-    if not os.path.isdir(basePath):
+_APP_DIRNAME = 'ferret-scan'
+
+
+def _xdg_config_home():
+    env = os.environ.get('XDG_CONFIG_HOME')
+    if env:
+        return os.path.expanduser(env)
+    return os.path.expanduser('~/.config')
+
+
+def _xdg_data_home():
+    env = os.environ.get('XDG_DATA_HOME')
+    if env:
+        return os.path.expanduser(env)
+    return os.path.expanduser('~/.local/share')
+
+
+def _ensure_dir(path):
+    if not os.path.isdir(path):
         try:
-            os.makedirs(basePath)
-        except:
-            logger.error("Failed to create directory: %s" % (basePath))
-    return basePath
+            os.makedirs(path)
+        except OSError:
+            logger.error('Failed to create directory: %s' % path)
+
+
+def get_config_dir():
+    """User settings directory (settings.json, exported profiles)."""
+    if system.is_windows():
+        base_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+        if hasattr(sys, 'frozen'):
+            base_path = os.path.normpath(os.path.join(base_path, '..'))
+    elif system.is_darwin():
+        base_path = os.path.join(os.path.expanduser('~/Library/Application Support'), _APP_DIRNAME)
+    else:
+        base_path = os.path.join(_xdg_config_home(), _APP_DIRNAME)
+    _ensure_dir(base_path)
+    return base_path
+
+
+def get_data_dir():
+    """User data directory (calibration captures, etc.)."""
+    if system.is_windows():
+        base_path = get_config_dir()
+    elif system.is_darwin():
+        base_path = os.path.join(os.path.expanduser('~/Library/Application Support'), _APP_DIRNAME)
+    else:
+        base_path = os.path.join(_xdg_data_home(), _APP_DIRNAME)
+    _ensure_dir(base_path)
+    return base_path
+
+
+def get_base_path():
+    """Alias for :func:`get_config_dir` (default path for settings and profiles)."""
+    return get_config_dir()
 
 
 def load_settings():
-    if os.path.exists(os.path.join(get_base_path(), 'settings.json')):
+    if os.path.exists(os.path.join(get_config_dir(), 'settings.json')):
         settings.load_settings()
         return
 
 
 # TODO: Move these somewhere else
 
+
 # Returns a list of convex polygons, first polygon is the allowed area of the machine,
 # the rest of the polygons are the dis-allowed areas of the machine.
 def get_machine_size_polygons():
-    machine_shape = settings["machine_shape"]
-    if machine_shape == "Circular":
-        size = np.array([ settings['machine_diameter'],
-                          settings['machine_diameter'],
-                          settings['machine_height'] ], np.float32)
-    elif machine_shape == "Rectangular":
-        size = np.array([ settings['machine_width'],
-                          settings['machine_depth'],
-                          settings['machine_height'] ], np.float32)
+    machine_shape = settings['machine_shape']
+    if machine_shape == 'Circular':
+        size = np.array(
+            [settings['machine_diameter'], settings['machine_diameter'], settings['machine_height']], np.float32
+        )
+    elif machine_shape == 'Rectangular':
+        size = np.array([settings['machine_width'], settings['machine_depth'], settings['machine_height']], np.float32)
     return get_size_polygons(size, machine_shape)
 
 
 def get_roi_size_polygons():
-    machine_shape = settings["machine_shape"]
-    if machine_shape == "Circular":
-        size = np.array([ settings['roi_diameter'],
-                          settings['roi_diameter'],
-                          settings['roi_height'] ], np.float32)
-    elif machine_shape == "Rectangular":
-        size = np.array([ settings['roi_width'],
-                          settings['roi_depth'],
-                          settings['roi_height'] ], np.float32)
+    machine_shape = settings['machine_shape']
+    if machine_shape == 'Circular':
+        size = np.array([settings['roi_diameter'], settings['roi_diameter'], settings['roi_height']], np.float32)
+    elif machine_shape == 'Rectangular':
+        size = np.array([settings['roi_width'], settings['roi_depth'], settings['roi_height']], np.float32)
     return get_size_polygons(size, machine_shape)
 
 
@@ -1054,8 +1437,12 @@ def get_size_polygons(size, machine_shape):
         circle = []
         steps = 32
         for n in range(0, steps):
-            circle.append([math.cos(float(n) / steps * 2 * math.pi) * size[0] / 2,
-                           math.sin(float(n) / steps * 2 * math.pi) * size[1] / 2])
+            circle.append(
+                [
+                    math.cos(float(n) / steps * 2 * math.pi) * size[0] / 2,
+                    math.sin(float(n) / steps * 2 * math.pi) * size[1] / 2,
+                ]
+            )
         ret.append(np.array(circle, np.float32))
 
     elif machine_shape == 'Rectangular':
@@ -1068,28 +1455,56 @@ def get_size_polygons(size, machine_shape):
 
     w = 20
     h = 20
-    ret.append(np.array([[-size[0] / 2, -size[1] / 2],
-                         [-size[0] / 2 + w + 2, -size[1] / 2],
-                         [-size[0] / 2 + w, -size[1] / 2 + h],
-                         [-size[0] / 2, -size[1] / 2 + h]], np.float32))
-    ret.append(np.array([[size[0] / 2 - w - 2, -size[1] / 2],
-                         [size[0] / 2, -size[1] / 2],
-                         [size[0] / 2, -size[1] / 2 + h],
-                         [size[0] / 2 - w, -size[1] / 2 + h]], np.float32))
-    ret.append(np.array([[-size[0] / 2 + w + 2, size[1] / 2],
-                         [-size[0] / 2, size[1] / 2],
-                         [-size[0] / 2, size[1] / 2 - h],
-                         [-size[0] / 2 + w, size[1] / 2 - h]], np.float32))
-    ret.append(np.array([[size[0] / 2, size[1] / 2],
-                         [size[0] / 2 - w - 2, size[1] / 2],
-                         [size[0] / 2 - w, size[1] / 2 - h],
-                         [size[0] / 2, size[1] / 2 - h]], np.float32))
+    ret.append(
+        np.array(
+            [
+                [-size[0] / 2, -size[1] / 2],
+                [-size[0] / 2 + w + 2, -size[1] / 2],
+                [-size[0] / 2 + w, -size[1] / 2 + h],
+                [-size[0] / 2, -size[1] / 2 + h],
+            ],
+            np.float32,
+        )
+    )
+    ret.append(
+        np.array(
+            [
+                [size[0] / 2 - w - 2, -size[1] / 2],
+                [size[0] / 2, -size[1] / 2],
+                [size[0] / 2, -size[1] / 2 + h],
+                [size[0] / 2 - w, -size[1] / 2 + h],
+            ],
+            np.float32,
+        )
+    )
+    ret.append(
+        np.array(
+            [
+                [-size[0] / 2 + w + 2, size[1] / 2],
+                [-size[0] / 2, size[1] / 2],
+                [-size[0] / 2, size[1] / 2 - h],
+                [-size[0] / 2 + w, size[1] / 2 - h],
+            ],
+            np.float32,
+        )
+    )
+    ret.append(
+        np.array(
+            [
+                [size[0] / 2, size[1] / 2],
+                [size[0] / 2 - w - 2, size[1] / 2],
+                [size[0] / 2 - w, size[1] / 2 - h],
+                [size[0] / 2, size[1] / 2 - h],
+            ],
+            np.float32,
+        )
+    )
 
     return ret
+
 
 laser_bg_scanning = [None, None]
 laser_bg_scanning_enable = False
 
 laser_bg_calibration = [None, None]
 laser_bg_calibration_enable = False
-

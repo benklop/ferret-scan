@@ -1,16 +1,17 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+import logging
+import re
+
+import cv2
+
 from ferret.util import profile
 
-import re
-import cv2
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -31,38 +32,33 @@ def parse_usb_camera_index(camera_id):
         return int(text[-1])
     return None
 
-class WrongCamera(Exception):
 
+class WrongCamera(Exception):
     def __init__(self):
-        Exception.__init__(self, "Wrong Camera")
+        Exception.__init__(self, 'Wrong Camera')
 
 
 class CameraNotConnected(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Camera Not Connected")
+        Exception.__init__(self, 'Camera Not Connected')
 
 
 class InvalidVideo(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Invalid Video")
+        Exception.__init__(self, 'Invalid Video')
 
 
 class WrongDriver(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Wrong Driver")
+        Exception.__init__(self, 'Wrong Driver')
 
 
 class InputOutputError(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "V4L2 Input/Output Error")
+        Exception.__init__(self, 'V4L2 Input/Output Error')
 
 
-class Camera(object):
-
+class Camera:
     """Camera class. For accessing to the scanner camera"""
 
     def __init__(self, parent=None, camera_id=0):
@@ -72,7 +68,6 @@ class Camera(object):
 
         self.initialize()
 
-
     def initialize(self):
         self._brightness = 0
         self._contrast = 0
@@ -80,7 +75,7 @@ class Camera(object):
         self._exposure = 0
         self._luminosity = 1.0
         self._frame_rate = 0
-        self._width = 0 # has to be detected at camera connect
+        self._width = 0  # has to be detected at camera connect
         self._height = 0
         self._rotate = True
         self._hflip = True
@@ -89,8 +84,7 @@ class Camera(object):
 
     def read_profile(self):
         self.set_frame_rate(int(profile.settings['frame_rate']))
-        self.set_resolution(
-            profile.settings['camera_width'], profile.settings['camera_height'])
+        self.set_resolution(profile.settings['camera_width'], profile.settings['camera_height'])
         self.set_rotate(profile.settings['camera_rotate'])
         self.set_hflip(profile.settings['camera_hflip'])
         self.set_vflip(profile.settings['camera_vflip'])
@@ -116,7 +110,7 @@ class Camera(object):
 
     def save_image(self, filename, image):
         if image is not None:
-            #image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             cv2.imwrite(filename, image)
 
     def set_rotate(self, value):
@@ -141,11 +135,7 @@ class Camera(object):
         self._exposure = value
 
     def set_luminosity(self, value):
-        possible_values = {
-            "High": 0.5,
-            "Medium": 1.0,
-            "Low": 2.0
-        }
+        possible_values = {'High': 0.5, 'Medium': 1.0, 'Low': 2.0}
         self._luminosity = possible_values[value]
 
     def set_frame_rate(self, value):
@@ -155,7 +145,7 @@ class Camera(object):
         return False
 
     def set_resolution(self, width, height):
-        if width>0 and height>0:
+        if width > 0 and height > 0:
             self._width = width
             self._height = height
 

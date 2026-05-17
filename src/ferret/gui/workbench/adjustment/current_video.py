@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import cv2
 import time
+
+import cv2
 import numpy as np
 
 from ferret import Singleton
@@ -17,8 +17,7 @@ from ferret.gui.util.augmented_view import augmented_draw_platform
 
 
 @Singleton
-class CurrentVideo(object):
-
+class CurrentVideo:
     def __init__(self):
         self.mode = 'Texture'
         self.updating = False
@@ -50,9 +49,9 @@ class CurrentVideo(object):
             if self.calibration:
                 image = image_capture.capture_pattern()
                 corners = image_detection.detect_corners(image)
-#                image_capture.flush_laser(14)
+                #                image_capture.flush_laser(14)
                 image = image_capture.capture_all_lasers()
-#                image = image_capture.capture_lasers()
+                #                image = image_capture.capture_lasers()
                 image = image_detection.pattern_mask(image, corners)
             else:
                 image = image_capture.capture_all_lasers()
@@ -61,7 +60,7 @@ class CurrentVideo(object):
             if self.calibration:
                 image = image_capture.capture_pattern()
                 corners = image_detection.detect_corners(image)
-#                image_capture.flush_laser(14)
+                #                image_capture.flush_laser(14)
                 images = image_capture.capture_lasers()
                 for i in range(2):
                     images[i] = image_detection.pattern_mask(images[i], corners)

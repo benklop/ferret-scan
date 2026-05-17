@@ -1,42 +1,37 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
 import numpy as np
-
-from ferret.util import profile
-
-from ferret.gui.engine import calibration_data, cloud_correction, image_capture, image_detection
-from ferret.engine.calibration.cloud_correction import CloudCorrectionError
-
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.figure import Figure
+import wx._core
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from matplotlib.figure import Figure
 
+from ferret.engine.calibration.cloud_correction import CloudCorrectionError
+from ferret.gui.engine import cloud_correction, image_capture, image_detection
 from ferret.gui.workbench.calibration.pages.page import Page
 from ferret.gui.workbench.calibration.pages.video_page import VideoPage
-
+from ferret.util import profile
 from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
-class CloudCorrectionPages(wx.Panel):
 
+class CloudCorrectionPages(wx.Panel):
     def __init__(self, parent, start_callback=None, exit_callback=None):
         wx.Panel.__init__(self, parent)  # , style=wx.RAISED_BORDER)
 
         self.start_callback = start_callback
         self.exit_callback = exit_callback
 
-        self.video_page = VideoPage(self, title=_('Cloud correction'),
-                                    start_callback=self.on_start, cancel_callback=self.on_exit)
-        self.video_page.add_info(_("Estimate point cloud compensation."), "")
-        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                                 "picture and press \"Start\""), "pattern-position.png")
+        self.video_page = VideoPage(
+            self, title=_('Cloud correction'), start_callback=self.on_start, cancel_callback=self.on_exit
+        )
+        self.video_page.add_info(_('Estimate point cloud compensation.'), '')
+        self.video_page.add_info(
+            _('Put the pattern on the platform as shown in the picture and press "Start"'), 'pattern-position.png'
+        )
 
         self.result_page = ResultPage(self, exit_callback=self.on_exit)
 
@@ -94,18 +89,25 @@ class CloudCorrectionPages(wx.Panel):
         pose = image_detection.detect_pose(image)
         if pose is not None:
             cloud_correction.angle_offset = estimate_platform_angle_from_pattern(pose)
-            cloud_correction.set_callbacks(lambda: wx.CallAfter(self.before_calibration),
-                                           lambda p: wx.CallAfter(self.progress_calibration, p),
-                                           lambda r: wx.CallAfter(self.after_calibration, r))
+            cloud_correction.set_callbacks(
+                lambda: wx.CallAfter(self.before_calibration),
+                lambda p: wx.CallAfter(self.progress_calibration, p),
+                lambda r: wx.CallAfter(self.after_calibration, r),
+            )
 
             cloud_correction.start()
         else:
             dlg = wx.MessageDialog(
-                self, _("Please put calibration pattern on platform and make sure it is detected correctly.\n"
-                        "You can set pattern parameters in \"Pattern settings\" panel.\n"
-                        "Also you can set up the calibration's capture camera settings "
-                        "in the \"Adjustment workbench\"."),
-                _("Pattern not detected"), wx.OK | wx.ICON_ERROR)
+                self,
+                _(
+                    'Please put calibration pattern on platform and make sure it is detected correctly.\n'
+                    'You can set pattern parameters in "Pattern settings" panel.\n'
+                    "Also you can set up the calibration's capture camera settings "
+                    'in the "Adjustment workbench".'
+                ),
+                _('Pattern not detected'),
+                wx.OK | wx.ICON_ERROR,
+            )
             dlg.ShowModal()
             dlg.Destroy()
 
@@ -117,15 +119,17 @@ class CloudCorrectionPages(wx.Panel):
 
 
 class ResultPage(Page):
-
     def __init__(self, parent, exit_callback=None):
-        Page.__init__(self, parent,
-                      title=_('Estimate cloud correction result'),
-                      desc='.',
-                      left=_('Reject'),
-                      right=_('Accept'),
-                      button_left_callback=self.on_reject,
-                      button_right_callback=self.on_accept)
+        Page.__init__(
+            self,
+            parent,
+            title=_('Estimate cloud correction result'),
+            desc='.',
+            left=_('Reject'),
+            right=_('Accept'),
+            button_left_callback=self.on_reject,
+            button_right_callback=self.on_accept,
+        )
 
         self.result = None
         self.exit_callback = exit_callback
@@ -165,8 +169,7 @@ class ResultPage(Page):
             self.result = (ML, MR)
 
             np.set_printoptions(formatter={'float': '{:g}'.format})
-            text = 'Mean displacement (mm) L: {0}  R: {1}'.format(
-                   round(dl, 3), np.round(dr, 3))
+            text = f'Mean displacement (mm) L: {round(dl, 3)}  R: {np.round(dr, 3)}'
             np.set_printoptions()
             self.desc_text.SetLabel(text)
 
@@ -175,26 +178,30 @@ class ResultPage(Page):
             self.plot_panel.Show()
             self.Layout()
             dlg = wx.MessageDialog(
-                self, _("Cloud corrections measured successfully"),
-                _("Success"), wx.OK | wx.ICON_INFORMATION)
+                self, _('Cloud corrections measured successfully'), _('Success'), wx.OK | wx.ICON_INFORMATION
+            )
             dlg.ShowModal()
             dlg.Destroy()
             self.Layout()
         else:
             if isinstance(result, CloudCorrectionError):
                 dlg = wx.MessageDialog(
-                    self, _("Measure cloud correction has failed. "
-                            "Please check the pattern and try again. "
-                            "Also you can set up the calibration's settings "
-                            "in the \"Adjustment workbench\" until the pattern "
-                            "are detected correctly at all required platform angles"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Measure cloud correction has failed. '
+                        'Please check the pattern and try again. '
+                        "Also you can set up the calibration's settings "
+                        'in the "Adjustment workbench" until the pattern '
+                        'are detected correctly at all required platform angles'
+                    ),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
 
 
 class CloudCorrection3DPlot(wx.Panel):
-
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -204,8 +211,7 @@ class CloudCorrection3DPlot(wx.Panel):
         fig = Figure(facecolor=(0.7490196, 0.7490196, 0.7490196, 1), tight_layout=True)
         self.canvas = FigureCanvasWxAgg(self, -1, fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
-        self.ax = fig.add_subplot(111, projection='3d',
-                                  facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = fig.add_subplot(111, projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.Bind(wx.EVT_SIZE, self.onSize)
         self.Layout()
@@ -219,21 +225,23 @@ class CloudCorrection3DPlot(wx.Panel):
         # self.corrections, err, self.p0_3d, self.angles, self.clouds
         M, err, p_center, angles, clouds = args
 
-        print((p_center[0].tolist()))
-        print((p_center.shape))
+        print(p_center[0].tolist())
+        print(p_center.shape)
         self.ax.scatter(p_center[0].tolist(), p_center[2].tolist(), p_center[1].tolist(), c='g', marker='o')
 
         for index, l in enumerate(angles):
-            cloud = np.mean(clouds[index], axis = 0)
-            print((cloud[0]))
+            cloud = np.mean(clouds[index], axis=0)
+            print(cloud[0])
             self.ax.scatter(cloud[0].tolist(), cloud[2].tolist(), cloud[1].tolist(), c='r', marker='.')
-        
+
             # Rotate p_center to angle
             c, s = np.cos(-np.deg2rad(-l)), np.sin(-np.deg2rad(-l))
             Rz = np.matrix([[c, -s, 0], [s, c, 0], [0, 0, 1]])
             perfect_points = Rz * p_center
 
-            self.ax.scatter(perfect_points[0].tolist(), perfect_points[2].tolist(), perfect_points[1].tolist(), c='g', marker='.')
+            self.ax.scatter(
+                perfect_points[0].tolist(), perfect_points[2].tolist(), perfect_points[1].tolist(), c='g', marker='.'
+            )
 
         self.ax.text(-100, 0, 0, str(round(err[0], 5)), fontsize=15)
         self.ax.text(100, 0, 0, str(round(err[1], 5)), fontsize=15)
@@ -262,8 +270,9 @@ class CloudCorrection3DPlot(wx.Panel):
         w = 200
         h = 300
 
-        p = np.array([[-w / 2, -h / 2, 0], [-w / 2, h / 2, 0],
-                      [w / 2, h / 2, 0], [w / 2, -h / 2, 0], [-w / 2, -h / 2, 0]])
+        p = np.array(
+            [[-w / 2, -h / 2, 0], [-w / 2, h / 2, 0], [w / 2, h / 2, 0], [w / 2, -h / 2, 0], [-w / 2, -h / 2, 0]]
+        )
         n = np.array([[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]])
 
         self.ax.plot([0, t[0]], [0, t[2]], [0, t[1]], linewidth=2.0, color='yellow')

@@ -125,10 +125,6 @@ if [ $BUILD_TARGET = "debian" ]; then
 	# Generate Debian source package
 	python setup.py --command-packages=stdeb.command sdist_dsc
 
-	# Copy postinst and postrm files
-	cp -a pkg/linux/debian/postinst deb_dist/horus-${VERSION}/debian/postinst
-	cp -a pkg/linux/debian/postrm deb_dist/horus-${VERSION}/debian/postrm
-
 	# Modify changelog and control files
 	cp -a pkg/linux/debian/changelog deb_dist/horus-${VERSION}/debian/changelog
 	cp -a pkg/linux/debian/control deb_dist/horus-${VERSION}/debian/control

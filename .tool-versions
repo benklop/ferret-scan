@@ -1,3 +1,4 @@
-# Ferret Scan GUI + libferret/pyorbbecsdk (see requirements.txt)
-# pyorbbecsdk v2 documents support through Python 3.13
+# Ferret Scan GUI + libferret/pyorbbecsdk (see pyproject.toml)
+# pyorbbecsdk v2 supports Python 3.8–3.13; ferret-scan requires >=3.9,<3.14
 python 3.13.7
+uv 0.6.14

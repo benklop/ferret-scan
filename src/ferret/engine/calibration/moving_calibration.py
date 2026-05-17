@@ -1,23 +1,20 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import time
 from ferret.engine.calibration.calibration import Calibration
-
 from ferret.util import profile
 
-class MovingCalibration(Calibration):
 
+class MovingCalibration(Calibration):
     """Moving calibration:
 
-            - Move motor sequence
-            - Call _capture at each position
-            - Call _calibrate at the end
+    - Move motor sequence
+    - Call _capture at each position
+    - Call _calibrate at the end
     """
 
     def __init__(self):
@@ -26,9 +23,9 @@ class MovingCalibration(Calibration):
         self.motor_speed = 0
         self.motor_acceleration = 0
         self.angle_offset = 0  # initial offset from perpendicular
-        self.start_angle = -90 # start calibration from this angle (initial movement). 0 - perpendicular to camera
-        self.angle_target = 180 # rotation during calibration
-        self.final_move = "Return"
+        self.start_angle = -90  # start calibration from this angle (initial movement). 0 - perpendicular to camera
+        self.angle_target = 180  # rotation during calibration
+        self.final_move = 'Return'
 
     def _initialize(self):
         raise NotImplementedError
@@ -47,20 +44,19 @@ class MovingCalibration(Calibration):
 
     def _start(self):
         if self.driver.is_connected:
-
             self._initialize()
 
-            if self._is_calibrating: # calibration can be cancelled during _initialize()
+            if self._is_calibrating:  # calibration can be cancelled during _initialize()
                 # Setup scanner
                 self.driver.board.lasers_off()
                 self.driver.board.motor_enable()
                 self.driver.board.motor_reset_origin()
                 self.driver.board.motor_speed(self.motor_speed)
                 self.driver.board.motor_acceleration(self.motor_acceleration)
-        
+
                 # Move to starting position
-                self.driver.board.motor_move(self.start_angle-self.angle_offset)
-        
+                self.driver.board.motor_move(self.start_angle - self.angle_offset)
+
                 if self._progress_callback is not None:
                     self._progress_callback(0)
 
@@ -68,13 +64,13 @@ class MovingCalibration(Calibration):
             angle = self._move_and_capture()
 
             # final movement
-            a = 0 # Keep position
+            a = 0  # Keep position
             if self.final_move == 'Return':
                 # Move to origin
-                a = self.start_angle - self.angle_offset + angle # angle to return point
+                a = self.start_angle - self.angle_offset + angle  # angle to return point
             elif self.final_move == 'Perpendicular':
                 # Move to perpendicular
-                a = self.start_angle + angle # angle to perpendicular point
+                a = self.start_angle + angle  # angle to perpendicular point
 
             if a != 0:
                 if a > 180:
@@ -86,7 +82,7 @@ class MovingCalibration(Calibration):
             self.driver.board.lasers_off()
             self.driver.board.motor_disable()
             self.driver.board.motor_reset_origin()
-            self.angle_offset = 0. # cleanup
+            self.angle_offset = 0.0  # cleanup
 
             # Compute calibration
             response = self._calibrate()
@@ -97,7 +93,6 @@ class MovingCalibration(Calibration):
     def _move_and_capture(self):
         angle = 0.0
         while self._is_calibrating and abs(angle) < self.angle_target:
-
             if self._progress_callback is not None:
                 self._progress_callback(100 * abs(angle) / self.angle_target)
 
@@ -105,6 +100,5 @@ class MovingCalibration(Calibration):
 
             angle += self.motor_step
             self.driver.board.motor_move(self.motor_step)
-            #time.sleep(0.5)
+            # time.sleep(0.5)
         return angle
-

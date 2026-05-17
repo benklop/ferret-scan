@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Rebuild wxPython from source after "uv sync" replaced it with a wheel.
+set -eo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/wx_build.sh
+source "${ROOT}/scripts/lib/wx_build.sh"
+
+VENV_PY="${ROOT}/.venv/bin/python"
+if [[ ! -x "${VENV_PY}" ]]; then
+  echo "No .venv — run ./scripts/dev-setup first" >&2
+  exit 1
+fi
+if [[ "$(uname -s)" != Linux ]]; then
+  exit 0
+fi
+
+unset UV_PYTHON
+export UV_PROJECT_ENVIRONMENT="${ROOT}/.venv"
+ferret_uv_pip() {
+  uv pip install --python "${VENV_PY}" "$@"
+}
+ferret_build_wxpython "${VENV_PY}"

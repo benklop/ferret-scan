@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -12,15 +11,15 @@ from ferret.util import version
 
 
 class VersionWindow(wx.Dialog):
-
     def __init__(self, parent):
-        super(VersionWindow, self).__init__(
-            parent, title=_('New version available!'),
-            size=(420, -1), style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
+        super().__init__(
+            parent, title=_('New version available!'), size=(420, -1), style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER
+        )
 
         # Elements
         self.description = wx.StaticText(
-            self, label=_('A new version of Horus is available, would you like to download it?'))
+            self, label=_('A new version of Horus is available, would you like to download it?')
+        )
         self.download_button = wx.Button(self, label=_('Download'))
         self.cancel_button = wx.Button(self, label=_('Cancel'))
 

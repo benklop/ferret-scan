@@ -1,17 +1,15 @@
 # This file is part of the Gryphon Scan Project
-from __future__ import absolute_import
 import six
-from six.moves import map
+
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2019 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 
-import wx._core
-import types
-import struct
 import binascii
-from collections import OrderedDict
+import types
+
+import wx._core
 
 
 def _rgb_list_to_hex(rgb):
@@ -21,14 +19,14 @@ def _rgb_list_to_hex(rgb):
 def _hex_to_rgb_list(hex_str):
     return list(binascii.unhexlify(hex_str))
 
-from ferret.util import profile, resources, system as sys
+
 from ferret.gui.util.custom_panels import ControlPanel
+from ferret.util import profile
 
 
 class Header(ControlPanel):
-
     def __init__(self, parent, name, tooltip=None):
-        #ControlPanel.__init__(self, parent, name, engine_callback)
+        # ControlPanel.__init__(self, parent, name, engine_callback)
         wx.Panel.__init__(self, parent)
         self.name = name
         if tooltip:
@@ -44,7 +42,7 @@ class Header(ControlPanel):
         self.label = wx.StaticText(self, label=name)
         font = self.label.GetFont()
         font.SetWeight(wx.BOLD)
-        #font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        # font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         self.label.SetFont(font)
         self.line = wx.StaticLine(self)
 
@@ -81,11 +79,10 @@ class Header(ControlPanel):
 
 
 class DirPicker(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         def _bound_SetValue(self, value):
             self.SetPath(value)
-        
+
         def _bound_GetValue(self, value):
             return self.GetPath()
 
@@ -93,7 +90,9 @@ class DirPicker(ControlPanel):
 
         # Elements
         label = wx.StaticText(self, size=(140, -1), label=_(self.setting._label))
-        self.control = wx.DirPickerCtrl(self, size=(120, -1), style= wx.DIRP_USE_TEXTCTRL ) #| wx.DIRP_SMALL ) # | wx.DIRP_DIR_MUST_EXIST)
+        self.control = wx.DirPickerCtrl(
+            self, size=(120, -1), style=wx.DIRP_USE_TEXTCTRL
+        )  # | wx.DIRP_SMALL ) # | wx.DIRP_DIR_MUST_EXIST)
         self.control.SetPath(profile.settings[self.name])
         self.control.SetValue = types.MethodType(_bound_SetValue, self.control)
         self.control.GetValue = types.MethodType(_bound_GetValue, self.control)
@@ -117,12 +116,11 @@ class DirPicker(ControlPanel):
 
 
 class ColorPicker(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
         # Elements
         label = wx.StaticText(self, size=(130, -1), label=_(self.setting._label))
-        self.control = wx.Button(self, label="", size=(150, -1), style=wx.BORDER_NONE)
+        self.control = wx.Button(self, label='', size=(150, -1), style=wx.BORDER_NONE)
         self.update_from_profile()
 
         # Layout
@@ -136,7 +134,6 @@ class ColorPicker(ControlPanel):
         # Events
         self.control.Bind(wx.EVT_BUTTON, self._on_btn_click)
 
-
     def update_from_profile(self):
         value = self.decode_color(self.setting.value)
         if self.control is not None:
@@ -146,14 +143,11 @@ class ColorPicker(ControlPanel):
     def decode_color(self, value):
         if isinstance(value, six.string_types):
             ret = _hex_to_rgb_list(value)
-        elif isinstance(value, (tuple,list)) and \
-             len(value) == 3 and \
-             all(isinstance(x, int) for x in value):
-           ret = value
+        elif isinstance(value, (tuple, list)) and len(value) == 3 and all(isinstance(x, int) for x in value):
+            ret = value
         else:
-           ret = (0,0,0)
+            ret = (0, 0, 0)
         return ret
-
 
     def update_to_profile(self, value):
         if issubclass(self.setting._type, six.string_types):
@@ -163,12 +157,9 @@ class ColorPicker(ControlPanel):
         elif issubclass(self.setting._type, tuple):
             profile.settings[self.name] = tuple(value)
 
-
     def set_control_value(self, value):
         self.control.SetBackgroundColour(wx.Colour(value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF))
-        self.control.SetLabel("#{0}\n{1} {2} {3}".format(
-            _rgb_list_to_hex(value),
-            value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF))
+        self.control.SetLabel(f'#{_rgb_list_to_hex(value)}\n{value[0] & 0xFF} {value[1] & 0xFF} {value[2] & 0xFF}')
 
     def _on_btn_click(self, event):
         v = self.pick_color()
@@ -188,4 +179,3 @@ class ColorPicker(ControlPanel):
             ret = list(data.GetColour().Get())
         dialog.Destroy()
         return ret
-

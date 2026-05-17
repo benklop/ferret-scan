@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Nicanor Romero Venier <nicanor.romerovenier@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import os
+
 import wx._core
 import wx.lib.intctrl
 
@@ -16,37 +16,36 @@ from ferret.util import profile
 
 
 class MachineSettingsDialog(wx.Dialog):
-
     def __init__(self, parent):
-        wx.Dialog.__init__(self, None, title=_("Machine settings"))
+        wx.Dialog.__init__(self, None, title=_('Machine settings'))
 
         self.main = parent
 
         # Elements
-        self.machineShapeLabel = wx.StaticText(self, label=_("Platform shape"))
-        self.machineShapes = profile.settings.get_possible_values("machine_shape")
+        self.machineShapeLabel = wx.StaticText(self, label=_('Platform shape'))
+        self.machineShapes = profile.settings.get_possible_values('machine_shape')
         self.translatedMachineShapes = [_(s) for s in self.machineShapes]
         self.machineShapeCombo = wx.ComboBox(
-            self, choices=self.translatedMachineShapes, size=(170, -1), style=wx.CB_READONLY)
+            self, choices=self.translatedMachineShapes, size=(170, -1), style=wx.CB_READONLY
+        )
 
-        self.dimensionsStaticText = wx.StaticText(
-            self, label=_("Platform dimensions"), style=wx.ALIGN_CENTRE)
-        self.diameterLabel = wx.StaticText(self, label=_("Diameter"))
+        self.dimensionsStaticText = wx.StaticText(self, label=_('Platform dimensions'), style=wx.ALIGN_CENTRE)
+        self.diameterLabel = wx.StaticText(self, label=_('Diameter'))
         self.diameterField = wx.lib.intctrl.IntCtrl(self, size=(170, -1), style=wx.TE_RIGHT)
-        self.widthLabel = wx.StaticText(self, label=_("Width"))
+        self.widthLabel = wx.StaticText(self, label=_('Width'))
         self.widthField = wx.lib.intctrl.IntCtrl(self, size=(170, -1), style=wx.TE_RIGHT)
-        self.heightLabel = wx.StaticText(self, label=_("Height"))
+        self.heightLabel = wx.StaticText(self, label=_('Height'))
         self.heightField = wx.lib.intctrl.IntCtrl(self, size=(170, -1), style=wx.TE_RIGHT)
-        self.depthLabel = wx.StaticText(self, label=_("Depth"))
+        self.depthLabel = wx.StaticText(self, label=_('Depth'))
         self.depthField = wx.lib.intctrl.IntCtrl(self, size=(170, -1), style=wx.TE_RIGHT)
 
-        self.machineModelLabel = wx.StaticText(self, label=_("Machine model"))
-        self.machineModelButton = wx.Button(self, label=_("Browse"))
+        self.machineModelLabel = wx.StaticText(self, label=_('Machine model'))
+        self.machineModelButton = wx.Button(self, label=_('Browse'))
         self.machineModelField = wx.StaticText(self, size=(200, -1))
 
-        self.defaultButton = wx.Button(self, label=_("Default"))
-        self.cancel_button = wx.Button(self, label=_("Cancel"))
-        self.saveButton = wx.Button(self, label=_("Save"))
+        self.defaultButton = wx.Button(self, label=_('Default'))
+        self.cancel_button = wx.Button(self, label=_('Cancel'))
+        self.saveButton = wx.Button(self, label=_('Save'))
 
         # Events
         self.machineShapeCombo.Bind(wx.EVT_COMBOBOX, self.onMachineShapeComboChanged)
@@ -131,8 +130,7 @@ class MachineSettingsDialog(wx.Dialog):
 
     def onSaveButton(self, event):
         # Store the original value, not the translated one
-        machine_shape = self.machineShapes[
-            self.translatedMachineShapes.index(self.machineShapeCombo.GetValue())]
+        machine_shape = self.machineShapes[self.translatedMachineShapes.index(self.machineShapeCombo.GetValue())]
         profile.settings['machine_shape'] = machine_shape
         profile.settings['machine_diameter'] = self.diameterField.GetValue()
         profile.settings['machine_width'] = self.widthField.GetValue()
@@ -155,13 +153,12 @@ class MachineSettingsDialog(wx.Dialog):
 
     def onMachineShapeComboChanged(self, event):
         vbox = self.get_sizer()
-        machine_shape = self.machineShapes[
-            self.translatedMachineShapes.index(self.machineShapeCombo.GetValue())]
-        if machine_shape == "Circular":
+        machine_shape = self.machineShapes[self.translatedMachineShapes.index(self.machineShapeCombo.GetValue())]
+        if machine_shape == 'Circular':
             vbox.Show(self.diam_hbox, recursive=True)
             vbox.Hide(self.width_hbox, recursive=True)
             vbox.Hide(self.depth_hbox, recursive=True)
-        elif machine_shape == "Rectangular":
+        elif machine_shape == 'Rectangular':
             vbox.Hide(self.diam_hbox, recursive=True)
             vbox.Show(self.width_hbox, recursive=True)
             vbox.Show(self.depth_hbox, recursive=True)
@@ -169,10 +166,8 @@ class MachineSettingsDialog(wx.Dialog):
         self.SetSizerAndFit(vbox)
 
     def onMachineModelButton(self, event):
-        dlg = wx.FileDialog(
-            self, message=_("Select binary file to load"),
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-        dlg.SetWildcard("Model files (*.stl)|*.stl")
+        dlg = wx.FileDialog(self, message=_('Select binary file to load'), style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        dlg.SetWildcard('Model files (*.stl)|*.stl')
         if dlg.ShowModal() == wx.ID_OK:
             self.machineModelPath = dlg.GetPath()
             self.machineModelField.SetLabel(dlg.GetFilename())

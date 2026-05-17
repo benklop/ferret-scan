@@ -1,28 +1,26 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import cv2
 import math
+
+import cv2
 import numpy as np
 import scipy.ndimage
 
 from ferret import Singleton
-from ferret.engine.calibration.calibration_data import CalibrationData
 from ferret.engine.algorithms.point_cloud_roi import PointCloudROI
-
+from ferret.engine.calibration.calibration_data import CalibrationData
 from ferret.gui.util.augmented_view import augmented_platform_mask
-
 from ferret.util import profile
 
-@Singleton
-class LaserSegmentation(object):
 
+@Singleton
+class LaserSegmentation:
     def __init__(self):
         self.calibration_data = CalibrationData()
         self.point_cloud_roi = PointCloudROI()
@@ -37,14 +35,14 @@ class LaserSegmentation(object):
         self.refinement_method = 'SGF'
 
     def read_profile(self, mode):
-        self.laser_color_detector = profile.settings['laser_color_detector_'+mode]
-        self.threshold_enable = profile.settings['threshold_enable_'+mode]
-        self.threshold_value = profile.settings['threshold_value_'+mode]
-        self.blur_enable = profile.settings['blur_enable_'+mode]
-        self.set_blur_value(profile.settings['blur_value_'+mode])
-        self.window_enable = profile.settings['window_enable_'+mode]
-        self.window_value = profile.settings['window_value_'+mode]
-        self.refinement_method = profile.settings['refinement_'+mode]
+        self.laser_color_detector = profile.settings['laser_color_detector_' + mode]
+        self.threshold_enable = profile.settings['threshold_enable_' + mode]
+        self.threshold_value = profile.settings['threshold_value_' + mode]
+        self.blur_enable = profile.settings['blur_enable_' + mode]
+        self.set_blur_value(profile.settings['blur_value_' + mode])
+        self.window_enable = profile.settings['window_enable_' + mode]
+        self.window_value = profile.settings['window_value_' + mode]
+        self.refinement_method = profile.settings['refinement_' + mode]
 
     def set_laser_color_detector(self, value):
         self.laser_color_detector = value
@@ -107,7 +105,7 @@ class LaserSegmentation(object):
             image = self._window_mask(image)
             return image
 
-    def compute_line_segmentation_bg(self, image, avoid_platform = False):
+    def compute_line_segmentation_bg(self, image, avoid_platform=False):
         mask = image.copy()
         mask = self._obtain_laser_image(mask)
         mask = self._threshold_image(mask)
@@ -135,20 +133,20 @@ class LaserSegmentation(object):
             ret = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
             # lower mask (0-10)
             # TODO Use separate threshold value or 0 for 'V'
-            lower_red = np.array([0,50,self.threshold_value])
-            upper_red = np.array([10,255,255])
+            lower_red = np.array([0, 50, self.threshold_value])
+            upper_red = np.array([10, 255, 255])
             mask0 = cv2.inRange(ret, lower_red, upper_red)
 
             # upper mask (170-180)
-            lower_red = np.array([160,50,self.threshold_value])
-            upper_red = np.array([180,255,255])
+            lower_red = np.array([160, 50, self.threshold_value])
+            upper_red = np.array([180, 255, 255])
             mask1 = cv2.inRange(ret, lower_red, upper_red)
 
             # join masks
-            mask = mask0+mask1
+            mask = mask0 + mask1
 
             ret = cv2.split(ret)[2]
-            ret[np.where(mask==0)] = 0
+            ret[np.where(mask == 0)] = 0
 
         elif self.laser_color_detector == 'Cr (YCrCb)':
             ret = cv2.split(cv2.cvtColor(image, cv2.COLOR_RGB2YCR_CB))[1]
@@ -161,12 +159,10 @@ class LaserSegmentation(object):
     def _threshold_image(self, image):
         if self.threshold_enable:
             if image is not None:
-                image = cv2.threshold(
-                    image, self.threshold_value, 255, cv2.THRESH_TOZERO)[1]
+                image = cv2.threshold(image, self.threshold_value, 255, cv2.THRESH_TOZERO)[1]
                 if self.blur_enable:
                     image = cv2.blur(image, (self.blur_value, self.blur_value))
-                image = cv2.threshold(
-                    image, self.threshold_value, 255, cv2.THRESH_TOZERO)[1]
+                image = cv2.threshold(image, self.threshold_value, 255, cv2.THRESH_TOZERO)[1]
         return image
 
     def _window_mask(self, image):
@@ -177,7 +173,7 @@ class LaserSegmentation(object):
                 _max = peak + self.window_value + 1
                 mask = np.zeros_like(image)
                 for i in range(self.calibration_data.height):
-                    mask[i, _min[i]:_max[i]] = 255
+                    mask[i, _min[i] : _max[i]] = 255
                 # Apply mask
                 image = cv2.bitwise_and(image, mask)
         return image
@@ -194,7 +190,7 @@ class LaserSegmentation(object):
             for segment in segments:
                 j = len(segment)
                 # Apply gaussian filter
-                fseg = scipy.ndimage.gaussian_filter(u[i:i + j], sigma=sigma)
+                fseg = scipy.ndimage.gaussian_filter(u[i : i + j], sigma=sigma)
                 f = np.concatenate((f, fseg))
                 i += j
             return f
@@ -211,12 +207,12 @@ class LaserSegmentation(object):
             u = (dr - v * math.sin(thetar)) / math.cos(thetar)
         return u
 
-    class LinearLeastSquares2D(object):
-        '''
+    class LinearLeastSquares2D:
+        """
         2D linear least squares using the hesse normal form:
             d = x*sin(theta) + y*cos(theta)
         which allows you to have vertical lines.
-        '''
+        """
 
         def fit(self, data):
             data_mean = data.mean(axis=0)
@@ -240,7 +236,7 @@ class LaserSegmentation(object):
             return False
 
     def ransac(self, data, model_class, min_samples, threshold, max_trials=100):
-        '''
+        """
         Fits a model to data with the RANSAC algorithm.
         :param data: numpy.ndarray
             data set to which the model is fitted, must be of shape NxD where
@@ -260,7 +256,7 @@ class LaserSegmentation(object):
             maximum number of iterations for random sample selection, default 100
         :returns: tuple
             best model returned by model_class.fit, best inlier indices
-        '''
+        """
 
         best_model = None
         best_inlier_num = 0

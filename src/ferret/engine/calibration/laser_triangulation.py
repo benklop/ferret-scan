@@ -1,51 +1,40 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 import six
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import struct
-import math
+import logging
+
 import numpy as np
-from scipy.sparse import linalg as splinalg
-from scipy import sparse, linalg
 import numpy.linalg
-import cv2
+from scipy.sparse import linalg as splinalg
 
 from ferret import Singleton
 from ferret.engine.calibration.calibration import CalibrationCancel
-from ferret.engine.calibration.moving_calibration import MovingCalibration
 from ferret.engine.calibration.calibration_data import CalibrationData
-from ferret.util.model import Mesh
+from ferret.engine.calibration.moving_calibration import MovingCalibration
 from ferret.util.mesh_loaders import ply
+from ferret.util.model import Mesh
 
-from ferret.gui.util.augmented_view import augmented_pattern_mask
-from ferret.util.gryphon_util import apply_mask
-
-from ferret.util import profile
-
-import logging
 logger = logging.getLogger(__name__)
 
 
 class LaserTriangulationError(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "LaserTriangulationError")
+        Exception.__init__(self, 'LaserTriangulationError')
 
 
 @Singleton
 class LaserTriangulation(MovingCalibration):
-
     """Laser triangulation algorithm:
 
-            - Laser coordinates matrix
-            - Pattern's origin
-            - Pattern's normal
+    - Laser coordinates matrix
+    - Pattern's origin
+    - Pattern's normal
     """
 
     def __init__(self):
@@ -74,7 +63,7 @@ class LaserTriangulation(MovingCalibration):
 
     def read_profile(self):
         MovingCalibration.read_profile(self)
-        
+
     def _capture(self, angle):
         self.image_capture.stream = False
         image = self.image_capture.capture_pattern()
@@ -84,27 +73,28 @@ class LaserTriangulation(MovingCalibration):
             distance, normal, corners = plane
 
             if self.points_image is None:
-                self.points_image = np.zeros(image.shape, dtype = "uint8")
+                self.points_image = np.zeros(image.shape, dtype='uint8')
             self.image = np.copy(self.points_image)
-            colors = [(255,0,0), (0,255,255), (255,255,0), (0,0,255)]
+            colors = [(255, 0, 0), (0, 255, 255), (255, 255, 0), (0, 0, 255)]
 
             images = self.image_capture.capture_lasers()[:-1]
-            for i,image in enumerate(images):
+            for i, image in enumerate(images):
                 if image is not None:
                     image = self.image_detection.pattern_mask(image, corners)
-                    np.maximum(self.image, image, out = self.image)
-                  
+                    np.maximum(self.image, image, out=self.image)
+
                     points_2d, image = self.laser_segmentation.compute_2d_points(image)
-                    if len(points_2d[0])>0: 
-                        points_3d = self.point_cloud_generation.compute_camera_point_cloud(
-                            points_2d, distance, normal)
-                        self._point_cloud.setdefault(i,Mesh(None)._prepare_vertex_count(100)).add_pointcloud(
-                               points_3d.T, [colors[i]]*len(points_3d[0]),
-                               (self.calibration_num, int(angle/self.motor_step), np.deg2rad(angle)) )
-                        self.points_image[points_2d[1],np.rint(points_2d[0]).astype(int)] = colors[i]
-                  
+                    if len(points_2d[0]) > 0:
+                        points_3d = self.point_cloud_generation.compute_camera_point_cloud(points_2d, distance, normal)
+                        self._point_cloud.setdefault(i, Mesh(None)._prepare_vertex_count(100)).add_pointcloud(
+                            points_3d.T,
+                            [colors[i]] * len(points_3d[0]),
+                            (self.calibration_num, int(angle / self.motor_step), np.deg2rad(angle)),
+                        )
+                        self.points_image[points_2d[1], np.rint(points_2d[0]).astype(int)] = colors[i]
+
                     # test line detection: draw 3D points back on image
-                    '''
+                    """
                     if points_3d.shape[1]>0:
                         p, jac = cv2.projectPoints(np.float32(points_3d.T),
                             np.identity(3),
@@ -114,7 +104,7 @@ class LaserTriangulation(MovingCalibration):
                         p.reshape(-1,2)
                         for pp in p.astype(np.int):
                             self.image[pp[0][1], pp[0][0]] = [255,0,0]
-                    '''
+                    """
         else:
             self.image = image
 
@@ -123,20 +113,21 @@ class LaserTriangulation(MovingCalibration):
         self.image_capture.stream = True
 
         # Save point clouds
-        for i,mesh in six.iteritems(self._point_cloud):
+        for i, mesh in six.iteritems(self._point_cloud):
             ply.save_scene('laser_triangulation' + str(i) + '.ply', self._point_cloud[i])
 
         self.planes = {}
 
         # Compute planes
-        for i,mesh in six.iteritems(self._point_cloud):
+        for i, mesh in six.iteritems(self._point_cloud):
             if self._is_calibrating:
                 # distance, normal, std
                 self.planes[i] = compute_plane(i, mesh.get_vertexes())
 
         if self._is_calibrating:
-            if all(np.array(list(self.planes.values()))[:,2] < 1.0) and \
-               all(np.array(list(self.planes.values()))[:,0]):
+            if all(np.array(list(self.planes.values()))[:, 2] < 1.0) and all(
+                np.array(list(self.planes.values()))[:, 0]
+            ):
                 response = (True, (self.planes, self._point_cloud))
             else:
                 response = (False, LaserTriangulationError())
@@ -149,12 +140,13 @@ class LaserTriangulation(MovingCalibration):
         return response
 
     def accept(self):
-        for i,p in six.iteritems(self.planes):
+        for i, p in six.iteritems(self.planes):
             self.calibration_data.laser_planes[i].distance = p[0]
             self.calibration_data.laser_planes[i].normal = p[1]
 
 
 # ========================================================
+
 
 def compute_plane(index, X):
     if X is not None and X.shape[0] > 3:
@@ -163,11 +155,11 @@ def compute_plane(index, X):
         distance, normal, M = model
         std = np.dot(M.T, normal).std()
 
-        logger.info("Laser calibration " + str(index))
-        logger.info(" Distance: " + str(distance))
-        logger.info(" Normal: " + str(normal))
-        logger.info(" Standard deviation: " + str(std))
-        logger.info(" Point cloud size: " + str(len(inliers)))
+        logger.info('Laser calibration ' + str(index))
+        logger.info(' Distance: ' + str(distance))
+        logger.info(' Normal: ' + str(normal))
+        logger.info(' Standard deviation: ' + str(std))
+        logger.info(' Point cloud size: ' + str(len(inliers)))
 
         return distance, normal, std
     else:
@@ -176,8 +168,8 @@ def compute_plane(index, X):
 
 # ========================================================
 
-class PlaneDetection(object):
 
+class PlaneDetection:
     def fit(self, X):
         M, Xm = self._compute_m(X)
         # U = linalg.svds(M, k=2)[0]
@@ -187,11 +179,11 @@ class PlaneDetection(object):
         U = splinalg.svds(M, k=2)[0]
         normal = np.cross(U.T[0], U.T[1])
 
-        # faster but need a lot of memory 
-        #normal = numpy.linalg.svd(M)[0][:, 2]
+        # faster but need a lot of memory
+        # normal = numpy.linalg.svd(M)[0][:, 2]
 
         # save memory enough to fit but.... is this ok?
-        #normal = numpy.linalg.svd(M, full_matrices= False)[0][:, 2]
+        # normal = numpy.linalg.svd(M, full_matrices= False)[0][:, 2]
 
         if normal[2] < 0:
             normal *= -1
@@ -215,6 +207,7 @@ class PlaneDetection(object):
 
 # ========================================================
 
+
 def ransac(data, model_class, min_samples, threshold, max_trials=500):
     best_model = None
     best_inlier_num = 0
@@ -234,5 +227,3 @@ def ransac(data, model_class, min_samples, threshold, max_trials=500):
     if best_inliers is not None:
         best_model = model_class.fit(data[best_inliers])
     return best_model, best_inliers
-
-

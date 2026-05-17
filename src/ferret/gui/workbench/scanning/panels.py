@@ -1,29 +1,22 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from six.moves import map
 import six
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 
 import wx._core
-import numpy as np
 
+from ferret.gui.engine import ciclop_scan, driver, point_cloud_roi
+from ferret.gui.util.custom_panels import Button, CheckBox, ComboBox, ExpandablePanel, FloatTextBox, Slider
 from ferret.util import profile
-from ferret.gui.engine import driver, ciclop_scan, point_cloud_roi
-from ferret.gui.util.custom_panels import ExpandablePanel, Slider, CheckBox, ComboBox, \
-    Button, FloatTextBox
-from ferret.util import model
 
 
 class ScanParameters(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(
-            self, parent, _("Scan parameters"), has_undo=False, has_restore=False)
+        ExpandablePanel.__init__(self, parent, _('Scan parameters'), has_undo=False, has_restore=False)
         self.main = self.GetParent().GetParent().GetParent()
 
     def add_controls(self):
@@ -43,17 +36,14 @@ class ScanParameters(ExpandablePanel):
 
 
 class RotatingPlatform(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(
-            self, parent, _("Rotating platform"), has_undo=False)
+        ExpandablePanel.__init__(self, parent, _('Rotating platform'), has_undo=False)
         self.main = self.GetParent().GetParent().GetParent()
 
     def add_controls(self):
         self.add_control(
-            'show_center', CheckBox,
-            _("Shows the center of the platform using the "
-              "current calibration parameters"))
+            'show_center', CheckBox, _('Shows the center of the platform using the current calibration parameters')
+        )
         self.add_control('motor_step_scanning', FloatTextBox)
         self.add_control('motor_speed_scanning', FloatTextBox)
         self.add_control('motor_acceleration_scanning', FloatTextBox)
@@ -71,23 +61,26 @@ class RotatingPlatform(ExpandablePanel):
 
 
 class PointCloudROI(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Point cloud ROI"))
+        ExpandablePanel.__init__(self, parent, _('Point cloud ROI'))
         self.main = self.GetParent().GetParent().GetParent()
 
     def add_controls(self):
         self.add_control(
-            'use_roi', CheckBox,
-            _("Use a Region Of Interest (ROI). "
-              "This cylindrical region is the one being scanned. "
-              "All information outside won't be taken into account "
-              "during the scanning process"))
+            'use_roi',
+            CheckBox,
+            _(
+                'Use a Region Of Interest (ROI). '
+                'This cylindrical region is the one being scanned. '
+                "All information outside won't be taken into account "
+                'during the scanning process'
+            ),
+        )
 
         if profile.settings.get_max_value('roi_diameter') < profile.settings['machine_diameter']:
-            profile.settings.set_max_value('roi_diameter', profile.settings['machine_diameter']+50)
+            profile.settings.set_max_value('roi_diameter', profile.settings['machine_diameter'] + 50)
         if profile.settings.get_max_value('roi_height') < profile.settings['machine_height']:
-            profile.settings.set_max_value('roi_height', profile.settings['machine_height']+50)
+            profile.settings.set_max_value('roi_height', profile.settings['machine_height'] + 50)
 
         self.add_control('roi_diameter', Slider)
         self.add_control('roi_height', Slider)
@@ -130,10 +123,8 @@ class PointCloudROI(ExpandablePanel):
 
 
 class PointCloudColor(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(
-            self, parent, _("Point cloud color"), has_undo=False, has_restore=False)
+        ExpandablePanel.__init__(self, parent, _('Point cloud color'), has_undo=False, has_restore=False)
         self.main = self.GetParent().GetParent().GetParent()
 
     def add_controls(self):
@@ -152,6 +143,7 @@ class PointCloudColor(ExpandablePanel):
             color = data.GetColour().Get()
             ciclop_scan.color = color
             from ferret.gui.util.gryphon_controls import _rgb_list_to_hex
+
             profile.settings['point_cloud_color'] = six.text_type(_rgb_list_to_hex(color))
         dialog.Destroy()
 
@@ -159,4 +151,3 @@ class PointCloudColor(ExpandablePanel):
         self.main.scene_view._view_roi = False
         self.main.scene_view.queue_refresh()
         profile.settings['current_panel_scanning'] = 'point_cloud_color'
-

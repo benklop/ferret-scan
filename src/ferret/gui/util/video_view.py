@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+from threading import Timer
+
 import wx._core
 
-from threading import Timer
 from ferret.gui.util.image_view import ImageView
 
 
 class VideoView(ImageView):
-
     def __init__(self, parent, callback=None, size=(-1, -1), wxtimer=True):
         ImageView.__init__(self, parent, size=size, black=True)
 
@@ -44,7 +42,7 @@ class VideoView(ImageView):
                                 wx.CallAfter(self.set_frame, frame)
                     self._start()
         except Exception as e:
-            print((e.message))
+            print(e.message)
 
     def set_callback(self, callback):
         self.callback = callback

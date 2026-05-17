@@ -1,31 +1,30 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import struct
 import wx._core
 
-from ferret.util import resources, profile
-
 from ferret.engine.driver.camera import InputOutputError
-
-from ferret.gui.engine import driver, image_capture, laser_segmentation, calibration_data, \
-    ciclop_scan, current_video, point_cloud_roi
-from ferret.gui.workbench.workbench import Workbench
+from ferret.gui.engine import (
+    calibration_data,
+    ciclop_scan,
+    current_video,
+    driver,
+    image_capture,
+    laser_segmentation,
+    point_cloud_roi,
+)
+from ferret.gui.workbench.scanning.gryphon_panels import MeshCorrection, Photogrammetry, PointCloudColor
+from ferret.gui.workbench.scanning.panels import PointCloudROI, RotatingPlatform, ScanParameters
 from ferret.gui.workbench.scanning.view_page import ViewPage
-from ferret.gui.workbench.scanning.panels import ScanParameters, RotatingPlatform, \
-    PointCloudROI
-from ferret.gui.workbench.scanning.gryphon_panels import PointCloudColor, Photogrammetry, \
-    MeshCorrection
+from ferret.gui.workbench.workbench import Workbench
+from ferret.util import profile, resources
 
 
 class ScanningWorkbench(Workbench):
-
     def __init__(self, parent, toolbar_scan):
         Workbench.__init__(self, parent, name=_('Scanning workbench'))
 
@@ -34,14 +33,14 @@ class ScanningWorkbench(Workbench):
 
         # Elements
         self.play_tool = self.toolbar_scan.AddLabelTool(
-            wx.NewId(), _("Play"),
-            wx.Bitmap(resources.get_path_for_image("play.png")), shortHelp=_("Play"))
+            wx.NewId(), _('Play'), wx.Bitmap(resources.get_path_for_image('play.png')), shortHelp=_('Play')
+        )
         self.stop_tool = self.toolbar_scan.AddLabelTool(
-            wx.NewId(), _("Stop"),
-            wx.Bitmap(resources.get_path_for_image("stop.png")), shortHelp=_("Stop"))
+            wx.NewId(), _('Stop'), wx.Bitmap(resources.get_path_for_image('stop.png')), shortHelp=_('Stop')
+        )
         self.pause_tool = self.toolbar_scan.AddLabelTool(
-            wx.NewId(), _("Pause"),
-            wx.Bitmap(resources.get_path_for_image("pause.png")), shortHelp=_("Pause"))
+            wx.NewId(), _('Pause'), wx.Bitmap(resources.get_path_for_image('pause.png')), shortHelp=_('Pause')
+        )
         self.toolbar_scan.Realize()
         self.toolbar_scan.GetParent().Layout()
 
@@ -62,7 +61,7 @@ class ScanningWorkbench(Workbench):
         self.add_panel('point_cloud_roi', PointCloudROI)
         self.add_panel('point_cloud_color', PointCloudColor)
         self.add_panel('photogrammetry', Photogrammetry)
-        self.add_panel('mesh_correction',MeshCorrection)
+        self.add_panel('mesh_correction', MeshCorrection)
 
     def add_pages(self):
         self.add_page('view_page', ViewPage(self, self.get_image))
@@ -70,8 +69,7 @@ class ScanningWorkbench(Workbench):
         self.scene_panel = self.pages_collection['view_page'].scene_panel
         self.scene_view = self.pages_collection['view_page'].scene_view
         self.gauge = self.pages_collection['view_page'].gauge
-        self.panels_collection.expandable_panels[
-            profile.settings['current_panel_scanning']].on_title_clicked(None)
+        self.panels_collection.expandable_panels[profile.settings['current_panel_scanning']].on_title_clicked(None)
 
     def on_open(self):
         if self.video_view.IsShown():
@@ -115,7 +113,6 @@ class ScanningWorkbench(Workbench):
         ciclop_scan.read_profile()
         point_cloud_roi.read_profile()
 
-
     def get_image(self):
         if self.scanning:
             image_capture.stream = False
@@ -133,8 +130,7 @@ class ScanningWorkbench(Workbench):
 
     def point_cloud_callback(self, range, progress, point_cloud, point_meta):
         point_cloud = point_cloud_roi.mask_point_cloud(*point_cloud)
-        wx.CallAfter(self._point_cloud_callback,
-                     range, progress, point_cloud, point_meta)
+        wx.CallAfter(self._point_cloud_callback, range, progress, point_cloud, point_meta)
 
     def _point_cloud_callback(self, range, progress, point_cloud, meta):
         if range > 0:
@@ -142,7 +138,7 @@ class ScanningWorkbench(Workbench):
             self.gauge.SetValue(progress)
         if point_cloud is not None:
             (points, texture) = point_cloud
-            self.scene_view.append_point_cloud(points, texture, meta = meta)
+            self.scene_view.append_point_cloud(points, texture, meta=meta)
 
     def on_play_tool_clicked(self, event):
         if ciclop_scan._inactive:
@@ -151,47 +147,70 @@ class ScanningWorkbench(Workbench):
             ciclop_scan.resume()
         else:
             if not calibration_data.check_calibration():
-                dlg = wx.MessageDialog(self,
-                                       _("Calibration parameters are not correct.\n"
-                                         "Please perform calibration process:\n"
-                                         "  1. Scanner autocheck\n"
-                                         "  2. Laser triangulation\n"
-                                         "  3. Platform extrinsics"),
-                                       _("Wrong calibration parameters"), wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(
+                    self,
+                    _(
+                        'Calibration parameters are not correct.\n'
+                        'Please perform calibration process:\n'
+                        '  1. Scanner autocheck\n'
+                        '  2. Laser triangulation\n'
+                        '  3. Platform extrinsics'
+                    ),
+                    _('Wrong calibration parameters'),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
 
             if profile.settings['laser_triangulation_hash'] != calibration_data.md5_hash():
-                dlg = wx.MessageDialog(self,
-                                       _("Laser triangulation calibration has been performed \n"
-                                         "with different camera intrinsics values.\n"
-                                         "Please perform Laser triangulation calibration again:\n"
-                                         "  1. Scanner autocheck\n"
-                                         "  2. Laser triangulation"),
-                                       _("Wrong calibration parameters"), wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(
+                    self,
+                    _(
+                        'Laser triangulation calibration has been performed \n'
+                        'with different camera intrinsics values.\n'
+                        'Please perform Laser triangulation calibration again:\n'
+                        '  1. Scanner autocheck\n'
+                        '  2. Laser triangulation'
+                    ),
+                    _('Wrong calibration parameters'),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
 
             if profile.settings['platform_extrinsics_hash'] != calibration_data.md5_hash():
-                dlg = wx.MessageDialog(self,
-                                       _("Platform extrinsics calibration has been performed \n"
-                                         "with different camera intrinsics values.\n"
-                                         "Please perform Platform extrinsics calibration again:\n"
-                                         "  1. Scanner autocheck\n"
-                                         "  2. Platform extrinsics"),
-                                       _("Wrong calibration parameters"), wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(
+                    self,
+                    _(
+                        'Platform extrinsics calibration has been performed \n'
+                        'with different camera intrinsics values.\n'
+                        'Please perform Platform extrinsics calibration again:\n'
+                        '  1. Scanner autocheck\n'
+                        '  2. Platform extrinsics'
+                    ),
+                    _('Wrong calibration parameters'),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
 
-            if profile.settings['texture_mode'] == 'Laser BG' and profile.settings['remove_background_scanning'] == False:
-                dlg = wx.MessageDialog(self,
-                                       _("'Laser BG' texture mode selected but laser background removal disabled. Background will not be captured. \n"
-                                         "You can enable laser background option at Adjustment->Scan capture->Lasers\n"
-                                         "Scan with flat color background?\n"),
-                                       _("Laser BG impossible"), wx.YES_NO | wx.ICON_QUESTION)
+            if (
+                profile.settings['texture_mode'] == 'Laser BG'
+                and profile.settings['remove_background_scanning'] == False
+            ):
+                dlg = wx.MessageDialog(
+                    self,
+                    _(
+                        "'Laser BG' texture mode selected but laser background removal disabled. Background will not be captured. \n"
+                        'You can enable laser background option at Adjustment->Scan capture->Lasers\n'
+                        'Scan with flat color background?\n'
+                    ),
+                    _('Laser BG impossible'),
+                    wx.YES_NO | wx.ICON_QUESTION,
+                )
                 result = dlg.ShowModal() == wx.ID_YES
                 dlg.Destroy()
                 if not result:
@@ -199,15 +218,16 @@ class ScanningWorkbench(Workbench):
 
             result = True
             if self.scene_view._object is not None:
-                dlg = wx.MessageDialog(self,
-                                       _("Your current model will be deleted.\n"
-                                         "Are you sure you want to delete it?"),
-                                       _("Clear point cloud"), wx.YES_NO | wx.ICON_QUESTION)
+                dlg = wx.MessageDialog(
+                    self,
+                    _('Your current model will be deleted.\nAre you sure you want to delete it?'),
+                    _('Clear point cloud'),
+                    wx.YES_NO | wx.ICON_QUESTION,
+                )
                 result = dlg.ShowModal() == wx.ID_YES
                 dlg.Destroy()
             if result:
-                ciclop_scan.set_callbacks(self.before_scan,
-                                          None, lambda r: wx.CallAfter(self.after_scan, r))
+                ciclop_scan.set_callbacks(self.before_scan, None, lambda r: wx.CallAfter(self.after_scan, r))
                 ciclop_scan.start()
 
     def before_scan(self):
@@ -225,12 +245,22 @@ class ScanningWorkbench(Workbench):
         self.scene_view.set_show_delete_menu(False)
         obj = self.scene_view.create_default_object()
         obj._mesh.metadata = {}
-        meta_names = ['motor_step_scanning', 'texture_mode', 'use_laser', 'camera_matrix', 'distortion_vector',\
-                'distance_left','normal_left','distance_right','normal_right',\
-                'rotation_matrix', 'translation_vector']
+        meta_names = [
+            'motor_step_scanning',
+            'texture_mode',
+            'use_laser',
+            'camera_matrix',
+            'distortion_vector',
+            'distance_left',
+            'normal_left',
+            'distance_right',
+            'normal_right',
+            'rotation_matrix',
+            'translation_vector',
+        ]
         for n in meta_names:
             obj._mesh.metadata[n] = profile.settings[n]
-        print("Metadata created: {0}".format(obj._mesh.metadata))
+        print(f'Metadata created: {obj._mesh.metadata}')
         self.gauge.SetValue(0)
         self.gauge.Show()
         self.scene_panel.Layout()
@@ -240,10 +270,12 @@ class ScanningWorkbench(Workbench):
         ret, result = response
         if ret:
             self.gauge.SetValue(self.gauge.GetRange())
-            dlg = wx.MessageDialog(self,
-                                   _("Scanning has finished. If you want to save your "
-                                     "point cloud go to \"File > Save model\""),
-                                   _("Scanning finished!"), wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(
+                self,
+                _('Scanning has finished. If you want to save your point cloud go to "File > Save model"'),
+                _('Scanning finished!'),
+                wx.OK | wx.ICON_INFORMATION,
+            )
             dlg.ShowModal()
             dlg.Destroy()
             self.scanning = False
@@ -260,19 +292,23 @@ class ScanningWorkbench(Workbench):
                 driver.disconnect()
                 dlg = wx.MessageDialog(
                     self,
-                    "Low exposure values can cause a timing issue at the USB stack level on "
-                    "v4l2_ioctl function in VIDIOC_S_CTRL mode. This is a Logitech issue on Linux",
-                    str(result), wx.OK | wx.ICON_ERROR)
+                    'Low exposure values can cause a timing issue at the USB stack level on '
+                    'v4l2_ioctl function in VIDIOC_S_CTRL mode. This is a Logitech issue on Linux',
+                    str(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
 
     def on_stop_tool_clicked(self, event):
         paused = ciclop_scan._inactive
         ciclop_scan.pause()
-        dlg = wx.MessageDialog(self,
-                               _("Your current scanning will be stopped.\n"
-                                 "Are you sure you want to stop?"),
-                               _("Stop scanning"), wx.YES_NO | wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(
+            self,
+            _('Your current scanning will be stopped.\nAre you sure you want to stop?'),
+            _('Stop scanning'),
+            wx.YES_NO | wx.ICON_QUESTION,
+        )
         result = dlg.ShowModal() == wx.ID_YES
         dlg.Destroy()
 

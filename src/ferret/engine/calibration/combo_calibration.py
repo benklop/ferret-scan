@@ -1,43 +1,38 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
-from six.moves import range
-from six.moves import zip
+from six.moves import range, zip
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+import logging
 import math
+
 import numpy as np
 
 from ferret import Singleton
+from ferret.engine.calibration import laser_triangulation, platform_extrinsics
 from ferret.engine.calibration.calibration import CalibrationCancel
 from ferret.engine.calibration.moving_calibration import MovingCalibration
-from ferret.engine.calibration import laser_triangulation, platform_extrinsics
-
 from ferret.util import profile
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class ComboCalibrationError(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "ComboCalibrationError")
+        Exception.__init__(self, 'ComboCalibrationError')
 
 
 @Singleton
 class ComboCalibration(MovingCalibration):
-
     """Combine Laser Triangulation and Platform Extrinsics calibration in one"""
 
     def __init__(self):
         self.image = None
         self.has_image = False
-        self.laser_calibration_angles = np.float32( [ (-90,90), (-90,90) ])
+        self.laser_calibration_angles = np.float32([(-90, 90), (-90, 90)])
         MovingCalibration.__init__(self)
 
     def _initialize(self):
@@ -52,7 +47,7 @@ class ComboCalibration(MovingCalibration):
     def read_profile(self):
         MovingCalibration.read_profile(self)
         self.laser_calibration_angles = profile.settings['laser_calibration_angles']
-        
+
     def _capture(self, angle):
         image = self.image_capture.capture_pattern()
         pose = self.image_detection.detect_pose(image)
@@ -61,33 +56,33 @@ class ComboCalibration(MovingCalibration):
             distance, normal, corners = plane
 
             # Angle between the pattern and the camera
-            # measure angle within camera XZ plane. 
+            # measure angle within camera XZ plane.
             # Negative angle for pattern face turned to the left from camera
-            alpha = -np.rad2deg(math.acos(normal[2]/np.linalg.norm( (normal[0], normal[2]) ))) * math.copysign(1, normal[0])
-            lasers = np.where(np.logical_and(
-                self.laser_calibration_angles[:,0]<alpha,
-                self.laser_calibration_angles[:,1]>alpha ))[0]
+            alpha = -np.rad2deg(math.acos(normal[2] / np.linalg.norm((normal[0], normal[2])))) * math.copysign(
+                1, normal[0]
+            )
+            lasers = np.where(
+                np.logical_and(self.laser_calibration_angles[:, 0] < alpha, self.laser_calibration_angles[:, 1] > alpha)
+            )[0]
             if lasers.size > 0:
-#                self.image_capture.flush_laser()
-#                self.image_capture.flush_laser()
+                #                self.image_capture.flush_laser()
+                #                self.image_capture.flush_laser()
                 for i in lasers:
                     image = self.image_capture.capture_laser(i)[0]
                     image = self.image_detection.pattern_mask(image, corners)
                     self.image = image
                     points_2d, image = self.laser_segmentation.compute_2d_points(image)
-                    point_3d = self.point_cloud_generation.compute_camera_point_cloud(
-                        points_2d, distance, normal)
+                    point_3d = self.point_cloud_generation.compute_camera_point_cloud(points_2d, distance, normal)
                     if self._point_cloud[i] is None:
                         self._point_cloud[i] = point_3d.T
                     else:
-                        self._point_cloud[i] = np.concatenate(
-                            (self._point_cloud[i], point_3d.T))
+                        self._point_cloud[i] = np.concatenate((self._point_cloud[i], point_3d.T))
             else:
                 self.image = image
-                print(("Skip laser calibration at "+str(alpha)))
+                print('Skip laser calibration at ' + str(alpha))
 
             # Platform extrinsics
-            pp = (self.pattern.square_width * (self.pattern.rows-1)) * pose[0].T[1] + pose[1].T[0]
+            pp = (self.pattern.square_width * (self.pattern.rows - 1)) * pose[0].T[1] + pose[1].T[0]
             self.x += [pp[0]]
             self.y += [pp[1]]
             self.z += [pp[2]]
@@ -130,25 +125,24 @@ class ComboCalibration(MovingCalibration):
             # Get real origin
             self.t = center - self.pattern.origin_distance * np.array(normal)
 
-            logger.info("Platform calibration ")
-            logger.info(" Translation: " + str(self.t))
-            logger.info(" Rotation: " + str(self.R).replace('\n', ''))
-            logger.info(" Normal: " + str(normal))
+            logger.info('Platform calibration ')
+            logger.info(' Translation: ' + str(self.t))
+            logger.info(' Rotation: ' + str(self.R).replace('\n', ''))
+            logger.info(' Normal: ' + str(normal))
 
         # Return response
         result = True
         if self._is_calibrating:
-            if self.t is not None and \
-               np.linalg.norm(self.t - platform_extrinsics.estimated_t) < 100:
-                response_platform_extrinsics = (
-                    self.R, self.t, center, point, normal, [self.x, self.y, self.z], circle)
+            if self.t is not None and np.linalg.norm(self.t - platform_extrinsics.estimated_t) < 100:
+                response_platform_extrinsics = (self.R, self.t, center, point, normal, [self.x, self.y, self.z], circle)
             else:
                 result = False
 
-            if self.std[0] < 1.0 and self.std[1] < 1.0 and \
-               self.normal[0] is not None and self.normal[1] is not None:
-                response_laser_triangulation = ((self.distance[0], self.normal[0], self.std[0]),
-                                                (self.distance[1], self.normal[1], self.std[1]))
+            if self.std[0] < 1.0 and self.std[1] < 1.0 and self.normal[0] is not None and self.normal[1] is not None:
+                response_laser_triangulation = (
+                    (self.distance[0], self.normal[0], self.std[0]),
+                    (self.distance[1], self.normal[1], self.std[1]),
+                )
             else:
                 result = False
 

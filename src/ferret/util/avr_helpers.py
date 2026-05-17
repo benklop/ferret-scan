@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import os
-from . import resources
-from subprocess import Popen, PIPE, STDOUT
-
 import logging
+import os
+from subprocess import PIPE, STDOUT, Popen
+
+from . import resources
+
 logger = logging.getLogger(__name__)
 
 from ferret.util import system as sys
@@ -21,29 +20,27 @@ class AvrError(Exception):
     pass
 
 
-class AvrDude(object):
-
-    def __init__(self, protocol="arduino", microcontroller="atmega328p",
-                 baud_rate="19200", port=None):
+class AvrDude:
+    def __init__(self, protocol='arduino', microcontroller='atmega328p', baud_rate='19200', port=None):
         self.protocol = protocol
         self.microcontroller = microcontroller
         self.baud_rate = baud_rate
 
         if sys.is_windows():
-            self.avrdude = os.path.abspath(resources.get_path_for_tools("avrdude.exe"))
+            self.avrdude = os.path.abspath(resources.get_path_for_tools('avrdude.exe'))
         elif sys.is_darwin():
-            self.avrdude = os.path.abspath(resources.get_path_for_tools("avrdude"))
+            self.avrdude = os.path.abspath(resources.get_path_for_tools('avrdude'))
         else:
             try:
-                Popen(["avrdude"], stdout=PIPE, stderr=STDOUT)
-                self.avrdude = "avrdude"
+                Popen(['avrdude'], stdout=PIPE, stderr=STDOUT)
+                self.avrdude = 'avrdude'
             except:
                 self.avrdude = None
 
         if self.avrdude is None:
             raise AvrError('avrdude not installed')
 
-        self.avrconf = os.path.abspath(resources.get_path_for_tools("avrdude.conf"))
+        self.avrconf = os.path.abspath(resources.get_path_for_tools('avrdude.conf'))
         self.port = port
 
     def _run_command(self, flags=[], callback=None):
@@ -58,9 +55,7 @@ class AvrDude(object):
             if not char:
                 break
             out += char
-            if 'not in sync' in out or \
-               'Invalid' in out or \
-               'is not responding' in out:
+            if 'not in sync' in out or 'Invalid' in out or 'is not responding' in out:
                 break
             if char == '#':
                 if callback is not None:
@@ -70,12 +65,24 @@ class AvrDude(object):
 
     def flash(self, hex_path=None, clear_eeprom=False, callback=None):
         if hex_path is None:
-            hex_path = resources.get_path_for_firmware("ferret-fw.hex")
+            hex_path = resources.get_path_for_firmware('ferret-fw.hex')
         if clear_eeprom:
-            hex_path = resources.get_path_for_firmware("eeprom_clear.hex")
-        flags = ['-C', '%(avrconf)s', '-c', self.protocol, '-p', self.microcontroller,
-                 '-P', '%s' % self.port, '-b', str(self.baud_rate), '-D', '-U',
-                 'flash:w:%s' % os.path.basename(hex_path)]
+            hex_path = resources.get_path_for_firmware('eeprom_clear.hex')
+        flags = [
+            '-C',
+            '%(avrconf)s',
+            '-c',
+            self.protocol,
+            '-p',
+            self.microcontroller,
+            '-P',
+            '%s' % self.port,
+            '-b',
+            str(self.baud_rate),
+            '-D',
+            '-U',
+            'flash:w:%s' % os.path.basename(hex_path),
+        ]
         try:
             cwd = os.getcwd()
             os.chdir(os.path.dirname(os.path.abspath(hex_path)))

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
 from ferret.util import compat  # noqa: F401
@@ -18,14 +17,14 @@ def Singleton(class_):
 
         def __new__(class_, *args, **kwargs):
             if class_w._instance is None:
-                class_w._instance = super(class_w, class_).__new__(class_, *args, **kwargs)
+                class_w._instance = super().__new__(class_, *args, **kwargs)
                 class_w._instance.__initialized = False
             return class_w._instance
 
         def __init__(class_, *args, **kwargs):
             if class_w._instance.__initialized:
                 return
-            super(class_w, class_).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             class_w._instance.__initialized = True
 
     class_w.__name__ = class_.__name__

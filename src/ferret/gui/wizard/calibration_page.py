@@ -1,42 +1,41 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from ferret.util import profile, resources
-
 from ferret.engine.calibration.combo_calibration import ComboCalibrationError
-from ferret.gui.engine import driver, calibration_data, image_capture, \
-    image_detection, combo_calibration
+from ferret.gui.engine import calibration_data, combo_calibration, driver, image_capture, image_detection
 from ferret.gui.util.image_view import ImageView
 from ferret.gui.util.pattern_distance_window import PatternDistanceWindow
 from ferret.gui.wizard.wizard_page import WizardPage
-
+from ferret.util import profile, resources
 from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
 
 class CalibrationPage(WizardPage):
-
     def __init__(self, parent, button_prev_callback=None, button_next_callback=None):
-        WizardPage.__init__(self, parent,
-                            title=_("Calibration"),
-                            button_prev_callback=button_prev_callback,
-                            button_next_callback=button_next_callback)
+        WizardPage.__init__(
+            self,
+            parent,
+            title=_('Calibration'),
+            button_prev_callback=button_prev_callback,
+            button_next_callback=button_next_callback,
+        )
 
         self.parent = parent
 
-        self.pattern_label = wx.StaticText(self.panel, label=_(
-            "Put the pattern on the platform as shown in the picture and press \"Calibrate\""))
+        self.pattern_label = wx.StaticText(
+            self.panel, label=_('Put the pattern on the platform as shown in the picture and press "Calibrate"')
+        )
         self.pattern_label.Wrap(400)
         self.image_view = ImageView(self.panel, quality=wx.IMAGE_QUALITY_HIGH)
-        self.image_view.set_image(wx.Image(resources.get_path_for_image("pattern-position.png")))
-        self.calibrate_button = wx.Button(self.panel, label=_("Calibrate"))
-        self.cancel_button = wx.Button(self.panel, label=_("Cancel"))
+        self.image_view.set_image(wx.Image(resources.get_path_for_image('pattern-position.png')))
+        self.calibrate_button = wx.Button(self.panel, label=_('Calibrate'))
+        self.cancel_button = wx.Button(self.panel, label=_('Cancel'))
         self.gauge = wx.Gauge(self.panel, range=100, size=(-1, 30))
         self.result_label = wx.StaticText(self.panel, size=(-1, 30))
 
@@ -107,15 +106,21 @@ class CalibrationPage(WizardPage):
                 combo_calibration.set_callbacks(
                     lambda: wx.CallAfter(self.before_calibration),
                     lambda p: wx.CallAfter(self.progress_calibration, p),
-                    lambda r: wx.CallAfter(self.after_calibration, r))
+                    lambda r: wx.CallAfter(self.after_calibration, r),
+                )
                 combo_calibration.start()
             else:
                 dlg = wx.MessageDialog(
-                    self, _("Please put calibration pattern on platform and make sure it is detected correctly.\n"
-                            "You can set pattern parameters in \"Pattern settings\" panel.\n"
-                            "Also you can set up the calibration's capture camera settings "
-                            "in the \"Adjustment workbench\"."),
-                    _("Pattern not detected"), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Please put calibration pattern on platform and make sure it is detected correctly.\n'
+                        'You can set pattern parameters in "Pattern settings" panel.\n'
+                        "Also you can set up the calibration's capture camera settings "
+                        'in the "Adjustment workbench".'
+                    ),
+                    _('Pattern not detected'),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
 
@@ -124,7 +129,7 @@ class CalibrationPage(WizardPage):
         camera_unplug_callback = driver.camera.unplug_callback
         driver.board.set_unplug_callback(None)
         driver.camera.set_unplug_callback(None)
-        self.result_label.SetLabel(_("Calibration canceled. To try again press \"Calibrate\""))
+        self.result_label.SetLabel(_('Calibration canceled. To try again press "Calibrate"'))
         combo_calibration.cancel()
         self.skip_button.Enable()
         self.on_finish_calibration()
@@ -169,15 +174,19 @@ class CalibrationPage(WizardPage):
             combo_calibration.accept()
         else:
             if isinstance(result, ComboCalibrationError):
-                self.result_label.SetLabel(
-                    _("Check the pattern and the lasers and try again"))
+                self.result_label.SetLabel(_('Check the pattern and the lasers and try again'))
                 dlg = wx.MessageDialog(
-                    self, _("Scanner calibration has failed. "
-                            "Please check the pattern and the lasers and try again. "
-                            "Also you can set up the calibration's settings "
-                            "in the \"Adjustment workbench\" until the pattern "
-                            "and the lasers are detected correctly"),
-                    _("Calibration failed"), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Scanner calibration has failed. '
+                        'Please check the pattern and the lasers and try again. '
+                        "Also you can set up the calibration's settings "
+                        'in the "Adjustment workbench" until the pattern '
+                        'and the lasers are detected correctly'
+                    ),
+                    _('Calibration failed'),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
             self.skip_button.Enable()
@@ -188,10 +197,8 @@ class CalibrationPage(WizardPage):
         if ret:
             self.skip_button.Disable()
             self.next_button.Enable()
-            self.result_label.SetLabel(_("Success. Please press \"Next\" to continue"))
-            dlg = wx.MessageDialog(
-                self, _("Scanner calibrated correctly"),
-                _("Success"), wx.OK | wx.ICON_INFORMATION)
+            self.result_label.SetLabel(_('Success. Please press "Next" to continue'))
+            dlg = wx.MessageDialog(self, _('Scanner calibrated correctly'), _('Success'), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         else:

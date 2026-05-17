@@ -1,4 +1,6 @@
-#Horus development in Mac OS X
+# Horus development in Mac OS X
+
+> **Superseded:** For ferret-scan development, use the [README](../../README.md). This document is kept for historical Horus packaging notes only.
 
 [return to Home](../../README.md)
 

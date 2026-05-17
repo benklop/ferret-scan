@@ -1,42 +1,37 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 import six
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
 import numpy as np
-
-from ferret.util import profile
-
-from ferret.gui.engine import calibration_data, laser_triangulation, image_capture, image_detection
-from ferret.engine.calibration.laser_triangulation import LaserTriangulationError
-
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.figure import Figure
+import wx._core
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from matplotlib.figure import Figure
 
+from ferret.engine.calibration.laser_triangulation import LaserTriangulationError
+from ferret.gui.engine import calibration_data, image_capture, image_detection, laser_triangulation
 from ferret.gui.workbench.calibration.pages.page import Page
 from ferret.gui.workbench.calibration.pages.video_page import VideoPage
-
 from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
-class LaserTriangulationPages(wx.Panel):
 
+class LaserTriangulationPages(wx.Panel):
     def __init__(self, parent, start_callback=None, exit_callback=None):
         wx.Panel.__init__(self, parent)  # , style=wx.RAISED_BORDER)
 
         self.start_callback = start_callback
         self.exit_callback = exit_callback
 
-        self.video_page = VideoPage(self, title=_('Laser triangulation'),
-                                    start_callback=self.on_start, cancel_callback=self.on_exit)
-        self.video_page.add_info(_("Estimate lasers positions."), "")
-        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                                 "picture and press \"Start\""), "pattern-position.png")
+        self.video_page = VideoPage(
+            self, title=_('Laser triangulation'), start_callback=self.on_start, cancel_callback=self.on_exit
+        )
+        self.video_page.add_info(_('Estimate lasers positions.'), '')
+        self.video_page.add_info(
+            _('Put the pattern on the platform as shown in the picture and press "Start"'), 'pattern-position.png'
+        )
 
         self.result_page = ResultPage(self, exit_callback=self.on_exit)
 
@@ -94,16 +89,22 @@ class LaserTriangulationPages(wx.Panel):
         pose = image_detection.detect_pose(image)
         if pose is not None:
             laser_triangulation.angle_offset = estimate_platform_angle_from_pattern(pose)
-            laser_triangulation.set_callbacks(lambda: wx.CallAfter(self.before_calibration),
-                                              lambda p: wx.CallAfter(self.progress_calibration, p),
-                                              lambda r: wx.CallAfter(self.after_calibration, r))
+            laser_triangulation.set_callbacks(
+                lambda: wx.CallAfter(self.before_calibration),
+                lambda p: wx.CallAfter(self.progress_calibration, p),
+                lambda r: wx.CallAfter(self.after_calibration, r),
+            )
 
-            if len(laser_triangulation._point_cloud)>0:
+            if len(laser_triangulation._point_cloud) > 0:
                 dlg = wx.MessageDialog(
                     self,
-                    _("Previous calibration results found. Continue previous calibration?\n"
-                      " Yes - append to previous calibration.\n No - reset and start new calibration.\n"),
-                    "Continue previous calibration?", wx.YES_NO | wx.ICON_QUESTION)
+                    _(
+                        'Previous calibration results found. Continue previous calibration?\n'
+                        ' Yes - append to previous calibration.\n No - reset and start new calibration.\n'
+                    ),
+                    'Continue previous calibration?',
+                    wx.YES_NO | wx.ICON_QUESTION,
+                )
                 result = dlg.ShowModal() == wx.ID_YES
                 dlg.Destroy()
                 laser_triangulation.continue_calibration = result
@@ -111,11 +112,16 @@ class LaserTriangulationPages(wx.Panel):
             laser_triangulation.start()
         else:
             dlg = wx.MessageDialog(
-                self, _("Please put calibration pattern on platform and make sure it is detected correctly.\n"
-                        "You can set pattern parameters in \"Pattern settings\" panel.\n"
-                        "Also you can set up the calibration's capture camera settings "
-                        "in the \"Adjustment workbench\"."),
-                _("Pattern not detected"), wx.OK | wx.ICON_ERROR)
+                self,
+                _(
+                    'Please put calibration pattern on platform and make sure it is detected correctly.\n'
+                    'You can set pattern parameters in "Pattern settings" panel.\n'
+                    "Also you can set up the calibration's capture camera settings "
+                    'in the "Adjustment workbench".'
+                ),
+                _('Pattern not detected'),
+                wx.OK | wx.ICON_ERROR,
+            )
             dlg.ShowModal()
             dlg.Destroy()
 
@@ -127,15 +133,17 @@ class LaserTriangulationPages(wx.Panel):
 
 
 class ResultPage(Page):
-
     def __init__(self, parent, exit_callback=None):
-        Page.__init__(self, parent,
-                      title=_('Laser triangulation result'),
-                      desc='.',
-                      left=_('Reject'),
-                      right=_('Accept'),
-                      button_left_callback=self.on_reject,
-                      button_right_callback=self.on_accept)
+        Page.__init__(
+            self,
+            parent,
+            title=_('Laser triangulation result'),
+            desc='.',
+            left=_('Reject'),
+            right=_('Accept'),
+            button_left_callback=self.on_reject,
+            button_right_callback=self.on_accept,
+        )
 
         self.result = None
         self.exit_callback = exit_callback
@@ -165,10 +173,10 @@ class ResultPage(Page):
         if ret:
             self.result = result[0]
 
-            text = ""
+            text = ''
             np.set_printoptions(formatter={'float': '{:g}'.format})
-            for i,p in six.iteritems(result[0]):
-                text += ' L{0}: {1} {2} '.format(i, round(p[0], 3), np.round(p[1], 3))
+            for i, p in six.iteritems(result[0]):
+                text += f' L{i}: {round(p[0], 3)} {np.round(p[1], 3)} '
             np.set_printoptions()
 
             self.desc_text.SetLabel(text)
@@ -176,27 +184,29 @@ class ResultPage(Page):
             self.plot_panel.add(result)
             self.plot_panel.Show()
             self.Layout()
-            dlg = wx.MessageDialog(
-                self, _("Lasers calibrated correctly"),
-                _("Success"), wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _('Lasers calibrated correctly'), _('Success'), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.Layout()
         else:
             if isinstance(result, LaserTriangulationError):
                 dlg = wx.MessageDialog(
-                    self, _("Laser triangulation calibration has failed. "
-                            "Please check the pattern and the lasers and try again. "
-                            "Also you can set up the calibration's settings "
-                            "in the \"Adjustment workbench\" until the pattern "
-                            "and the lasers are detected correctly"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Laser triangulation calibration has failed. '
+                        'Please check the pattern and the lasers and try again. '
+                        "Also you can set up the calibration's settings "
+                        'in the "Adjustment workbench" until the pattern '
+                        'and the lasers are detected correctly'
+                    ),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
 
 
 class LaserTriangulation3DPlot(wx.Panel):
-
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -206,8 +216,7 @@ class LaserTriangulation3DPlot(wx.Panel):
         fig = Figure(facecolor=(0.7490196, 0.7490196, 0.7490196, 1), tight_layout=True)
         self.canvas = FigureCanvasWxAgg(self, -1, fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
-        self.ax = fig.add_subplot(111, projection='3d',
-                                  facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = fig.add_subplot(111, projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.Bind(wx.EVT_SIZE, self.onSize)
         self.Layout()
@@ -219,22 +228,20 @@ class LaserTriangulation3DPlot(wx.Panel):
 
     def add(self, args):
         planes, points = args
-        colors = [(255,0,0), (0,255,255), (255,255,0), (0,0,255)]
-        colors = (np.array(colors)/255).astype(np.float32).tolist()
+        colors = [(255, 0, 0), (0, 255, 255), (255, 255, 0), (0, 0, 255)]
+        colors = (np.array(colors) / 255).astype(np.float32).tolist()
 
-        for i,pts in six.iteritems(points):
+        for i, pts in six.iteritems(points):
             p = pts.vertexes[np.random.randint(pts.vertex_count, size=100), :]
-            self.ax.scatter(p[:,0], p[:,2], p[:,1], c=[colors[i]], marker='.')
+            self.ax.scatter(p[:, 0], p[:, 2], p[:, 1], c=[colors[i]], marker='.')
 
-        for i,plane in six.iteritems(planes):
+        for i, plane in six.iteritems(planes):
             r = np.cross(np.array([0, 0, 1]), plane[1])
             s = np.cross(r, plane[1])
             R = np.array([r, s, plane[1]])
             p = plane[0] * plane[1]
             self.addPlane(R, p)
             self.ax.text(p[0], p[2], p[1], str(round(plane[2], 5)), fontsize=15)
-
-
 
         self.ax.plot([0, 50], [0, 0], [0, 0], linewidth=2.0, color='red')
         self.ax.plot([0, 0], [0, 0], [0, 50], linewidth=2.0, color='green')
@@ -259,8 +266,9 @@ class LaserTriangulation3DPlot(wx.Panel):
         w = 200
         h = 300
 
-        p = np.array([[-w / 2, -h / 2, 0], [-w / 2, h / 2, 0],
-                      [w / 2, h / 2, 0], [w / 2, -h / 2, 0], [-w / 2, -h / 2, 0]])
+        p = np.array(
+            [[-w / 2, -h / 2, 0], [-w / 2, h / 2, 0], [w / 2, h / 2, 0], [w / 2, -h / 2, 0], [-w / 2, -h / 2, 0]]
+        )
         n = np.array([[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]])
 
         self.ax.plot([0, t[0]], [0, t[2]], [0, t[1]], linewidth=2.0, color='yellow')

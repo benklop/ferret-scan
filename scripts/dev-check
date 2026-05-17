@@ -4,5 +4,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/common.sh
 source "${ROOT}/scripts/lib/common.sh"
 "${ROOT}/scripts/check_licenses.sh"
+
+if [[ ! -x "${ROOT}/.venv/bin/python" ]]; then
+  echo "FAIL: .venv missing — run ./scripts/dev-setup" >&2
+  exit 1
+fi
+
 ferret_export_libs
-exec "$(ferret_python)" "${ROOT}/scripts/check_ferret.py" "$@"
+exec "${ROOT}/.venv/bin/python" "${ROOT}/scripts/check_ferret.py" "$@"

@@ -1,4 +1,6 @@
-#Horus development in Ubuntu
+# Horus development in Ubuntu
+
+> **Superseded:** For ferret-scan development, use the [README](../../README.md) (uv, `./scripts/dev-setup`, `uv run pytest`). This document is kept for historical Horus packaging notes only.
 
 [return to Home](../../README.md)
 
@@ -108,16 +110,10 @@ In the project directory, execute the command:
 
 ### Unit testing
 
-To run the tests install nose:
+Use pytest via uv (see [README](../../README.md)):
 
 ```bash
-sudo -H pip install -U nose
-```
-
-And execute:
-
-```bash
-nosetests test
+uv run pytest
 ```
 
 ## 4. Build packages

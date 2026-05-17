@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 """Python 2/3 compatibility shims for Horus."""
-
-from __future__ import absolute_import
 
 import sys
 
@@ -14,6 +11,7 @@ if sys.version_info[0] >= 3:
     builtins.xrange = range
 
     import collections
+
     collections.MutableMapping = collections.abc.MutableMapping
 
     types.BooleanType = bool

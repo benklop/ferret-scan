@@ -1,17 +1,19 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import json
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 import webbrowser
 
-from ferret import __version__, __datetime__, __commit__
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+
+from ferret import __commit__, __datetime__, __version__
 from ferret.util import system as sys
 
 
@@ -60,17 +62,20 @@ def download_lastest_data():
 
 
 def check_for_updates():
-    return latest_version is not '' and \
-        latest_version.number >= current_version.number and \
-        latest_version.prenumber >= current_version.prenumber and \
-        current_datetime is not '' and \
-        latest_datetime > current_datetime
+    return (
+        latest_version != ''
+        and latest_version.number >= current_version.number
+        and latest_version.prenumber >= current_version.prenumber
+        and current_datetime != ''
+        and latest_datetime > current_datetime
+    )
 
 
 def _get_executable_url(version):
     url = None
     if sys.is_linux():
         import platform
+
         url = 'https://launchpad.net/~bqlabs/+archive/ubuntu/horus-dev/+files/'
         url += 'horus_'
         url += str(version) + '-'

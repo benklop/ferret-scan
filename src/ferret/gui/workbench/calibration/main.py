@@ -1,109 +1,118 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+from ferret.gui.engine import (
+    calibration_data,
+    combo_calibration,
+    driver,
+    image_capture,
+    image_detection,
+    laser_segmentation,
+    laser_triangulation,
+    pattern,
+    platform_extrinsics,
+)  # , cloud_correction
+from ferret.gui.util.video_view import VideoView
+
+#    CloudCorrectionPanel
+from ferret.gui.workbench.calibration.pages.camera_intrinsics import CameraIntrinsicsPages
+from ferret.gui.workbench.calibration.pages.laser_triangulation import LaserTriangulationPages
+from ferret.gui.workbench.calibration.pages.pattern_settings import PatternSettingsPages
+from ferret.gui.workbench.calibration.pages.platform_extrinsics import PlatformExtrinsicsPages
+from ferret.gui.workbench.calibration.pages.scanner_autocheck import ScannerAutocheckPages
+from ferret.gui.workbench.calibration.panels import (
+    CameraIntrinsics,
+    LaserTriangulationPanel,
+    PatternSettings,
+    PlatformExtrinsics,
+    RotatingPlatform,
+    ScannerAutocheck,
+    VideoSettings,
+)
+from ferret.gui.workbench.workbench import Workbench
 from ferret.util import profile
 
-from ferret.gui.engine import driver, pattern, calibration_data, image_capture, \
-    image_detection, laser_segmentation, laser_triangulation, platform_extrinsics, \
-    combo_calibration #, cloud_correction
-from ferret.gui.util.video_view import VideoView
-from ferret.gui.workbench.workbench import Workbench
-from ferret.gui.workbench.calibration.panels import PatternSettings, CameraIntrinsics, \
-    ScannerAutocheck, RotatingPlatform, LaserTriangulationPanel, PlatformExtrinsics, VideoSettings
-#    CloudCorrectionPanel
-
-from ferret.gui.workbench.calibration.pages.camera_intrinsics import CameraIntrinsicsPages
-from ferret.gui.workbench.calibration.pages.scanner_autocheck import ScannerAutocheckPages
-from ferret.gui.workbench.calibration.pages.laser_triangulation import LaserTriangulationPages
-from ferret.gui.workbench.calibration.pages.platform_extrinsics import PlatformExtrinsicsPages
-from ferret.gui.workbench.calibration.pages.pattern_settings import PatternSettingsPages
-#from ferret.gui.workbench.calibration.pages.cloud_correction import CloudCorrectionPages
+# from ferret.gui.workbench.calibration.pages.cloud_correction import CloudCorrectionPages
 
 
 class CalibrationWorkbench(Workbench):
-
     def __init__(self, parent):
         self.engine_mode = 'calibration'
         Workbench.__init__(self, parent, name=_('Calibration workbench'))
 
     def add_panels(self):
-        self.add_panel(
-            'pattern_settings', PatternSettings,
-            self.on_pattern_settings_selected)
-        self.add_panel(
-            'scanner_autocheck', ScannerAutocheck,
-            self.on_scanner_autocheck_selected)
-        self.add_panel(
-            'rotating_platform_settings', RotatingPlatform,
-            self.on_rotating_platform_settings_selected)
-        self.add_panel(
-            'video_settings', VideoSettings,
-            self.on_video_settings_selected)
-        self.add_panel(
-            'camera_intrinsics', CameraIntrinsics,
-            self.on_camera_intrinsics_selected)
-        self.add_panel(
-            'laser_triangulation', LaserTriangulationPanel,
-            self.on_laser_triangulation_selected)
-        self.add_panel(
-            'platform_extrinsics', PlatformExtrinsics,
-            self.on_platform_extrinsics_selected)
-#        self.add_panel(
-#            'cloud_correction', CloudCorrectionPanel,
-#            self.on_cloud_correction_selected)
+        self.add_panel('pattern_settings', PatternSettings, self.on_pattern_settings_selected)
+        self.add_panel('scanner_autocheck', ScannerAutocheck, self.on_scanner_autocheck_selected)
+        self.add_panel('rotating_platform_settings', RotatingPlatform, self.on_rotating_platform_settings_selected)
+        self.add_panel('video_settings', VideoSettings, self.on_video_settings_selected)
+        self.add_panel('camera_intrinsics', CameraIntrinsics, self.on_camera_intrinsics_selected)
+        self.add_panel('laser_triangulation', LaserTriangulationPanel, self.on_laser_triangulation_selected)
+        self.add_panel('platform_extrinsics', PlatformExtrinsics, self.on_platform_extrinsics_selected)
+
+    #        self.add_panel(
+    #            'cloud_correction', CloudCorrectionPanel,
+    #            self.on_cloud_correction_selected)
 
     def add_pages(self):
         self.add_page('video_view', VideoView(self, self.get_image))
-        self.add_page('camera_intrinsics_pages', CameraIntrinsicsPages(
-            self, start_callback=self.disable_panels, exit_callback=self.update_panels))
-        self.add_page('scanner_autocheck_pages', ScannerAutocheckPages(
-            self, start_callback=self.disable_panels, exit_callback=self.update_panels))
-        self.add_page('laser_triangulation_pages', LaserTriangulationPages(
-            self, start_callback=self.disable_panels, exit_callback=self.update_panels))
-        self.add_page('platform_extrinsics_pages', PlatformExtrinsicsPages(
-            self, start_callback=self.disable_panels, exit_callback=self.update_panels))
+        self.add_page(
+            'camera_intrinsics_pages',
+            CameraIntrinsicsPages(self, start_callback=self.disable_panels, exit_callback=self.update_panels),
+        )
+        self.add_page(
+            'scanner_autocheck_pages',
+            ScannerAutocheckPages(self, start_callback=self.disable_panels, exit_callback=self.update_panels),
+        )
+        self.add_page(
+            'laser_triangulation_pages',
+            LaserTriangulationPages(self, start_callback=self.disable_panels, exit_callback=self.update_panels),
+        )
+        self.add_page(
+            'platform_extrinsics_pages',
+            PlatformExtrinsicsPages(self, start_callback=self.disable_panels, exit_callback=self.update_panels),
+        )
         self.add_page('pattern_settings_pages', PatternSettingsPages(self))
-#        self.add_page('cloud_correction_pages', CloudCorrectionPages(
-#            self, start_callback=self.disable_panels, exit_callback=self.update_panels))
+        #        self.add_page('cloud_correction_pages', CloudCorrectionPages(
+        #            self, start_callback=self.disable_panels, exit_callback=self.update_panels))
 
         self.pages_collection['camera_intrinsics_pages'].Hide()
         self.pages_collection['scanner_autocheck_pages'].Hide()
         self.pages_collection['laser_triangulation_pages'].Hide()
         self.pages_collection['platform_extrinsics_pages'].Hide()
         self.pages_collection['pattern_settings_pages'].Hide()
-#        self.pages_collection['cloud_correction_pages'].Hide()
+        #        self.pages_collection['cloud_correction_pages'].Hide()
 
         self.pages_collection['camera_intrinsics_pages'].Disable()
         self.pages_collection['scanner_autocheck_pages'].Disable()
         self.pages_collection['laser_triangulation_pages'].Disable()
         self.pages_collection['platform_extrinsics_pages'].Disable()
         self.pages_collection['pattern_settings_pages'].Disable()
-#        self.pages_collection['cloud_correction_pages'].Disable()
+        #        self.pages_collection['cloud_correction_pages'].Disable()
 
         if not profile.settings['view_mode_advanced']:
             self.panels_collection.expandable_panels['video_settings'].Hide()
             self.panels_collection.expandable_panels['camera_intrinsics'].Hide()
 
-            if profile.settings['current_panel_calibration'] == 'video_settings' or \
-               profile.settings['current_panel_calibration'] == 'camera_intrinsics':
+            if (
+                profile.settings['current_panel_calibration'] == 'video_settings'
+                or profile.settings['current_panel_calibration'] == 'camera_intrinsics'
+            ):
                 self.on_pattern_settings_selected()
 
         if profile.settings['view_hide_help']:
-            #self.pages_collection['video_view'].info_panel.Hide()
-            #self.pages_collection['camera_intrinsics_pages'].info_panel.Hide()
+            # self.pages_collection['video_view'].info_panel.Hide()
+            # self.pages_collection['camera_intrinsics_pages'].info_panel.Hide()
             self.pages_collection['scanner_autocheck_pages'].video_page.info_panel.Hide()
             self.pages_collection['laser_triangulation_pages'].video_page.info_panel.Hide()
             self.pages_collection['platform_extrinsics_pages'].video_page.info_panel.Hide()
             self.pages_collection['pattern_settings_pages'].info_panel.Hide()
-#            self.pages_collection['cloud_correction_pages'].video_page.info_panel.Hide()
+        #            self.pages_collection['cloud_correction_pages'].video_page.info_panel.Hide()
 
-        self.panels_collection.expandable_panels[
-            profile.settings['current_panel_calibration']].on_title_clicked(None)
+        self.panels_collection.expandable_panels[profile.settings['current_panel_calibration']].on_title_clicked(None)
 
     def get_image(self):
         image = image_capture.capture_pattern()
@@ -116,7 +125,7 @@ class CalibrationWorkbench(Workbench):
             self.pages_collection['laser_triangulation_pages'].Enable()
             self.pages_collection['platform_extrinsics_pages'].Enable()
             self.pages_collection['pattern_settings_pages'].Enable()
-#            self.pages_collection['cloud_correction_pages'].Enable()
+        #            self.pages_collection['cloud_correction_pages'].Enable()
         else:
             for page in self.pages_collection:
                 self.pages_collection[page].stop()
@@ -125,10 +134,9 @@ class CalibrationWorkbench(Workbench):
             self.pages_collection['laser_triangulation_pages'].Disable()
             self.pages_collection['platform_extrinsics_pages'].Disable()
             self.pages_collection['pattern_settings_pages'].Disable()
-#            self.pages_collection['cloud_correction_pages'].Disable()
+        #            self.pages_collection['cloud_correction_pages'].Disable()
 
-        self.panels_collection.expandable_panels[
-            profile.settings['current_panel_calibration']].on_title_clicked(None)
+        self.panels_collection.expandable_panels[profile.settings['current_panel_calibration']].on_title_clicked(None)
 
     def on_close(self):
         try:
@@ -160,19 +168,19 @@ class CalibrationWorkbench(Workbench):
         laser_triangulation.read_profile()
         platform_extrinsics.read_profile()
         combo_calibration.read_profile()
-#        cloud_correction.read_profile()
+        #        cloud_correction.read_profile()
 
         image_capture.set_mode_pattern()
 
-    def switch_engine_mode(self, mode='calibration'): # 'scanning'
+    def switch_engine_mode(self, mode='calibration'):  # 'scanning'
         if self.engine_mode == mode:
             return
-    
+
         engine_mode = mode
 
-        image_capture.laser_mode.read_profile('laser_'+mode)
-        image_capture.set_remove_background(profile.settings['remove_background_'+mode])
-    
+        image_capture.laser_mode.read_profile('laser_' + mode)
+        image_capture.set_remove_background(profile.settings['remove_background_' + mode])
+
         laser_segmentation.read_profile(mode)
 
     def on_pattern_settings_selected(self):
@@ -210,10 +218,10 @@ class CalibrationWorkbench(Workbench):
         self.switch_engine_mode('calibration')
         self._on_panel_selected(self.pages_collection['platform_extrinsics_pages'])
 
-#    def on_cloud_correction_selected(self):
-#        profile.settings['current_panel_calibration'] = 'cloud_correction'
-#        self.switch_engine_mode('calibration')
-#        self._on_panel_selected(self.pages_collection['cloud_correction_pages'])
+    #    def on_cloud_correction_selected(self):
+    #        profile.settings['current_panel_calibration'] = 'cloud_correction'
+    #        self.switch_engine_mode('calibration')
+    #        self._on_panel_selected(self.pages_collection['cloud_correction_pages'])
 
     def disable_panels(self):
         self.GetParent().enable_gui(False)

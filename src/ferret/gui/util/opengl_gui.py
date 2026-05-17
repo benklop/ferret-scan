@@ -2,26 +2,28 @@
 # This file is part of the Horus Project
 
 from __future__ import absolute_import
+
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx
-import traceback
-import sys
 import os
+import sys
 import time
+import traceback
 
-from wx import glcanvas
 import OpenGL
+import wx
+from wx import glcanvas
+
 OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
 
 
 class animation(object):
-
     def __init__(self, gui, start, end, run_time):
         self._start = start
         self._end = end
@@ -44,7 +46,6 @@ class animation(object):
 
 
 class glGuiControl(object):
-
     def __init__(self, parent, pos):
         self._parent = parent
         self._base = parent._base
@@ -99,7 +100,6 @@ class glGuiControl(object):
 
 
 class glGuiContainer(glGuiControl):
-
     def __init__(self, parent, pos):
         self._gl_gui_control_list = []
         super(glGuiContainer, self).__init__(parent, pos)
@@ -137,10 +137,16 @@ class glGuiContainer(glGuiControl):
 
 
 class glGuiPanel(glcanvas.GLCanvas):
-
     def __init__(self, parent):
-        attrib_list = (glcanvas.WX_GL_RGBA, glcanvas.WX_GL_DOUBLEBUFFER,
-                       glcanvas.WX_GL_DEPTH_SIZE, 24, glcanvas.WX_GL_STENCIL_SIZE, 8, 0)
+        attrib_list = (
+            glcanvas.WX_GL_RGBA,
+            glcanvas.WX_GL_DOUBLEBUFFER,
+            glcanvas.WX_GL_DEPTH_SIZE,
+            24,
+            glcanvas.WX_GL_STENCIL_SIZE,
+            8,
+            0,
+        )
         glcanvas.GLCanvas.__init__(self, parent, style=wx.WANTS_CHARS, attribList=attrib_list)
         self._base = self
         self._focus = None
@@ -155,8 +161,11 @@ class glGuiPanel(glcanvas.GLCanvas):
         self.gl_release_list = []
         self._refresh_queued = False
         self._idle_called = False
+        self._native_repaint_pending = False
+        self._last_motion_refresh = 0.0
 
         wx.EVT_PAINT(self, self._on_gui_paint)
+        self.Bind(wx.EVT_SHOW, self._on_show)
         wx.EVT_SIZE(self, self._on_size)
         wx.EVT_ERASE_BACKGROUND(self, self._on_erase_background)
         wx.EVT_LEFT_DOWN(self, self._on_gui_mouse_down)
@@ -174,6 +183,35 @@ class glGuiPanel(glcanvas.GLCanvas):
         wx.EVT_KILL_FOCUS(self, self._on_focus_lost)
         wx.EVT_IDLE(self, self._on_idle)
 
+    def _gl_paint_allowed(self):
+        if not self.IsShownOnScreen():
+            return False
+        frame = self.GetTopLevelParent()
+        if frame is not None and getattr(frame, '_defer_gl_paint', False):
+            return False
+        app = wx.GetApp()
+        if app is not None:
+            top = app.GetTopWindow()
+            if top is not None and frame is not None and top != frame:
+                return False
+        return True
+
+    def _activate_gl_context(self):
+        if not self._gl_paint_allowed():
+            return False
+        if not self.SetCurrent(self._context):
+            return False
+        try:
+            from OpenGL import platform as gl_platform
+
+            if not gl_platform.GetCurrentContext():
+                return False
+            if not glGetString(GL_VERSION):
+                return False
+        except Exception:
+            return False
+        return True
+
     def _on_idle(self, e):
         self._idle_called = True
         if len(self._animation_list) > 0 or self._refresh_queued:
@@ -181,7 +219,8 @@ class glGuiPanel(glcanvas.GLCanvas):
             for anim in self._animation_list:
                 if anim.is_done():
                     self._animation_list.remove(anim)
-            self.Refresh()
+            if self._gl_paint_allowed():
+                self.Refresh()
 
     def _on_gui_key_up(self, e):
         if self._focus is not None:
@@ -215,14 +254,47 @@ class glGuiPanel(glcanvas.GLCanvas):
         self.on_mouse_up(e)
 
     def _on_gui_mouse_motion(self, e):
-        self.Refresh()
-        if not self._container.on_mouse_motion(e.GetX(), e.GetY()):
-            self.on_mouse_motion(e)
+        handled = self._container.on_mouse_motion(e.GetX(), e.GetY())
+        self.on_mouse_motion(e)
+        now = time.time()
+        hover_refresh = getattr(self, '_mouse_x', -1) >= 0
+        if (
+            handled
+            or e.Dragging()
+            or len(self._animation_list) > 0
+            or (hover_refresh and now - self._last_motion_refresh >= 0.033)
+        ):
+            self._last_motion_refresh = now
+            self.Refresh()
+
+    def _on_show(self, event):
+        if event.IsShown():
+            self._schedule_native_repaint()
+        event.Skip()
+
+    def _schedule_native_repaint(self):
+        if self._native_repaint_pending:
+            return
+        self._native_repaint_pending = True
+        wx.CallAfter(self._do_native_repaint)
+
+    def _do_native_repaint(self):
+        self._native_repaint_pending = False
+        w = self.GetParent()
+        while w is not None:
+            scroll = getattr(w, 'scroll_panel', None)
+            if scroll is not None:
+                scroll.Refresh(False)
+                scroll.Update()
+                return
+            w = w.GetParent()
 
     def _on_gui_paint(self, e):
         wx.PaintDC(self)
         try:
-            self.SetCurrent(self._context)
+            if not self._activate_gl_context():
+                self._schedule_native_repaint()
+                return
             for obj in self.gl_release_list:
                 obj.release()
             del self.gl_release_list[:]
@@ -230,21 +302,20 @@ class glGuiPanel(glcanvas.GLCanvas):
             self._draw_gui()
             glFlush()
             self.SwapBuffers()
+            self._schedule_native_repaint()
         except:
             # When an exception happens, catch it and show a message box.
             # If the exception is not caught the draw function bugs out.
             # Only show this exception once so we do not overload the user with popups.
-            errStr = _("An error occurred during the 3D view drawing.")
+            errStr = _('An error occurred during the 3D view drawing.')
             tb = traceback.extract_tb(sys.exc_info()[2])
             errStr += "\n%s: '%s'" % (str(sys.exc_info()[0].__name__), str(sys.exc_info()[1]))
             for n in range(len(tb) - 1, -1, -1):
                 locationInfo = tb[n]
-                errStr += "\n @ %s:%s:%d" % (
-                    os.path.basename(locationInfo[0]), locationInfo[2], locationInfo[1])
+                errStr += '\n @ %s:%s:%d' % (os.path.basename(locationInfo[0]), locationInfo[2], locationInfo[1])
             if not self._shown_error:
                 traceback.print_exc()
-                wx.CallAfter(
-                    wx.MessageBox, errStr, _("3D window error"), wx.OK | wx.ICON_EXCLAMATION)
+                wx.CallAfter(wx.MessageBox, errStr, _('3D window error'), wx.OK | wx.ICON_EXCLAMATION)
                 self._shown_error = True
 
     def _draw_gui(self):
@@ -273,7 +344,8 @@ class glGuiPanel(glcanvas.GLCanvas):
     def _on_size(self, e):
         self._container.set_size(0, 0, self.GetSize().GetWidth(), self.GetSize().GetHeight())
         self._container.update_layout()
-        self.Refresh()
+        if self._gl_paint_allowed():
+            self.Refresh()
 
     def on_mouse_down(self, e):
         pass
@@ -291,6 +363,8 @@ class glGuiPanel(glcanvas.GLCanvas):
         wx.CallAfter(self._queue_refresh)
 
     def _queue_refresh(self):
+        if not self._gl_paint_allowed():
+            return
         if self._idle_called:
             wx.CallAfter(self.Refresh)
         else:

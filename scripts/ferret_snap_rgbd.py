@@ -6,7 +6,6 @@ Writes: color.png, depth.png (uint16 mm), meta.json
 
 Requires: libferret on PYTHONPATH and pyorbbecsdk built against Ferret OrbbecSDK fork.
 """
-from __future__ import print_function
 
 import json
 import os
@@ -17,27 +16,28 @@ import numpy as np
 
 def main():
     if len(sys.argv) < 2:
-        print("usage: ferret_snap_rgbd.py <out_dir>", file=sys.stderr)
+        print('usage: ferret_snap_rgbd.py <out_dir>', file=sys.stderr)
         return 2
 
     out_dir = sys.argv[1]
     os.makedirs(out_dir, exist_ok=True)
 
-    lib_dir = os.path.join(os.path.dirname(__file__), "lib")
+    lib_dir = os.path.join(os.path.dirname(__file__), 'lib')
     if lib_dir not in sys.path:
         sys.path.insert(0, lib_dir)
     try:
         from libferret_import import get_ferret_device_class
+
         FerretDevice = get_ferret_device_class()
     except ImportError as e:
-        print("libferret device import failed: {0}".format(e), file=sys.stderr)
-        print("Set FERRET_LIBFERRET_ROOT and run ./scripts/dev-setup", file=sys.stderr)
+        print(f'libferret device import failed: {e}', file=sys.stderr)
+        print('Set FERRET_LIBFERRET_ROOT and run ./scripts/dev-setup', file=sys.stderr)
         return 2
 
     try:
         import cv2
     except ImportError:
-        print("opencv-python required", file=sys.stderr)
+        print('opencv-python required', file=sys.stderr)
         return 2
 
     dev = FerretDevice.open(laser=True, laser_settle_s=2.0)
@@ -59,7 +59,7 @@ def main():
     dev.pipeline.stop()
 
     if frames is None:
-        print("no synced depth+color frameset", file=sys.stderr)
+        print('no synced depth+color frameset', file=sys.stderr)
         return 2
 
     depth_frame, color_frame = frames
@@ -72,36 +72,37 @@ def main():
     cw = color_frame.get_width()
     ch = color_frame.get_height()
     color_data = np.frombuffer(color_frame.get_data(), dtype=np.uint8)
-    mjpg = getattr(getattr(cv2, "OBFormat", object), "MJPG", None)
+    mjpg = getattr(getattr(cv2, 'OBFormat', object), 'MJPG', None)
     if mjpg is None:
         try:
             from pyorbbecsdk import OBFormat
+
             mjpg = OBFormat.MJPG
         except ImportError:
             mjpg = None
     if mjpg is not None and color_fmt == mjpg:
         color = cv2.imdecode(color_data, cv2.IMREAD_COLOR)
         if color is None:
-            print("failed to decode MJPG color frame", file=sys.stderr)
+            print('failed to decode MJPG color frame', file=sys.stderr)
             return 2
     else:
         color = color_data.reshape(ch, cw, 3)
 
-    cv2.imwrite(os.path.join(out_dir, "color.png"), color)
-    cv2.imwrite(os.path.join(out_dir, "depth.png"), depth)
+    cv2.imwrite(os.path.join(out_dir, 'color.png'), color)
+    cv2.imwrite(os.path.join(out_dir, 'depth.png'), depth)
 
     meta = {
-        "depth_scale": float(scale),
-        "depth_width": int(w),
-        "depth_height": int(h),
-        "color_width": int(cw),
-        "color_height": int(ch),
+        'depth_scale': float(scale),
+        'depth_width': int(w),
+        'depth_height': int(h),
+        'color_width': int(cw),
+        'color_height': int(ch),
     }
-    with open(os.path.join(out_dir, "meta.json"), "w") as f:
+    with open(os.path.join(out_dir, 'meta.json'), 'w') as f:
         json.dump(meta, f)
 
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

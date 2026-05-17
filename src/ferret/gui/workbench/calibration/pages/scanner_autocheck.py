@@ -1,22 +1,18 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from ferret.gui.engine import scanner_autocheck, image_capture
-from ferret.engine.calibration.autocheck import PatternNotDetected, WrongMotorDirection, \
-    LaserNotDetected
-
+from ferret.engine.calibration.autocheck import LaserNotDetected, PatternNotDetected, WrongMotorDirection
+from ferret.gui.engine import image_capture, scanner_autocheck
 from ferret.gui.workbench.calibration.pages.video_page import VideoPage
 
 
 class ScannerAutocheckPages(wx.Panel):
-
     def __init__(self, parent, start_callback=None, exit_callback=None):
         wx.Panel.__init__(self, parent)  # , style=wx.RAISED_BORDER)
 
@@ -24,12 +20,13 @@ class ScannerAutocheckPages(wx.Panel):
         self.exit_callback = exit_callback
 
         # Elements
-        self.video_page = VideoPage(self, title=_('Scanner autocheck'),
-                                    start_callback=self.on_start,
-                                    cancel_callback=self.on_cancel)
+        self.video_page = VideoPage(
+            self, title=_('Scanner autocheck'), start_callback=self.on_start, cancel_callback=self.on_cancel
+        )
 
-        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                                 "picture and press \"Start\""), "pattern-position.png")
+        self.video_page.add_info(
+            _('Put the pattern on the platform as shown in the picture and press "Start"'), 'pattern-position.png'
+        )
 
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -69,36 +66,46 @@ class ScannerAutocheckPages(wx.Panel):
         image_capture.capture_pattern()
 
         if ret:
-            dlg = wx.MessageDialog(
-                self, _("Scanner configured correctly"),
-                _("Success"), wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _('Scanner configured correctly'), _('Success'), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         else:
             if isinstance(result, PatternNotDetected):
                 dlg = wx.MessageDialog(
-                    self, _("Please, put the pattern on the platform. "
-                            "Also you can set up the calibration's capture "
-                            "settings in the \"Adjustment workbench\" "
-                            "until the pattern is detected correctly"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Please, put the pattern on the platform. '
+                        "Also you can set up the calibration's capture "
+                        'settings in the "Adjustment workbench" '
+                        'until the pattern is detected correctly'
+                    ),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
             elif isinstance(result, WrongMotorDirection):
                 dlg = wx.MessageDialog(
-                    self, _(
-                        "Please, select \"Invert the motor direction\" in the preferences"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _('Please, select "Invert the motor direction" in the preferences'),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.GetParent().GetParent().launch_preferences(basic=True)
             elif isinstance(result, LaserNotDetected):
                 dlg = wx.MessageDialog(
-                    self, _("Please, check the lasers connection. "
-                            "Also you can set up the calibration's capture and "
-                            "segmentation settings in the \"Adjustment workbench\" "
-                            "until the lasers are detected correctly"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Please, check the lasers connection. '
+                        "Also you can set up the calibration's capture and "
+                        'segmentation settings in the "Adjustment workbench" '
+                        'until the lasers are detected correctly'
+                    ),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
         self._initialize()
@@ -109,9 +116,11 @@ class ScannerAutocheckPages(wx.Panel):
             self.exit_callback()
 
     def on_start(self):
-        scanner_autocheck.set_callbacks(lambda: wx.CallAfter(self.before_calibration),
-                                        lambda p: wx.CallAfter(self.progress_calibration, p),
-                                        lambda r: wx.CallAfter(self.after_calibration, r))
+        scanner_autocheck.set_callbacks(
+            lambda: wx.CallAfter(self.before_calibration),
+            lambda p: wx.CallAfter(self.progress_calibration, p),
+            lambda r: wx.CallAfter(self.after_calibration, r),
+        )
         scanner_autocheck.start()
 
     def on_cancel(self):

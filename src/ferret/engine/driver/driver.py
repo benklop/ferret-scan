@@ -1,24 +1,23 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+import logging
 import threading
 
 from ferret import Singleton
-from ferret.util import profile
 from ferret.engine.driver.board import Board
 from ferret.engine.driver.camera_usb import Camera_usb
+from ferret.util import profile
 
-import logging
 logger = logging.getLogger(__name__)
 
-@Singleton
-class Driver(object):
 
+@Singleton
+class Driver:
     """Driver class. For managing scanner hw"""
 
     def __init__(self):
@@ -35,6 +34,7 @@ class Driver(object):
         mode = profile.settings.get('scanner_mode', 'Ciclop laser')
         if mode == 'Ferret structured light':
             from ferret.engine.driver.camera_ferret import Camera_ferret
+
             return Camera_ferret(self)
         return Camera_usb(self)
 
@@ -56,12 +56,12 @@ class Driver(object):
                 try:
                     self.board.connect()
                 except Exception as board_err:
-                    logger.warning('Turntable board not connected: {0}'.format(board_err))
+                    logger.warning(f'Turntable board not connected: {board_err}')
             else:
                 self.board.connect()
         except Exception as e:
             exception = e
-            logger.error('Failed to connect: '+ str(e))
+            logger.error('Failed to connect: ' + str(e))
         else:
             self.is_connected = True
         finally:

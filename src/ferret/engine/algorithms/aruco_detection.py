@@ -1,13 +1,15 @@
 # This file is part of the Gryphon Scan Project
-from __future__ import absolute_import
+
 __author__ = 'Mikhail N Klimushkin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2019 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 
 import cv2
+
 try:
     import cv2.aruco as aruco
+
     aruco_present = True
 except ImportError:
     aruco_present = False
@@ -26,17 +28,19 @@ def _aruco_modern_api():
 
 def _marker_object_points(marker_length):
     half = marker_length / 2.0
-    return np.array([
-        [-half, half, 0],
-        [half, half, 0],
-        [half, -half, 0],
-        [-half, -half, 0],
-    ], dtype=np.float32)
+    return np.array(
+        [
+            [-half, half, 0],
+            [half, half, 0],
+            [half, -half, 0],
+            [-half, -half, 0],
+        ],
+        dtype=np.float32,
+    )
 
 
 @Singleton
-class ArucoDetection(object):
-
+class ArucoDetection:
     def __init__(self):
         if not aruco_present:
             return None
@@ -55,7 +59,6 @@ class ArucoDetection(object):
             self.aruco_parameters = aruco.DetectorParameters_create()
             self.aruco_parameters.cornerRefinementMethod = aruco.CORNER_REFINE_APRILTAG
 
-
     def aruco_detect(self, image):
         if not aruco_present:
             return (None, None)
@@ -67,11 +70,9 @@ class ArucoDetection(object):
         if self._modern:
             corners, ids, _rejected = self._detector.detectMarkers(gray)
         else:
-            corners, ids, _rejected = aruco.detectMarkers(
-                gray, self.aruco_dict, parameters=self.aruco_parameters)
+            corners, ids, _rejected = aruco.detectMarkers(gray, self.aruco_dict, parameters=self.aruco_parameters)
 
         return (corners, ids)
-
 
     def aruco_pose_from_corners(self, corners):
         if not aruco_present:
@@ -87,8 +88,8 @@ class ArucoDetection(object):
             tvecs = []
             for corner in corners:
                 ok, rvec, tvec = cv2.solvePnP(
-                    obj_points, corner.reshape(-1, 2), cam, dist,
-                    flags=cv2.SOLVEPNP_IPPE_SQUARE)
+                    obj_points, corner.reshape(-1, 2), cam, dist, flags=cv2.SOLVEPNP_IPPE_SQUARE
+                )
                 if not ok:
                     continue
                 rvecs.append(rvec)
@@ -97,16 +98,12 @@ class ArucoDetection(object):
                 return (None, None)
             return (np.array(rvecs), np.array(tvecs))
 
-        return aruco.estimatePoseSingleMarkers(
-            corners, marker_length, cam, dist)
-
+        return aruco.estimatePoseSingleMarkers(corners, marker_length, cam, dist)
 
     def aruco_draw_markers(self, image, corners, ids):
         rvecs = None
         tvecs = None
-        if aruco_present and \
-           image is not None and \
-           ids is not None and len(ids) > 0:
+        if aruco_present and image is not None and ids is not None and len(ids) > 0:
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
             image = aruco.drawDetectedMarkers(image, corners, ids)
@@ -119,18 +116,25 @@ class ArucoDetection(object):
                     tvec = tvecs[idx]
                     if self._modern:
                         cv2.drawFrameAxes(
-                            image, calibration_data.camera_matrix,
+                            image,
+                            calibration_data.camera_matrix,
                             calibration_data.distortion_vector,
-                            rvec, tvec, axis_len)
+                            rvec,
+                            tvec,
+                            axis_len,
+                        )
                     else:
                         image = aruco.drawAxis(
                             image,
                             calibration_data.camera_matrix,
                             calibration_data.distortion_vector,
-                            rvec, tvec,
-                            axis_len)
+                            rvec,
+                            tvec,
+                            axis_len,
+                        )
 
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return (image, rvecs, tvecs)
+
 
 aruco_detection = ArucoDetection()

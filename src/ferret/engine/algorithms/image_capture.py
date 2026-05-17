@@ -1,27 +1,25 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+import logging
+
 import cv2
 import numpy as np
-import time
-
-from ferret.util import profile
 
 from ferret import Singleton
-from ferret.engine.driver.driver import Driver
 from ferret.engine.calibration.calibration_data import CalibrationData
+from ferret.engine.driver.driver import Driver
+from ferret.util import profile
 
-import logging
 logger = logging.getLogger(__name__)
 
-class CameraSettings(object):
 
+class CameraSettings:
     def __init__(self):
         self.driver = Driver()
         self.calibration_data = CalibrationData()
@@ -32,9 +30,9 @@ class CameraSettings(object):
         self.saturation = 0
         self.exposure = 0
         # Photo lamps
-        self.light = [0,0]
+        self.light = [0, 0]
         # Laser capture background
-        self.laser_bg = [None]*len(self.calibration_data.laser_planes)
+        self.laser_bg = [None] * len(self.calibration_data.laser_planes)
         self.laser_bg_enable = False
 
     def set_brightness(self, value):
@@ -61,7 +59,7 @@ class CameraSettings(object):
         try:
             self.light[idx] = value
             if self.selected:
-                self.driver.camera.set_light(idx,value)
+                self.driver.camera.set_light(idx, value)
         except IndexError:
             pass
 
@@ -70,16 +68,16 @@ class CameraSettings(object):
         self.driver.camera.set_contrast(self.contrast)
         self.driver.camera.set_saturation(self.saturation)
         self.driver.camera.set_exposure(self.exposure)
-        for idx,br in enumerate(self.light):
-            self.driver.camera.set_light(idx,br)
+        for idx, br in enumerate(self.light):
+            self.driver.camera.set_light(idx, br)
 
     def read_profile(self, mode):
-        self.set_brightness(profile.settings['brightness_'+mode])
-        self.set_contrast(profile.settings['contrast_'+mode])
-        self.set_saturation(profile.settings['saturation_'+mode])
-        self.set_exposure(profile.settings['exposure_'+mode])
-        self.set_light(0,profile.settings['light1_'+mode])
-        self.set_light(1,profile.settings['light2_'+mode])
+        self.set_brightness(profile.settings['brightness_' + mode])
+        self.set_contrast(profile.settings['contrast_' + mode])
+        self.set_saturation(profile.settings['saturation_' + mode])
+        self.set_exposure(profile.settings['exposure_' + mode])
+        self.set_light(0, profile.settings['light1_' + mode])
+        self.set_light(1, profile.settings['light2_' + mode])
         if mode == 'laser_calibration':
             self.laser_bg = profile.laser_bg_calibration
             self.laser_bg_enable = profile.laser_bg_calibration_enable
@@ -89,11 +87,11 @@ class CameraSettings(object):
         else:
             self.laser_bg = [None, None]
             self.laser_bg_enable = False
-            logger.info("Capture profile load: "+mode)
+            logger.info('Capture profile load: ' + mode)
+
 
 @Singleton
-class ImageCapture(object):
-
+class ImageCapture:
     def __init__(self):
         self.driver = Driver()
         self.calibration_data = CalibrationData()
@@ -142,7 +140,7 @@ class ImageCapture(object):
                 flush = self._flush_mode
             if self.driver.is_connected:
                 if flush > 0:
-                    self.capture_image(flush-1)
+                    self.capture_image(flush - 1)
                 else:
                     self.capture_image(flush)
             self._updating = False
@@ -187,11 +185,10 @@ class ImageCapture(object):
             flush = self._flush_laser
         image = self.capture_image(flush=flush)
         self.driver.board.laser_off(index)
-        # substract environment laser lines 
+        # substract environment laser lines
         if self._mode.laser_bg_enable:
             try:
-                if self._mode.laser_bg[index] is not None and \
-                   image is not None:
+                if self._mode.laser_bg[index] is not None and image is not None:
                     image = cv2.subtract(image, self._mode.laser_bg[index])
             except:
                 logger.info('WARNING: Error applying laser BG @ image_capture._capture_laser')
@@ -216,7 +213,7 @@ class ImageCapture(object):
         return [image, image_background]
 
     def capture_lasers(self):
-        #tbegin = time.time()
+        # tbegin = time.time()
 
         # Capture background
         image_background = None
@@ -233,21 +230,21 @@ class ImageCapture(object):
         for i in range(len(self.calibration_data.laser_planes)):
             images += [self._capture_laser(i)]
         images += [image_background]
-        #images = [None, None, image_background]
-        #images[0] = self._capture_laser(0)
-        #images[1] = self._capture_laser(1)
+        # images = [None, None, image_background]
+        # images[0] = self._capture_laser(0)
+        # images[1] = self._capture_laser(1)
 
-        #print "capture lasers capture: {0} ms".format(int((time.time() - tbegin) * 1000))
-        #tbegin = time.time()
+        # print "capture lasers capture: {0} ms".format(int((time.time() - tbegin) * 1000))
+        # tbegin = time.time()
 
         self.remove_background_subtract(images)
         # test hsV based BG removal
-        #if self._mode.light[1] > 2:
+        # if self._mode.light[1] > 2:
         #    self.remove_background_subtract(images)
-        #else:
+        # else:
         #    self.remove_background_hsv(images,self._mode.light[1])
 
-        #print "capture lasers bg subtract: {0} ms".format(int((time.time() - tbegin) * 1000))
+        # print "capture lasers bg subtract: {0} ms".format(int((time.time() - tbegin) * 1000))
         return images
 
     def capture_all_lasers(self):
@@ -264,11 +261,11 @@ class ImageCapture(object):
         image = self.capture_image(flush=flush)
         self.driver.board.lasers_off()
 
-        self.remove_background_subtract([image,image_background])
+        self.remove_background_subtract([image, image_background])
         # test hsV based BG removal
-        #if self._mode.light[1] > 2:
+        # if self._mode.light[1] > 2:
         #    self.remove_background_subtract([image,image_background])
-        #else:
+        # else:
         #    self.remove_background_hsv([image,image_background],self._mode.light[1])
 
         # substract environment laser lines
@@ -297,26 +294,26 @@ class ImageCapture(object):
         image = self.driver.camera.capture_image(flush=flush)
         return image
 
-    def remove_background_subtract(self,images):
+    def remove_background_subtract(self, images):
         background = images[-1]
         if background is not None:
             for image in images[:-1]:
                 if image is not None:
                     cv2.subtract(image, background, image)
 
-    def remove_background_hsv(self,images, ch):
+    def remove_background_hsv(self, images, ch):
         background = images[-1]
         if background is not None:
             bg_hsv = cv2.cvtColor(background, cv2.COLOR_RGB2HSV)
-            bg_hsv = cv2.split(bg_hsv)[ch]#[2]
+            bg_hsv = cv2.split(bg_hsv)[ch]  # [2]
 
-            #lower = np.array([0,0,self.threshold_value])
-            #upper = np.array([255,255,255])
+            # lower = np.array([0,0,self.threshold_value])
+            # upper = np.array([255,255,255])
             for image in images[:-1]:
                 if image is not None:
                     image_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-                    image_hsv = cv2.split(image_hsv)[ch]#[2]
+                    image_hsv = cv2.split(image_hsv)[ch]  # [2]
                     image_hsv = cv2.subtract(image_hsv, bg_hsv)
-                    #mask = cv2.inRange(image, lower, upper)
-                    #image[np.where(mask==0)] = [0,0,0]
-                    image[np.where(image_hsv<self._mode.light[0])] = [0,0,0]
+                    # mask = cv2.inRange(image, lower, upper)
+                    # image[np.where(mask==0)] = [0,0,0]
+                    image[np.where(image_hsv < self._mode.light[0])] = [0, 0, 0]

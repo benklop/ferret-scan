@@ -2,22 +2,23 @@
 # This file is part of the Horus Project
 
 from __future__ import absolute_import
-from six.moves import range
-from six.moves import zip
+
+from six.moves import range, zip
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
-import types
-import struct
 from collections import OrderedDict
 
-from ferret.util import profile, resources, system as sys
+import wx._core
+
+from ferret.gui.util import gtk_compat
+from ferret.util import profile, resources
+from ferret.util import system as sys
 
 
 class ExpandableCollection(wx.Panel):
-
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         self.parent = parent
@@ -73,9 +74,9 @@ class ExpandableCollection(wx.Panel):
 
 
 class ExpandablePanel(wx.Panel):
-
-    def __init__(self, parent, title="", selected_callback=None,
-                 has_undo=True, has_restore=True, restore_callback=None):
+    def __init__(
+        self, parent, title='', selected_callback=None, has_undo=True, has_restore=True, restore_callback=None
+    ):
         wx.Panel.__init__(self, parent, size=(-1, -1))
 
         # Elements
@@ -90,13 +91,13 @@ class ExpandablePanel(wx.Panel):
         self.restore_callback = restore_callback
         if self.has_undo:
             self.undo_button = wx.BitmapButton(
-                self, wx.NewId(),
-                wx.Bitmap(resources.get_path_for_image("undo.png"), wx.BITMAP_TYPE_ANY))
+                self, wx.NewId(), wx.Bitmap(resources.get_path_for_image('undo.png'), wx.BITMAP_TYPE_ANY)
+            )
             self.undo_button.Disable()
         if self.has_restore:
             self.restore_button = wx.BitmapButton(
-                self, wx.NewId(),
-                wx.Bitmap(resources.get_path_for_image("restore.png"), wx.BITMAP_TYPE_ANY))
+                self, wx.NewId(), wx.Bitmap(resources.get_path_for_image('restore.png'), wx.BITMAP_TYPE_ANY)
+            )
 
         self.content = ControlCollection(self, self.append_undo, self.release_undo)
 
@@ -105,11 +106,9 @@ class ExpandablePanel(wx.Panel):
         self.hbox = wx.BoxSizer(wx.HORIZONTAL)
         self.hbox.Add(self.title_text, 1, wx.ALIGN_CENTER_VERTICAL)
         if self.has_undo:
-            self.hbox.Add(
-                self.undo_button, 0, wx.RIGHT | wx.BOTTOM | wx.ALIGN_RIGHT, 5)
+            self.hbox.Add(self.undo_button, 0, wx.RIGHT | wx.BOTTOM | wx.ALIGN_RIGHT, 5)
         if self.has_restore:
-            self.hbox.Add(
-                self.restore_button, 0, wx.RIGHT | wx.BOTTOM | wx.ALIGN_RIGHT, 5)
+            self.hbox.Add(self.restore_button, 0, wx.RIGHT | wx.BOTTOM | wx.ALIGN_RIGHT, 5)
         self.vbox.Add(self.hbox, 0, wx.TOP | wx.BOTTOM | wx.EXPAND, 5)
         self.vbox.Add(self.content, 1, wx.ALL ^ wx.TOP ^ wx.BOTTOM | wx.EXPAND, 15)
         self.SetSizer(self.vbox)
@@ -167,6 +166,8 @@ class ExpandablePanel(wx.Panel):
             self.restore_button.Show()
         self.parent.Refresh()
         self.parent.Layout()
+        if sys.is_linux():
+            gtk_compat.schedule_repaint_burst(self.GetTopLevelParent() or self)
 
     def hide_content(self):
         self.content.Hide()
@@ -196,9 +197,14 @@ class ExpandablePanel(wx.Panel):
     def on_restore_button_clicked(self, event):
         dlg = wx.MessageDialog(
             self,
-            _("This will reset all section settings to defaults. "
-              "Unless you have saved your current profile, all section settings will be lost!\n"
-              "Do you really want to reset?"), self.title, wx.YES_NO | wx.ICON_QUESTION)
+            _(
+                'This will reset all section settings to defaults. '
+                'Unless you have saved your current profile, all section settings will be lost!\n'
+                'Do you really want to reset?'
+            ),
+            self.title,
+            wx.YES_NO | wx.ICON_QUESTION,
+        )
         result = dlg.ShowModal() == wx.ID_YES
         dlg.Destroy()
         if result:
@@ -219,7 +225,6 @@ class ExpandablePanel(wx.Panel):
 
 
 class TitleText(wx.Panel):
-
     def __init__(self, parent, title, hand_cursor=True):
         wx.Panel.__init__(self, parent)
 
@@ -251,7 +256,6 @@ class TitleText(wx.Panel):
 
 
 class ControlCollection(wx.Panel):
-
     def __init__(self, parent, append_undo_callback=None, release_undo_callback=None):
         wx.Panel.__init__(self, parent, size=(100, 100))
 
@@ -307,7 +311,6 @@ class ControlCollection(wx.Panel):
 
 
 class ControlPanel(wx.Panel):
-
     def __init__(self, parent, name, tooltip=None):
         wx.Panel.__init__(self, parent)
         self.name = name
@@ -356,9 +359,11 @@ class ControlPanel(wx.Panel):
     def update_from_profile(self):
         value = profile.settings[self.name]
         # TODO:
-        if self.control is not None and \
-           not isinstance(self.control, wx.Button) and \
-           not isinstance(self.control, wx.ToggleButton):
+        if (
+            self.control is not None
+            and not isinstance(self.control, wx.Button)
+            and not isinstance(self.control, wx.ToggleButton)
+        ):
             self.set_control_value(value)
             self.set_engine(value)
 
@@ -374,7 +379,6 @@ class ControlPanel(wx.Panel):
 
 
 class Slider(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -382,11 +386,14 @@ class Slider(ControlPanel):
 
         # Elements
         self.label = wx.StaticText(self, label=_(self.setting._label), size=(130, -1))
-        self.control = wx.Slider(self, value=profile.settings[name],
-                                 minValue=profile.settings.get_min_value(name),
-                                 maxValue=profile.settings.get_max_value(name),
-                                 size=(150, -1),
-                                 style=wx.SL_LABELS)
+        self.control = wx.Slider(
+            self,
+            value=profile.settings[name],
+            minValue=profile.settings.get_min_value(name),
+            maxValue=profile.settings.get_max_value(name),
+            size=(150, -1),
+            style=wx.SL_LABELS,
+        )
 
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -427,7 +434,6 @@ class Slider(ControlPanel):
 
 
 class ComboBox(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -438,11 +444,14 @@ class ComboBox(ControlPanel):
 
         # Elements
         label = wx.StaticText(self, label=_(self.setting._label), size=(130, -1))
-        self.control = wx.ComboBox(self, wx.ID_ANY,
-                                   value=_(profile.settings[self.name]),
-                                   choices=_choices,
-                                   size=(150, -1),
-                                   style=wx.CB_READONLY)
+        self.control = wx.ComboBox(
+            self,
+            wx.ID_ANY,
+            value=_(profile.settings[self.name]),
+            choices=_choices,
+            size=(150, -1),
+            style=wx.CB_READONLY,
+        )
 
         self.control.SetValue_original = self.control.SetValue
         self.control.SetValue = self.SetValue_overwrite
@@ -469,14 +478,16 @@ class ComboBox(ControlPanel):
 
 
 class CheckBox(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
         # Elements
+        fg = gtk_compat.style_panel(self)
         label = wx.StaticText(self, label=_(self.setting._label), size=(130, -1))
+        gtk_compat.style_label(label, fg)
         self.control = wx.CheckBox(self, size=(150, -1))
         self.control.SetValue(profile.settings[self.name])
+        gtk_compat.style_checkbox(self.control, fg)
 
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -505,7 +516,6 @@ class CheckBox(ControlPanel):
 
 
 class RadioButton(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -532,7 +542,6 @@ class RadioButton(ControlPanel):
 
 
 class TextBox(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -561,7 +570,6 @@ class TextBox(ControlPanel):
 
 
 class IntLabel(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -583,7 +591,6 @@ class IntLabel(ControlPanel):
 
 
 class IntBox(wx.TextCtrl):
-
     def __init__(self, *args, **kwargs):
         wx.TextCtrl.__init__(self, *args, **kwargs)
         self.old_value = 0
@@ -606,7 +613,6 @@ class IntBox(wx.TextCtrl):
 
 
 class IntTextBox(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -642,7 +648,6 @@ class IntTextBox(ControlPanel):
 
 
 class FloatBox(wx.TextCtrl):
-
     def __init__(self, *args, **kwargs):
         wx.TextCtrl.__init__(self, *args, **kwargs)
         self.old_value = 0.0
@@ -665,7 +670,6 @@ class FloatBox(wx.TextCtrl):
 
 
 class FloatTextBox(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -694,7 +698,6 @@ class FloatTextBox(ControlPanel):
 
 
 class FloatBoxArray(wx.Panel):
-
     def __init__(self, parent, value, size, onedit_callback=None):
         wx.Panel.__init__(self, parent)
         self.onedit_callback = onedit_callback
@@ -748,14 +751,14 @@ class FloatBoxArray(wx.Panel):
 
 
 class FloatTextBoxArray(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
         # Elements
         label = wx.StaticText(self, size=(140, -1), label=_(self.setting._label))
-        self.control = FloatBoxArray(self, value=profile.settings[name], size=(50, -1),
-                                     onedit_callback=self._on_text_box_lost_focus)
+        self.control = FloatBoxArray(
+            self, value=profile.settings[name], size=(50, -1), onedit_callback=self._on_text_box_lost_focus
+        )
 
         # Layout
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -777,7 +780,6 @@ class FloatTextBoxArray(ControlPanel):
 
 
 class FloatLabel(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -799,7 +801,6 @@ class FloatLabel(ControlPanel):
 
 
 class FloatStaticArray(wx.Panel):
-
     def __init__(self, parent, value, size):
         wx.Panel.__init__(self, parent)
         self.value = value
@@ -835,7 +836,6 @@ class FloatStaticArray(wx.Panel):
 
 
 class FloatLabelArray(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -853,12 +853,13 @@ class FloatLabelArray(ControlPanel):
 
 
 class Button(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
         # Elements
+        gtk_compat.style_panel(self)
         self.control = wx.Button(self, label=_(self.setting._label))
+        gtk_compat.style_button(self.control)
 
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -878,12 +879,13 @@ class Button(ControlPanel):
 
 
 class CallbackButton(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
         # Elements
+        gtk_compat.style_panel(self)
         self.control = wx.Button(self, label=_(self.setting._label))
+        gtk_compat.style_button(self.control)
 
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -906,7 +908,6 @@ class CallbackButton(ControlPanel):
 
 
 class ToggleButton(ControlPanel):
-
     def __init__(self, parent, name, engine_callback=None):
         ControlPanel.__init__(self, parent, name, engine_callback)
 
@@ -931,5 +932,3 @@ class ToggleButton(ControlPanel):
 
             if self.engine_callback[function] is not None:
                 self.engine_callback[function]()
-
-

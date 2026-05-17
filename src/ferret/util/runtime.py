@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 """Repo paths and process environment for dev runs and snap subprocesses."""
-
-from __future__ import absolute_import
 
 import os
 import platform
@@ -10,8 +7,7 @@ import platform
 def repo_root():
     if os.environ.get('FERRET_REPO_ROOT'):
         return os.environ['FERRET_REPO_ROOT']
-    return os.path.normpath(os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+    return os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 
 
 def libferret_root():
@@ -30,18 +26,15 @@ def _sdk_platform_dir():
         return 'linux_x86_64'
     if machine in ('aarch64', 'arm64'):
         return 'linux_arm64'
-    return 'linux_{0}'.format(machine)
+    return f'linux_{machine}'
 
 
 def sdk_lib_dir():
-    return os.path.join(
-        libferret_root(), 'OrbbecSDK_v2', 'build', _sdk_platform_dir(), 'lib')
+    return os.path.join(libferret_root(), 'OrbbecSDK_v2', 'build', _sdk_platform_dir(), 'lib')
 
 
 def pyorbbec_install_lib():
-    root = os.environ.get(
-        'FERRET_PYORBBECSDK_ROOT',
-        os.path.join(repo_root(), '.deps', 'pyorbbecsdk'))
+    root = os.environ.get('FERRET_PYORBBECSDK_ROOT', os.path.join(repo_root(), '.deps', 'pyorbbecsdk'))
     return os.path.join(root, 'install', 'lib')
 
 

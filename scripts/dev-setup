@@ -4,12 +4,28 @@ set -eo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/common.sh
 source "${ROOT}/scripts/lib/common.sh"
+# shellcheck source=lib/wx_build.sh
+source "${ROOT}/scripts/lib/wx_build.sh"
+
+if ! command -v uv >/dev/null 2>&1; then
+  echo "Install uv: https://docs.astral.sh/uv/getting-started/installation/" >&2
+  exit 1
+fi
 
 LIBFERRET="$(ferret_libferret_root)"
 PYOB="$(ferret_pyorbbec_root)"
 SDK_SRC="$(ferret_sdk_lib_dir)"
 SDK_DST="${PYOB}/sdk/lib/$(ferret_pyorbbec_sdk_dirname)"
 VENV="${ROOT}/.venv"
+VENV_PY="${VENV}/bin/python"
+
+# Always use the project venv (asdf/.python-version). Never install into system Python.
+unset UV_PYTHON
+export UV_PROJECT_ENVIRONMENT="${VENV}"
+
+ferret_uv_pip() {
+  uv pip install --python "${VENV_PY}" "$@"
+}
 
 echo "==> ferret-scan dev setup ($(ferret_native_arch))"
 echo "    libferret: ${LIBFERRET}"
@@ -24,25 +40,32 @@ if [[ ! -f "${SDK_SRC}/libOrbbecSDK.so" ]]; then
   make -C "${LIBFERRET}" sdk -j"$(nproc)"
 fi
 
-echo "==> Python venv at .venv"
-PYTHON_BOOTSTRAP="python3"
-VENV_FLAGS=()
-if [[ -f /etc/fedora-release ]] && /usr/bin/python3 -c "import wx" 2>/dev/null; then
-  echo "    Fedora: using /usr/bin/python3 + system wxPython (pip wheels mismatch wxGTK here)"
-  PYTHON_BOOTSTRAP="/usr/bin/python3"
-  VENV_FLAGS=(--system-site-packages)
+echo "==> Python venv at .venv (uv + .python-version)"
+cd "${ROOT}"
+
+if [[ "$(uname -s)" == Linux ]] && ! ferret_wx_native_deps_ok; then
+  echo "ERROR: wxGTK development packages required before setup." >&2
+  echo >&2
+  ferret_wx_print_native_deps >&2
+  exit 1
 fi
-"${PYTHON_BOOTSTRAP}" -m venv "${VENV_FLAGS[@]}" "${VENV}"
-# shellcheck source=/dev/null
-source "${VENV}/bin/activate"
-pip install -U pip wheel
-if [[ "${PYTHON_BOOTSTRAP}" == "/usr/bin/python3" ]]; then
-  grep -v '^wxPython' "${ROOT}/requirements.txt" | pip install -r /dev/stdin
+
+uv venv --clear "${VENV}"
+# wxPython: pyproject [tool.uv] no-binary-package; build explicitly after other deps.
+uv sync --group dev --no-install-package wxPython
+
+if [[ "$(uname -s)" == Linux ]]; then
+  ferret_uv_pip uninstall wxPython wxpython 2>/dev/null || true
+  if ! ferret_build_wxpython "${VENV_PY}"; then
+    exit 1
+  fi
 else
-  pip install -r "${ROOT}/requirements.txt"
+  ferret_uv_pip 'wxPython>=4.2'
 fi
-if ! "${VENV}/bin/python" -c "import wx" 2>/dev/null; then
-  echo "ERROR: wxPython not available. On Fedora: sudo dnf install python3-wxpython4" >&2
+
+# ferret_build_wxpython already verifies import; keep a clear fallback message.
+if ! ferret_verify_wx_import "${VENV_PY}" 2>/dev/null; then
+  echo "ERROR: wxPython not available in ${VENV_PY}" >&2
   exit 1
 fi
 
@@ -57,13 +80,30 @@ rm -rf "${SDK_DST}"
 mkdir -p "${SDK_DST}"
 cp -a "${SDK_SRC}/"* "${SDK_DST}/"
 
-PYBIND_DIR="$("${VENV}/bin/python" -m pybind11 --cmakedir)"
-cmake -S "${PYOB}" -B "${PYOB}/build" -DCMAKE_BUILD_TYPE=Release -Dpybind11_DIR="${PYBIND_DIR}"
+if [[ -f "${PYOB}/build/CMakeCache.txt" ]]; then
+  cached_py="$(grep -m1 '^PYTHON_EXECUTABLE:FILEPATH=' "${PYOB}/build/CMakeCache.txt" 2>/dev/null | cut -d= -f2- || true)"
+  if [[ -n "${cached_py}" && "${cached_py}" != "${VENV_PY}" ]]; then
+    echo "==> Rebuilding pyorbbecsdk (Python interpreter changed)"
+    rm -rf "${PYOB}/build"
+  fi
+fi
+
+PYBIND_DIR="$("${VENV_PY}" -m pybind11 --cmakedir)"
+cmake -S "${PYOB}" -B "${PYOB}/build" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -Dpybind11_DIR="${PYBIND_DIR}" \
+  -DPython3_EXECUTABLE="${VENV_PY}"
 cmake --build "${PYOB}/build" -j"$(nproc)"
 cmake --install "${PYOB}/build"
 
-pip install -e "${PYOB}"
-pip install -e "${LIBFERRET}"
+ferret_uv_pip --force-reinstall --no-deps -e "${PYOB}"
+ferret_uv_pip --force-reinstall --no-deps -e "${LIBFERRET}"
+
+if ! "${VENV_PY}" -c "import pyorbbecsdk" 2>/dev/null; then
+  echo "ERROR: pyorbbecsdk import failed after install" >&2
+  echo "  Try: uv pip install --python ${VENV_PY} --force-reinstall -e ${PYOB}" >&2
+  exit 1
+fi
 
 echo ""
 echo "Done. Run:"

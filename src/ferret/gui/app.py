@@ -2,24 +2,25 @@
 # This file is part of the Horus Project
 
 from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
-import logging.config
 import datetime
+import logging.config
+
+import wx._core
 
 from ferret.gui.main import MainWindow
 from ferret.gui.splash import SplashScreen
-from ferret.gui.welcome import WelcomeDialog
-
-from ferret.util import profile, resources, version, system as sys
 from ferret.gui.util.version_window import VersionWindow
+from ferret.gui.welcome import WelcomeDialog
+from ferret.util import profile, resources, version
+from ferret.util import system as sys
 
 
 class FerretApp(wx.App):
-
     def __init__(self):
         super(FerretApp, self).__init__(redirect=False)
 
@@ -29,6 +30,11 @@ class FerretApp(wx.App):
             self.after_splash_callback()
         else:
             self.splash = SplashScreen(self.after_splash_callback)
+
+    def _show_welcome_dialog(self):
+        WelcomeDialog(self.main_window)
+        self.main_window._defer_gl_paint = False
+        self.main_window.workbench['scanning'].scene_view.queue_refresh()
 
     def after_splash_callback(self):
         # Load settings
@@ -67,8 +73,8 @@ class FerretApp(wx.App):
         self.main_window.Show()
 
         if profile.settings['show_welcome']:
-            # Create welcome window
-            WelcomeDialog(self.main_window)
+            # Defer until the main frame has painted (GTK otherwise skips first expose).
+            wx.CallAfter(self._show_welcome_dialog)
 
         set_full_screen_capable(self.main_window)
 
@@ -112,10 +118,13 @@ class FerretApp(wx.App):
         dlg.ShowModal()
         dlg.Destroy()
 
+
 if sys.is_darwin():  # Mac magic. Dragons live here. This sets full screen options.
     try:
         import ctypes
+
         import objc
+
         _objc = ctypes.PyDLL(objc._objc.__file__)
 
         # PyObject *PyObjCObject_New(id objc_object, int flags, int retain)
@@ -130,9 +139,11 @@ if sys.is_darwin():  # Mac magic. Dragons live here. This sets full screen optio
             newBehavior = window.collectionBehavior() | NSWindowCollectionBehaviorFullScreenPrimary
             window.setCollectionBehavior_(newBehavior)
     except:
+
         def set_full_screen_capable(frame):
             pass
 
 else:
+
     def set_full_screen_capable(frame):
         pass

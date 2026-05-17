@@ -1,24 +1,22 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 
 import hashlib
+
 import cv2
 import numpy as np
 
 from ferret import Singleton
-
-from ferret.util import profile
 from ferret.engine.driver.driver import Driver
+from ferret.util import profile
 
-class LaserPlane(object):
 
+class LaserPlane:
     def __init__(self, name):
         self.normal = None
         self.distance = None
@@ -34,19 +32,18 @@ class LaserPlane(object):
         return False
 
     def read_profile(self):
-        self.distance = profile.settings['distance_'+self.name]
-        self.normal   = profile.settings['normal_'+self.name]
+        self.distance = profile.settings['distance_' + self.name]
+        self.normal = profile.settings['normal_' + self.name]
 
     def save_profile(self):
-        profile.settings['distance_'+self.name] = self.distance
-        profile.settings['normal_'+self.name]   = self.normal
+        profile.settings['distance_' + self.name] = self.distance
+        profile.settings['normal_' + self.name] = self.normal
 
         profile.settings['laser_triangulation_hash'] = calibration_data.md5_hash()
 
 
 @Singleton
-class CalibrationData(object):
-
+class CalibrationData:
     def __init__(self):
         self.width = 0
         self.height = 0
@@ -64,9 +61,9 @@ class CalibrationData(object):
         self.platform_translation = None
 
     def read_profile_camera(self):
-        driver = Driver() # load driver singleton
+        driver = Driver()  # load driver singleton
         width, height = driver.camera.get_resolution()
-        print(("calibration_data.read_profile_camera: camera res = "+str(driver.camera.get_resolution())))
+        print('calibration_data.read_profile_camera: camera res = ' + str(driver.camera.get_resolution()))
         self.set_resolution(width, height)
         self.camera_matrix = profile.settings['camera_matrix']
         self.distortion_vector = profile.settings['distortion_vector']
@@ -79,7 +76,7 @@ class CalibrationData(object):
         for l in self.laser_planes:
             l.save_profile()
 
-        #profile.settings['laser_triangulation_hash'] = self.md5_hash()
+        # profile.settings['laser_triangulation_hash'] = self.md5_hash()
 
     def read_profile_platform(self):
         self.platform_rotation = profile.settings['rotation_matrix']
@@ -133,16 +130,17 @@ class CalibrationData(object):
     def _compute_dist_camera_matrix(self):
         if self._camera_matrix is not None and self._distortion_vector is not None:
             self._dist_camera_matrix, self._roi = cv2.getOptimalNewCameraMatrix(
-                self._camera_matrix, self._distortion_vector,
-                (int(self.width), int(self.height)), alpha=1)
+                self._camera_matrix, self._distortion_vector, (int(self.width), int(self.height)), alpha=1
+            )
             h = hashlib.md5()
             h.update(np.ascontiguousarray(self._camera_matrix).tobytes())
             h.update(np.ascontiguousarray(self._distortion_vector).tobytes())
             self._md5_hash = h.hexdigest()
 
     def _compute_weight_matrix(self):
-        self._weight_matrix = np.array((np.matrix(np.linspace(0, self.width - 1, self.width)).T *
-                                        np.matrix(np.ones(self.height))).T)
+        self._weight_matrix = np.array(
+            (np.matrix(np.linspace(0, self.width - 1, self.width)).T * np.matrix(np.ones(self.height))).T
+        )
 
     def check_camera_calibration(self):
         if self.camera_matrix is None or self.distortion_vector is None:
@@ -163,9 +161,7 @@ class CalibrationData(object):
         return True
 
     def check_calibration(self):
-        return self.check_camera_calibration() and \
-            self.check_lasers_calibration() and \
-            self.check_platform_calibration()
+        return self.check_camera_calibration() and self.check_lasers_calibration() and self.check_platform_calibration()
 
     def _is_zero(self, array):
         return np.all(array == 0.0)

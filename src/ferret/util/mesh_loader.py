@@ -1,45 +1,57 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+import logging
 import os
 
-from ferret.util.mesh_loaders import ply
-from ferret.util.mesh_loaders import stl
+from ferret.util.mesh_loaders import ply, stl
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 def load_supported_extensions():
-    """ return a list of supported file extensions for loading. """
+    """return a list of supported file extensions for loading."""
     return ['.ply', '.stl']
 
 
 def save_supported_extensions():
-    """ return a list of supported file extensions for saving. """
+    """return a list of supported file extensions for saving."""
     return ['.ply']
+
+
+def _resolve_mesh_path(filename):
+    if not filename:
+        return None
+    if os.path.isfile(filename):
+        return filename
+    from ferret.util import resources
+
+    for name in (filename, os.path.basename(filename)):
+        try:
+            path = resources.get_path_for_mesh(name)
+        except AssertionError:
+            continue
+        if os.path.isfile(path):
+            return path
+    return filename
 
 
 def load_mesh(filename):
     """
     loadMesh loads one model from a file.
     """
-    from __main__ import appdir
-    if os.path.isfile(appdir+'\\'+filename):
-        machine_model_path = appdir+'\\'+filename
-
-    if os.path.isfile(filename):
-        ext = os.path.splitext(filename)[1].lower()
+    path = _resolve_mesh_path(filename)
+    if path and os.path.isfile(path):
+        ext = os.path.splitext(path)[1].lower()
         if ext == '.ply':
-            return ply.load_scene(filename)
+            return ply.load_scene(path)
         if ext == '.stl':
-            return stl.load_scene(filename)
+            return stl.load_scene(path)
         logger.error('Error: Unknown model extension: %s' % (ext))
     else:
         logger.error('Error: Model file not found: %s' % (filename))

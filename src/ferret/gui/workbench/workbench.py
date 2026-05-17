@@ -1,22 +1,23 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 import six
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
-import wx.lib.scrolledpanel
 from collections import OrderedDict
 
+import wx._core
+import wx.lib.scrolledpanel
+
 from ferret.gui.engine import driver
+from ferret.gui.util import gtk_compat
 from ferret.gui.util.custom_panels import ExpandableCollection
+from ferret.util import system as sys
 
 
 class Workbench(wx.Panel):
-
     def __init__(self, parent, name='Workbench'):
         wx.Panel.__init__(self, parent)
         self.name = name
@@ -25,6 +26,8 @@ class Workbench(wx.Panel):
         self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self, size=(-1, -1))
         self.scroll_panel.SetupScrolling(scroll_x=False, scrollIntoView=False)
         self.scroll_panel.SetAutoLayout(1)
+        if hasattr(wx, 'BG_STYLE_PAINT'):
+            self.scroll_panel.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         self.panels_collection = ExpandableCollection(self.scroll_panel)
         self.pages_collection = OrderedDict()
 
@@ -79,6 +82,8 @@ class Workbench(wx.Panel):
     def enable_content(self):
         self.scroll_panel.Enable()
         self.panels_collection.enable_content()
+        if sys.is_linux():
+            wx.CallAfter(gtk_compat.schedule_repaint_burst, self.scroll_panel)
 
     def disable_content(self):
         self.panels_collection.disable_content()

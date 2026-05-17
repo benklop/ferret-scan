@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
-from __future__ import absolute_import
-from numpy.core._multiarray_umath import ndarray
 from six.moves import range
 
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
@@ -12,10 +9,11 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 import os
 
 import numpy as np
+
 np.seterr(all='ignore')
 
 
-class Model(object):
+class Model:
     """
     Each object has a Mesh and a 3x3 transformation matrix to rotate/scale the object.
     """
@@ -90,23 +88,28 @@ class Model(object):
         return self._is_point_cloud
 
     def get_scale(self):
-        return np.array([
-            np.linalg.norm(self._matrix[::, 0].getA().flatten()),
-            np.linalg.norm(self._matrix[::, 1].getA().flatten()),
-            np.linalg.norm(self._matrix[::, 2].getA().flatten())], np.float64)
+        return np.array(
+            [
+                np.linalg.norm(self._matrix[::, 0].getA().flatten()),
+                np.linalg.norm(self._matrix[::, 1].getA().flatten()),
+                np.linalg.norm(self._matrix[::, 2].getA().flatten()),
+            ],
+            np.float64,
+        )
 
 
-class Mesh(object):
+class Mesh:
     """
     A mesh is a list of 3D triangles build from vertexes.
     Each triangle has 3 vertexes. It can be also a point cloud.
     A "VBO" can be associated with this object, which is used for rendering this object.
     """
+
     vertexes_meta = None  # type: ndarray
 
-    def __init__(self, obj = None):
+    def __init__(self, obj=None):
         self.vertexes = np.zeros((0, 3), np.float32)
-        self.vertexes_meta = np.empty((0,), dtype=[('laser_id',np.int8),('slice_no','int'),('slice_l',np.float32)])
+        self.vertexes_meta = np.empty((0,), dtype=[('laser_id', np.int8), ('slice_no', 'int'), ('slice_l', np.float32)])
         self.colors = np.zeros((0, 3), np.uint8)
         self.normal = np.zeros((0, 3), np.float32)
         self.vertex_count = 0
@@ -116,27 +119,26 @@ class Mesh(object):
         self.current_cloud_index = 0
         self.metadata = None
 
-    def _add_vertex(self, x, y, z, r=255, g=255, b=255, laser_index=None, slice_no = None, slice_l = None):
+    def _add_vertex(self, x, y, z, r=255, g=255, b=255, laser_index=None, slice_no=None, slice_l=None):
         if laser_index is None:
-            laser_index=self.current_cloud_index
+            laser_index = self.current_cloud_index
         n = self.vertex_count
         # TODO extend array if required
         self.vertexes[n] = (x, y, z)
-        self.colors[n]   = (r, g, b)
+        self.colors[n] = (r, g, b)
         self.vertexes_meta[n] = (laser_index, slice_no, slice_l)
         self.vertex_count += 1
 
-    def add_pointcloud(self, cloud_vertex, cloud_color, meta=None ):
-        if cloud_vertex is None or \
-           cloud_vertex.shape[0] <= 0:
+    def add_pointcloud(self, cloud_vertex, cloud_color, meta=None):
+        if cloud_vertex is None or cloud_vertex.shape[0] <= 0:
             return
-        #print "Add {0} to {1}".format(cloud_vertex.shape, self.vertexes.shape)
-        #if laser_index < 0:
+        # print "Add {0} to {1}".format(cloud_vertex.shape, self.vertexes.shape)
+        # if laser_index < 0:
         #    laser_index=self.current_cloud_index
 
         _meta = np.empty((), dtype=object)
         if meta is None:
-            #_meta[()] = (laser_index, slice_no, slice_l)
+            # _meta[()] = (laser_index, slice_no, slice_l)
             _meta[()] = (-1, -1, np.nan)
         else:
             _meta[()] = meta
@@ -147,14 +149,14 @@ class Mesh(object):
         if m >= self.vertexes.shape[0]:
             if self.vertexes.shape[0] > n:
                 # shrink and append
-                self.vertexes.resize((n,3))
-                self.colors.resize((n,3))
-                #self.normal.resize((n,3))
-                self.vertexes_meta.resize(n, refcheck=False) #+self.vertexes_meta.shape[1:])
+                self.vertexes.resize((n, 3))
+                self.colors.resize((n, 3))
+                # self.normal.resize((n,3))
+                self.vertexes_meta.resize(n, refcheck=False)  # +self.vertexes_meta.shape[1:])
 
-            self.vertexes      = np.append( self.vertexes,      cloud_vertex, axis=0)
-            self.colors        = np.append( self.colors,        cloud_color,  axis=0)
-            self.vertexes_meta = np.append( self.vertexes_meta, _meta,        axis=0)
+            self.vertexes = np.append(self.vertexes, cloud_vertex, axis=0)
+            self.colors = np.append(self.colors, cloud_color, axis=0)
+            self.vertexes_meta = np.append(self.vertexes_meta, _meta, axis=0)
         else:
             self.vertexes[n:m] = cloud_vertex
             self.colors[n:m] = cloud_color
@@ -164,8 +166,7 @@ class Mesh(object):
 
     def _add_face(self, x0, y0, z0, x1, y1, z1, x2, y2, z2):
         n = self.vertex_count
-        self.vertexes[n], self.vertexes[
-            n + 1], self.vertexes[n + 2] = (x0, y0, z0), (x1, y1, z1), (x2, y2, z2)
+        self.vertexes[n], self.vertexes[n + 1], self.vertexes[n + 2] = (x0, y0, z0), (x1, y1, z1), (x2, y2, z2)
         self.vertex_count += 3
 
     def _prepare_vertex_count(self, vertex_number):
@@ -189,24 +190,24 @@ class Mesh(object):
 
     def _calculate_normals(self):
         # Calculate the normals
-        tris = self.vertexes.reshape(self.vertex_count / 3, 3, 3)
+        tris = self.vertexes.reshape(self.vertex_count // 3, 3, 3)
         normals = np.cross(tris[::, 1] - tris[::, 0], tris[::, 2] - tris[::, 0])
         normals /= np.linalg.norm(normals)
         n = np.concatenate((np.concatenate((normals, normals), axis=1), normals), axis=1)
         self.normal = n.reshape(self.vertex_count, 3)
 
     def get_vertexes(self):
-        return self.vertexes[0:self.vertex_count]
+        return self.vertexes[0 : self.vertex_count]
 
     def get_meta(self):
-        return self.vertexes_meta[0:self.vertex_count]
+        return self.vertexes_meta[0 : self.vertex_count]
 
     def copy(self, mesh):
-        self.vertexes      = np.copy(mesh.vertexes)
+        self.vertexes = np.copy(mesh.vertexes)
         self.vertexes_meta = np.copy(mesh.vertexes_meta)
-        self.colors        = np.copy(mesh.colors)
-        self.normal        = np.copy(mesh.normal)
-        self.vertex_count  = mesh.vertex_count
+        self.colors = np.copy(mesh.colors)
+        self.normal = np.copy(mesh.normal)
+        self.vertex_count = mesh.vertex_count
 
         self.vbo = None
         self._obj = mesh._obj
@@ -220,5 +221,3 @@ class Mesh(object):
         if self.vbo is not None:
             self.vbo.release()
             self.vbo = None
-
-

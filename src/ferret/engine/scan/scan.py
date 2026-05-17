@@ -1,30 +1,27 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import threading
 
-from ferret.engine.driver.driver import Driver
+from ferret.engine.algorithms.depth_to_point_cloud import DepthToPointCloud
 from ferret.engine.algorithms.image_capture import ImageCapture
 from ferret.engine.algorithms.image_detection import ImageDetection
 from ferret.engine.algorithms.laser_segmentation import LaserSegmentation
 from ferret.engine.algorithms.point_cloud_generation import PointCloudGeneration
-from ferret.engine.algorithms.depth_to_point_cloud import DepthToPointCloud
 from ferret.engine.algorithms.point_cloud_roi import PointCloudROI
+from ferret.engine.driver.driver import Driver
 
 
 class ScanError(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Scan Error")
+        Exception.__init__(self, 'Scan Error')
 
 
-class Scan(object):
-
+class Scan:
     """Generic class for threading scanning"""
 
     def __init__(self):

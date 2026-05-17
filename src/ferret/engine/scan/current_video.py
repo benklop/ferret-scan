@@ -1,21 +1,20 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+from itertools import cycle
+
 import cv2
 import numpy as np
-from itertools import cycle
 
 from ferret import Singleton
 
 
 @Singleton
-class CurrentVideo(object):
-
+class CurrentVideo:
     def __init__(self):
         self.mode = 'Texture'
 
@@ -43,18 +42,18 @@ class CurrentVideo(object):
         if image is None:
             return
 
-        line_colors = cycle([[255,0,0],[0,255,255],[0,255,0],[255,0,255]])
+        line_colors = cycle([[255, 0, 0], [0, 255, 255], [0, 255, 0], [255, 0, 255]])
         lines = np.zeros_like(image)
         for p in points:
             c = next(line_colors)
             if p:
                 lines[p[1].astype(int), np.around(p[0]).astype(int)] = c
 
-        self.images['Line'] = cv2.addWeighted(image,0.5,lines,1.,0.)
+        self.images['Line'] = cv2.addWeighted(image, 0.5, lines, 1.0, 0.0)
 
     def _combine_images(self, images):
         im = [i for i in images if i is not None]
-        if len(im)>0:
+        if len(im) > 0:
             return np.max(im, axis=0)
 
         return None
@@ -65,9 +64,9 @@ class CurrentVideo(object):
         if points is not None:
             u, v = points
             image = np.zeros_like(image)
-            #image[v.astype(int), np.around(u).astype(int) - 1] = 255
+            # image[v.astype(int), np.around(u).astype(int) - 1] = 255
             image[v.astype(int), np.around(u).astype(int)] = 255
-            #image[v.astype(int), np.around(u).astype(int) + 1] = 255
+            # image[v.astype(int), np.around(u).astype(int) + 1] = 255
             return image
 
     def capture(self):

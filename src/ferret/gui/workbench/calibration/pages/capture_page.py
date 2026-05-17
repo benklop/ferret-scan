@@ -1,42 +1,45 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
+import logging
 import os
-import wx._core
+from distutils.version import LooseVersion
+
 import cv2
-from distutils.version import StrictVersion, LooseVersion
+import wx._core
 
-from ferret.util import resources
-from ferret.util.profile import get_base_path
-
-from ferret.gui.engine import image_capture, image_detection, camera_intrinsics
-from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.gui.engine import camera_intrinsics, image_capture, image_detection
 from ferret.gui.util.image_view import ImageView
 from ferret.gui.util.video_view import VideoView
+from ferret.gui.workbench.calibration.pages.page import Page
+from ferret.util import resources
+from ferret.util.profile import get_data_dir
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class CapturePage(Page):
-
     def __init__(self, parent, start_callback=None):
-        Page.__init__(self, parent,
-                      title=_("Camera intrinsics (advanced)"),
-                      desc=_("Default values are recommended. To perform the calibration, "
-                             "click over the video panel and press "
-                             "space bar to perform the captures."),
-                      left=_("Reset"),
-                      right=_("Start"),
-                      button_left_callback=self.initialize,
-                      button_right_callback=start_callback,
-                      view_progress=True)
+        Page.__init__(
+            self,
+            parent,
+            title=_('Camera intrinsics (advanced)'),
+            desc=_(
+                'Default values are recommended. To perform the calibration, '
+                'click over the video panel and press '
+                'space bar to perform the captures.'
+            ),
+            left=_('Reset'),
+            right=_('Start'),
+            button_left_callback=self.initialize,
+            button_right_callback=start_callback,
+            view_progress=True,
+        )
 
         self.right_button.Hide()
 
@@ -65,15 +68,18 @@ class CapturePage(Page):
 
     def initialize(self):
         self.desc_text.SetLabel(
-            _("Default values are recommended. To perform the calibration, "
-              "click over the video panel and press "
-              "space bar to perform the captures."))
+            _(
+                'Default values are recommended. To perform the calibration, '
+                'click over the video panel and press '
+                'space bar to perform the captures.'
+            )
+        )
         self.current_grid = 0
         self.gauge.SetValue(0)
         camera_intrinsics.reset()
         for panel in range(self.rows * self.columns):
             self.panel_grid[panel].SetBackgroundColour((221, 221, 221))
-            self.panel_grid[panel].set_image(wx.Image(resources.get_path_for_image("void.png")))
+            self.panel_grid[panel].set_image(wx.Image(resources.get_path_for_image('void.png')))
 
     def play(self):
         self.gauge.SetValue(0)
@@ -106,9 +112,9 @@ class CapturePage(Page):
                     self.gauge.SetValue(self.current_grid * 100.0 / self.rows / self.columns)
             self.video_view.play()
 
-        elif key == 82: # 'R' 'r'
+        elif key == 82:  # 'R' 'r'
             self.video_view.stop()
-            image = self.read_image_file(self.current_grid+1)
+            image = self.read_image_file(self.current_grid + 1)
             if image is not None:
                 image = camera_intrinsics.capture(image)
                 if image is not None:
@@ -127,26 +133,25 @@ class CapturePage(Page):
                 self.button_right_callback()
 
     def save_image_file(self, image, id):
-        folder = os.path.join(get_base_path(), 'camera_intrisics')
+        folder = os.path.join(get_data_dir(), 'camera_intrisics')
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-        filename = os.path.join(folder, 'frame'+str(id)+'.png')
-        #if os.path.exists(filename):
-        if LooseVersion(cv2.__version__) > LooseVersion("3.0.0"):
+        filename = os.path.join(folder, 'frame' + str(id) + '.png')
+        # if os.path.exists(filename):
+        if LooseVersion(cv2.__version__) > LooseVersion('3.0.0'):
             compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 0]
         else:
             compression_params = [cv2.CV_IMWRITE_PNG_COMPRESSION, 0]
 
         cv2.imwrite(filename, image, compression_params)
 
-
     def read_image_file(self, id):
-        folder = os.path.join(get_base_path(), 'camera_intrisics')
-        filename = os.path.join(folder, 'frame'+str(id)+'.png')
+        folder = os.path.join(get_data_dir(), 'camera_intrisics')
+        filename = os.path.join(folder, 'frame' + str(id) + '.png')
         if not os.path.exists(filename):
             return None
         image = cv2.imread(filename, cv2.IMREAD_COLOR)
         if image is None:
-            logger.info("Error loading image "+filename)
+            logger.info('Error loading image ' + filename)
         return image

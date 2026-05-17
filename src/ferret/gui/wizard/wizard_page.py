@@ -1,21 +1,18 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from ferret.util import system as sys
-
 from ferret.gui.util.video_view import VideoView
+from ferret.util import system as sys
 
 
 class WizardPage(wx.Panel):
-
-    def __init__(self, parent, title="Title", button_prev_callback=None, button_next_callback=None):
+    def __init__(self, parent, title='Title', button_prev_callback=None, button_next_callback=None):
         wx.Panel.__init__(self, parent)
 
         self.title = title
@@ -28,9 +25,9 @@ class WizardPage(wx.Panel):
         self.button_next_callback = button_next_callback
 
         self.video_view = VideoView(self, size=(300, 400), wxtimer=False)
-        self.prev_button = wx.Button(self, label=_("Previous"))
-        self.skip_button = wx.Button(self, label=_("Skip"))
-        self.next_button = wx.Button(self, label=_("Next"))
+        self.prev_button = wx.Button(self, label=_('Previous'))
+        self.skip_button = wx.Button(self, label=_('Skip'))
+        self.next_button = wx.Button(self, label=_('Next'))
 
     def intialize(self, pages):
         self.breadcrumbs = Breadcrumbs(self, pages)
@@ -43,13 +40,10 @@ class WizardPage(wx.Panel):
         hbox.Add(self.video_view, 0, wx.ALL, 0)
         vbox.Add(hbox, 1, wx.ALL | wx.EXPAND, 20)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
-        hbox.Add(self.prev_button, 0, wx.ALL | wx.EXPAND |
-                 wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT, 2)
+        hbox.Add(self.prev_button, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT, 2)
         hbox.Add((0, 0), 1, wx.EXPAND)
-        hbox.Add(self.skip_button, 0, wx.ALL | wx.EXPAND |
-                 wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT, 2)
-        hbox.Add(self.next_button, 0, wx.ALL | wx.EXPAND |
-                 wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT, 2)
+        hbox.Add(self.skip_button, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT, 2)
+        hbox.Add(self.next_button, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT, 2)
         vbox.Add(hbox, 0, wx.ALL | wx.EXPAND, 10)
 
         self.SetSizer(vbox)
@@ -79,7 +73,6 @@ class WizardPage(wx.Panel):
 
 
 class Breadcrumbs(wx.Panel):
-
     def __init__(self, parent, pages=[]):
         wx.Panel.__init__(self, parent)
 
@@ -101,7 +94,7 @@ class Breadcrumbs(wx.Panel):
             title.Bind(wx.EVT_LEFT_UP, self.on_title_pressed)
             hbox.Add(title, 0, wx.ALL | wx.EXPAND, 0)
             if page is not pages[-1]:
-                line = wx.StaticText(self, label="  .....................  ")
+                line = wx.StaticText(self, label='  .....................  ')
                 line_font = line.GetFont()
                 line_font.SetWeight(wx.LIGHT)
                 line.SetFont(line_font)

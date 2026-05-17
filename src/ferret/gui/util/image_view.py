@@ -2,6 +2,7 @@
 # This file is part of the Horus Project
 
 from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -12,16 +13,16 @@ from ferret.util import resources
 
 
 class ImageView(wx.Panel):
-
-    def __init__(self, parent, resize=True, quality=wx.IMAGE_QUALITY_NORMAL,
-                 size=(-1, -1), black=False, style=wx.NO_BORDER):
+    def __init__(
+        self, parent, resize=True, quality=wx.IMAGE_QUALITY_NORMAL, size=(-1, -1), black=False, style=wx.NO_BORDER
+    ):
         wx.Panel.__init__(self, parent, size=size, style=style)
 
         self.x_offset = 0
         self.y_offset = 0
         self.quality = quality
 
-        self.default_image = wx.Image(resources.get_path_for_image("nusb.png"))
+        self.default_image = wx.Image(resources.get_path_for_image('nusb.png'))
         self.image = self.default_image
         self.bitmap = wx.Bitmap(self.default_image)
 
@@ -41,6 +42,9 @@ class ImageView(wx.Panel):
         if event.IsShown():
             self.GetParent().Layout()
             self.Layout()
+            self.refresh_bitmap()
+            self.Refresh()
+        event.Skip()
 
     def on_paint(self, event):
         if not self.hide:
@@ -50,7 +54,7 @@ class ImageView(wx.Panel):
                 dc.Clear()
             else:
                 dc = wx.PaintDC(self)
-            dc.DrawBitmap(self.bitmap, self.x_offset, self.y_offset)
+            dc.DrawBitmap(self.bitmap, int(self.x_offset), int(self.y_offset))
 
     def on_resize(self, size):
         new_size = size.GetSize()

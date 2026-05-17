@@ -31,6 +31,7 @@ ferret.egg-info/
 ferret.log
 horus.log
 .tool-versions.local
+.vscode/ferret-dev.env
 version
 doc/readthedocs/_build
 python/

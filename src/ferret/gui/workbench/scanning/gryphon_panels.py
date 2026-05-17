@@ -1,5 +1,5 @@
 # This file is part of the Gryphon Scan Project
-from __future__ import absolute_import
+
 __author__ = 'Mikhail N Klimushin aka Night Gryphon <ngryph@gmail.com>'
 __copyright__ = 'Copyright (C) 2019 Night Gryphon'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -7,19 +7,15 @@ __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.ht
 
 import numpy as np
 
-from ferret.util import profile
-from ferret.util import model
-from ferret.gui.engine import ciclop_scan, calibration_data
-from ferret.gui.util.custom_panels import ExpandablePanel, ComboBox, \
-     CheckBox, IntTextBox, Button, FloatTextBoxArray
-from ferret.gui.util.gryphon_controls import DirPicker, ColorPicker
+from ferret.gui.engine import ciclop_scan
+from ferret.gui.util.custom_panels import Button, CheckBox, ComboBox, ExpandablePanel, FloatTextBoxArray, IntTextBox
+from ferret.gui.util.gryphon_controls import ColorPicker, DirPicker
+from ferret.util import model, profile
 
 
 class PointCloudColor(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(
-            self, parent, _("Point cloud color"), has_undo=False, has_restore=False)
+        ExpandablePanel.__init__(self, parent, _('Point cloud color'), has_undo=False, has_restore=False)
         self.main = self.GetParent().GetParent().GetParent()
 
     def add_controls(self):
@@ -29,10 +25,10 @@ class PointCloudColor(ExpandablePanel):
         self.add_control('point_cloud_color_r', ColorPicker)
 
     def update_callbacks(self):
-        self.update_callback('texture_mode', lambda v: self._set_texture_mode(v) )
-        self.update_callback('point_cloud_color', ciclop_scan.set_color )
-        self.update_callback('point_cloud_color_l', lambda v: ciclop_scan.set_colors(0,v) )
-        self.update_callback('point_cloud_color_r', lambda v: ciclop_scan.set_colors(1,v) )
+        self.update_callback('texture_mode', lambda v: self._set_texture_mode(v))
+        self.update_callback('point_cloud_color', ciclop_scan.set_color)
+        self.update_callback('point_cloud_color_l', lambda v: ciclop_scan.set_colors(0, v))
+        self.update_callback('point_cloud_color_r', lambda v: ciclop_scan.set_colors(1, v))
 
     def on_selected(self):
         self.main.scene_view._view_roi = False
@@ -63,10 +59,8 @@ class PointCloudColor(ExpandablePanel):
 
 
 class Photogrammetry(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(
-            self, parent, _("Photogrammetry"), has_undo=False, has_restore=False)
+        ExpandablePanel.__init__(self, parent, _('Photogrammetry'), has_undo=False, has_restore=False)
         self.main = self.GetParent().GetParent().GetParent()
 
     def add_controls(self):
@@ -81,10 +75,8 @@ class Photogrammetry(ExpandablePanel):
 
 
 class MeshCorrection(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(
-            self, parent, _("Scan Correction"), has_undo=False, has_restore=False)
+        ExpandablePanel.__init__(self, parent, _('Scan Correction'), has_undo=False, has_restore=False)
         self.main = self.GetParent().GetParent().GetParent()
         self.mesh = None
         self.offset = np.zeros((3), dtype=np.float32)
@@ -103,37 +95,33 @@ class MeshCorrection(ExpandablePanel):
         profile.settings['current_panel_scanning'] = 'mesh_correction'
 
     def set_offset(self, v):
-        #print "Set offset {0}".format(self.offset)
+        # print "Set offset {0}".format(self.offset)
         self.offset = v
 
     def apply_correction(self):
-        if self.main.scene_view._object is None or \
-           not self.main.scene_view._object._is_point_cloud:
+        if self.main.scene_view._object is None or not self.main.scene_view._object._is_point_cloud:
             return
 
         mesh = self.main.scene_view._object._mesh
 
-        if mesh.metadata is None or \
-           'rotation_matrix' not in list(mesh.metadata.keys()):
+        if mesh.metadata is None or 'rotation_matrix' not in list(mesh.metadata.keys()):
             return
 
-        if self.mesh is None or \
-           not hasattr(mesh, 'correcting'):
+        if self.mesh is None or not hasattr(mesh, 'correcting'):
             mesh.correcting = True
             self.mesh = model.Mesh().copy(mesh)
             points_l = mesh.get_meta()['slice_l']
-            c,s = np.cos(points_l), np.sin(points_l)
-            self.M    = np.array([ c,-s,  s,c]).T.reshape((-1,2,2))
-            self.Mrev = np.array([ c, s, -s,c]).T.reshape((-1,2,2))
+            c, s = np.cos(points_l), np.sin(points_l)
+            self.M = np.array([c, -s, s, c]).T.reshape((-1, 2, 2))
+            self.Mrev = np.array([c, s, -s, c]).T.reshape((-1, 2, 2))
 
-        R = np.matrix(mesh.metadata['rotation_matrix'])# calibration_data.platform_rotation)
-        d = R.T * (np.matrix([ self.offset[0], self.offset[1], self.offset[2]]).T)
-        delta = np.full( (mesh.vertex_count,3), -d.T) # [ self.offset[2], -self.offset[0], self.offset[1]]
-        delta[:,[0,1]] =  np.einsum('ikj,ij->ik',self.Mrev, delta[:,[0,1]])
-        mesh.vertexes[0:self.mesh.vertex_count] = self.mesh.get_vertexes() + delta.astype(np.float32)
+        R = np.matrix(mesh.metadata['rotation_matrix'])  # calibration_data.platform_rotation)
+        d = R.T * (np.matrix([self.offset[0], self.offset[1], self.offset[2]]).T)
+        delta = np.full((mesh.vertex_count, 3), -d.T)  # [ self.offset[2], -self.offset[0], self.offset[1]]
+        delta[:, [0, 1]] = np.einsum('ikj,ij->ik', self.Mrev, delta[:, [0, 1]])
+        mesh.vertexes[0 : self.mesh.vertex_count] = self.mesh.get_vertexes() + delta.astype(np.float32)
         mesh.clear_vbo()
         self.main.scene_view.Refresh()
-
 
     def reset_correction(self):
         if self.mesh is None:
@@ -144,8 +132,7 @@ class MeshCorrection(ExpandablePanel):
             self.mesh = None
             return
 
-        if self.main.scene_view._object is None or \
-           not self.main.scene_view._object._is_point_cloud:
+        if self.main.scene_view._object is None or not self.main.scene_view._object._is_point_cloud:
             return
 
         self.main.scene_view._object._mesh.clear_vbo()
@@ -153,4 +140,3 @@ class MeshCorrection(ExpandablePanel):
         self.main.scene_view._object._mesh = self.mesh
         self.mesh = None
         self.main.scene_view.Refresh()
-

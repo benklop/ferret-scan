@@ -1,32 +1,33 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import os
 import gc
-import wx
 import math
-import numpy as np
+import os
 import traceback
 
+import numpy as np
 import OpenGL
-OpenGL.ERROR_CHECKING = False
-from OpenGL.GLU import *
-from OpenGL.GL import *
+import wx
 
-from ferret.util import profile, mesh_loader, model, system as sys
-from ferret.gui.util import opengl_helpers, opengl_gui
+OpenGL.ERROR_CHECKING = False
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+from ferret.gui.util import opengl_gui, opengl_helpers
+from ferret.util import mesh_loader, model, profile
+from ferret.util import system as sys
+
 
 class SceneView(opengl_gui.glGuiPanel):
-
     def __init__(self, parent):
-        super(SceneView, self).__init__(parent)
+        super().__init__(parent)
 
         self._yaw = 30
         self._pitch = 60
@@ -61,8 +62,8 @@ class SceneView(opengl_gui.glGuiPanel):
         self._view_roi = False
         self._point_size = 2
 
-#        self._object_point_cloud = []
-#        self._object_texture = []
+        #        self._object_point_cloud = []
+        #        self._object_texture = []
 
         self.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)
@@ -74,6 +75,8 @@ class SceneView(opengl_gui.glGuiPanel):
         if event.IsShown():
             self.GetParent().Layout()
             self.Layout()
+            self._schedule_native_repaint()
+        event.Skip()
 
     def __del__(self):
         if self._object_shader is not None:
@@ -107,12 +110,12 @@ class SceneView(opengl_gui.glGuiPanel):
         return self._object
 
     def append_point_cloud(self, point, color, meta=None):
-#        self._object_point_cloud.append(point)
-#        self._object_texture.append(color)
+        #        self._object_point_cloud.append(point)
+        #        self._object_texture.append(color)
         # TODO: optimize
         if self._object is not None:
             if self._object._mesh is not None:
-                self._object._mesh.add_pointcloud(point.T, color.T, meta = meta)
+                self._object._mesh.add_pointcloud(point.T, color.T, meta=meta)
             # Conpute Z center
             if point.shape[1] > 0:
                 zmax = max(point[2])
@@ -141,9 +144,8 @@ class SceneView(opengl_gui.glGuiPanel):
         if abs(height) > abs(self._h_offset):
             height -= self._h_offset
         new_view_pos = np.array(
-            [self._object.get_position()[0],
-             self._object.get_position()[1],
-             height - self._z_offset])
+            [self._object.get_position()[0], self._object.get_position()[1], height - self._z_offset]
+        )
         self._anim_view = opengl_gui.animation(self, self._view_target.copy(), new_view_pos, 0.5)
 
     def load_scene(self, filename):
@@ -174,9 +176,8 @@ class SceneView(opengl_gui.glGuiPanel):
             if abs(height) > abs(self._h_offset):
                 height -= self._h_offset
             new_view_pos = np.array(
-                [self._object.get_position()[0],
-                 self._object.get_position()[1],
-                 height - self._z_offset])
+                [self._object.get_position()[0], self._object.get_position()[1], height - self._z_offset]
+            )
             new_zoom = self._object.get_boundary_circle() * 4
 
         if new_zoom > np.max(self._machine_size) * 3:
@@ -186,13 +187,16 @@ class SceneView(opengl_gui.glGuiPanel):
         self._anim_view = opengl_gui.animation(self, self._view_target.copy(), new_view_pos, 0.5)
 
     def update_profile_to_controls(self):
-        self._machine_size = np.array([profile.settings['machine_width'],
-                                          profile.settings['machine_depth'],
-                                          profile.settings['machine_height']])
+        self._machine_size = np.array(
+            [profile.settings['machine_width'], profile.settings['machine_depth'], profile.settings['machine_height']]
+        )
         color_string = profile.settings['model_color']
-        self._obj_color = [float(int(color_string[0:2], 16)) / 255,
-                           float(int(color_string[2:4], 16)) / 255,
-                           float(int(color_string[4:6], 16)) / 255, 1.0]
+        self._obj_color = [
+            float(int(color_string[0:2], 16)) / 255,
+            float(int(color_string[2:4], 16)) / 255,
+            float(int(color_string[4:6], 16)) / 255,
+            1.0,
+        ]
 
     def shader_update(self, v, f):
         s = opengl_helpers.GLShader(v, f)
@@ -202,9 +206,11 @@ class SceneView(opengl_gui.glGuiPanel):
             self.queue_refresh()
 
     def on_key_down(self, key_code):
-        if key_code == wx.WXK_DELETE or \
-                key_code == wx.WXK_NUMPAD_DELETE or \
-                (key_code == wx.WXK_BACK and sys.is_darwin()):
+        if (
+            key_code == wx.WXK_DELETE
+            or key_code == wx.WXK_NUMPAD_DELETE
+            or (key_code == wx.WXK_BACK and sys.is_darwin())
+        ):
             if self._show_delete_menu:
                 if self._object is not None:
                     self.on_delete_object(None)
@@ -235,14 +241,12 @@ class SceneView(opengl_gui.glGuiPanel):
         elif key_code == wx.WXK_RIGHT:
             self._yaw += 15
             self.queue_refresh()
-        elif key_code == wx.WXK_NUMPAD_ADD or key_code == wx.WXK_ADD or \
-                key_code == ord('+') or key_code == ord('='):
+        elif key_code == wx.WXK_NUMPAD_ADD or key_code == wx.WXK_ADD or key_code == ord('+') or key_code == ord('='):
             self._zoom /= 1.2
             if self._zoom < 1:
                 self._zoom = 1
             self.queue_refresh()
-        elif key_code == wx.WXK_NUMPAD_SUBTRACT or key_code == wx.WXK_SUBTRACT or \
-                key_code == ord('-'):
+        elif key_code == wx.WXK_NUMPAD_SUBTRACT or key_code == wx.WXK_SUBTRACT or key_code == ord('-'):
             self._zoom *= 1.2
             if self._zoom > np.max(self._machine_size) * 3:
                 self._zoom = np.max(self._machine_size) * 3
@@ -294,8 +298,7 @@ class SceneView(opengl_gui.glGuiPanel):
                 if self._show_delete_menu:
                     menu = wx.Menu()
                     if self._object is not None:
-                        self.Bind(
-                            wx.EVT_MENU, self.on_delete_object, menu.Append(-1, _("Delete object")))
+                        self.Bind(wx.EVT_MENU, self.on_delete_object, menu.Append(-1, _('Delete object')))
                     if menu.MenuItemCount > 0:
                         self.PopupMenu(menu)
                     menu.Destroy()
@@ -310,8 +313,11 @@ class SceneView(opengl_gui.glGuiPanel):
     def on_delete_object(self, event):
         if self._object is not None:
             dlg = wx.MessageDialog(
-                self, _("Your current model will be deleted.\nAre you sure you want to delete it?"),
-                _("Clear point cloud"), wx.YES_NO | wx.ICON_QUESTION)
+                self,
+                _('Your current model will be deleted.\nAre you sure you want to delete it?'),
+                _('Clear point cloud'),
+                wx.YES_NO | wx.ICON_QUESTION,
+            )
             result = dlg.ShowModal() == wx.ID_YES
             dlg.Destroy()
             if result:
@@ -367,11 +373,11 @@ class SceneView(opengl_gui.glGuiPanel):
             return np.array([0, 0, 0], np.float32), np.array([0, 0, 1], np.float32)
 
         p0 = opengl_helpers.unproject(
-            x, self._viewport[1] + self._viewport[3] - y, 0,
-            self._model_matrix, self._proj_matrix, self._viewport)
+            x, self._viewport[1] + self._viewport[3] - y, 0, self._model_matrix, self._proj_matrix, self._viewport
+        )
         p1 = opengl_helpers.unproject(
-            x, self._viewport[1] + self._viewport[3] - y, 1,
-            self._model_matrix, self._proj_matrix, self._viewport)
+            x, self._viewport[1] + self._viewport[3] - y, 1, self._model_matrix, self._proj_matrix, self._viewport
+        )
         if p0 is not None and p1 is not None:
             p0 -= self._view_target
             p1 -= self._view_target
@@ -451,7 +457,8 @@ class SceneView(opengl_gui.glGuiPanel):
                     {
                         gl_FragColor = vec4(gl_Color.xyz * light_amount, gl_Color[3]);
                     }
-                    """)
+                    """,
+                )
                 self._object_shader_no_light = opengl_helpers.GLShader(
                     """
                     varying float light_amount;
@@ -471,7 +478,8 @@ class SceneView(opengl_gui.glGuiPanel):
                     {
                         gl_FragColor = vec4(gl_Color.xyz * light_amount, gl_Color[3]);
                     }
-                    """)
+                    """,
+                )
                 self._object_load_shader = opengl_helpers.GLShader(
                     """
                     uniform float intensity;
@@ -499,7 +507,8 @@ class SceneView(opengl_gui.glGuiPanel):
                     {
                         gl_FragColor = vec4(gl_Color.xyz * light_amount, 1.0-intensity);
                     }
-                    """)
+                    """,
+                )
             if self._object_shader is None or not self._object_shader.is_valid():
                 # Could not make shader.
                 self._object_shader = opengl_helpers.GLFakeShader()
@@ -509,8 +518,7 @@ class SceneView(opengl_gui.glGuiPanel):
         glTranslate(0, 0, -self._zoom)
         glRotate(-self._pitch, 1, 0, 0)
         glRotate(self._yaw, 0, 0, 1)
-        glTranslate(-self._view_target[0], -self._view_target[1], -
-                    self._view_target[2] - self._z_offset)
+        glTranslate(-self._view_target[0], -self._view_target[1], -self._view_target[2] - self._z_offset)
 
         self._viewport = glGetIntegerv(GL_VIEWPORT)
         self._model_matrix = glGetDoublev(GL_MODELVIEW_MATRIX)
@@ -523,12 +531,18 @@ class SceneView(opengl_gui.glGuiPanel):
             glFlush()
             # n = glReadPixels(self._mouse_x, self.GetSize().GetHeight() - 1 -
             #                  self._mouse_y, 1, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8)[0][0] >> 8
-            f = glReadPixels(self._mouse_x, self.GetSize().GetHeight() - 1 -
-                             self._mouse_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT)[0][0]
+            f = glReadPixels(
+                self._mouse_x, self.GetSize().GetHeight() - 1 - self._mouse_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT
+            )[0][0]
             # self.GetTopLevelParent().SetTitle(hex(n) + " " + str(f))
             self._mouse_3d_pos = opengl_helpers.unproject(
-                self._mouse_x, self._viewport[1] + self._viewport[3] - self._mouse_y,
-                f, self._model_matrix, self._proj_matrix, self._viewport)
+                self._mouse_x,
+                self._viewport[1] + self._viewport[3] - self._mouse_y,
+                f,
+                self._model_matrix,
+                self._proj_matrix,
+                self._viewport,
+            )
             self._mouse_3d_pos -= self._view_target
             self._mouse_3d_pos[2] -= self._z_offset
 
@@ -536,14 +550,12 @@ class SceneView(opengl_gui.glGuiPanel):
         glTranslate(0, 0, -self._zoom)
         glRotate(-self._pitch, 1, 0, 0)
         glRotate(self._yaw, 0, 0, 1)
-        glTranslate(-self._view_target[0], -self._view_target[1], -
-                    self._view_target[2] - self._z_offset)
+        glTranslate(-self._view_target[0], -self._view_target[1], -self._view_target[2] - self._z_offset)
 
         glStencilFunc(GL_ALWAYS, 1, 1)
         glStencilOp(GL_INCR, GL_INCR, GL_INCR)
 
         if self._object is not None:
-
             if self._object.is_point_cloud() and opengl_helpers.has_shader_support():
                 self._object_shader_no_light.bind()
             else:
@@ -585,58 +597,73 @@ class SceneView(opengl_gui.glGuiPanel):
                         obj._mesh.vbo.release()
                     obj._mesh.vbo = opengl_helpers.GLVBO(
                         GL_POINTS,
-                        obj._mesh.vertexes[:obj._mesh.vertex_count],
-                        color_array=obj._mesh.colors[:obj._mesh.vertex_count],
-                        point_size=self._point_size)
+                        obj._mesh.vertexes[: obj._mesh.vertex_count],
+                        color_array=obj._mesh.colors[: obj._mesh.vertex_count],
+                        point_size=self._point_size,
+                    )
                 obj._mesh.vbo.render()
         else:
             if obj._mesh is not None:
                 if obj._mesh.vbo is None:
                     obj._mesh.vbo = opengl_helpers.GLVBO(
                         GL_TRIANGLES,
-                        obj._mesh.vertexes[:obj._mesh.vertex_count],
-                        obj._mesh.normal[:obj._mesh.vertex_count])
+                        obj._mesh.vertexes[: obj._mesh.vertex_count],
+                        obj._mesh.normal[: obj._mesh.vertex_count],
+                    )
                 if brightness != 0:
                     glColor4fv([idx * brightness for idx in self._obj_color])
                 obj._mesh.vbo.render()
         glPopMatrix()
+
+    def _platform_mesh_scale(self, mesh):
+        machine_scale = 1.0
+        try:
+            if profile.settings['machine_model_diameter'] > 0:
+                machine_scale = profile.settings['machine_model_diameter'] / profile.settings['machine_diameter']
+            elif profile.settings['machine_model_diameter'] == 0:
+                machine_scale = mesh.get_size()[0] / profile.settings['machine_diameter']
+        except Exception:
+            pass
+        return machine_scale
+
+    def _load_platform_mesh(self, machine_model_path):
+        mesh = mesh_loader.load_mesh(machine_model_path)
+        if mesh is None:
+            self._platform_mesh[machine_model_path] = None
+            return None
+
+        machine_scale = self._platform_mesh_scale(mesh)
+        mesh._matrix = mesh._matrix / machine_scale
+        mesh._draw_offset = (
+            np.array(
+                [
+                    profile.settings['machine_model_offset_x'],
+                    profile.settings['machine_model_offset_y'],
+                    profile.settings['machine_model_offset_z'],
+                ],
+                np.float32,
+            )
+            / machine_scale
+        )
+        self._platform_mesh[machine_model_path] = mesh
+        return mesh
 
     def _draw_machine(self):
         glEnable(GL_BLEND)
         machine_model_path = profile.settings['machine_model_path']
         glEnable(GL_CULL_FACE)
 
-        # Draw Platform
-        if machine_model_path in self._platform_mesh:
-            try:  # TODO: Fix this. If not in the Scanning workbench, _draw_machine() fails.
-                self._platform_mesh[machine_model_path]._mesh.vbo.release()
-            except:
-                pass
+        if machine_model_path not in self._platform_mesh:
+            self._load_platform_mesh(machine_model_path)
 
-        mesh = mesh_loader.load_mesh(machine_model_path)
-        if mesh is not None:
-            self._platform_mesh[machine_model_path] = mesh
-        else:
-            self._platform_mesh[machine_model_path] = None
+        mesh = self._platform_mesh.get(machine_model_path)
+        if mesh is None:
+            glDisable(GL_CULL_FACE)
+            return
 
-        machine_scale = 1
-        try:
-             if profile.settings['machine_model_diameter'] > 0:
-                 machine_scale = profile.settings['machine_model_diameter'] / profile.settings['machine_diameter']
-             elif profile.settings['machine_model_diameter'] == 0:
-                 machine_scale = mesh.get_size()[0] / profile.settings['machine_diameter']
-        except:
-            pass
-
-        mesh._matrix /= machine_scale
-        self._platform_mesh[machine_model_path]._draw_offset = np.array(
-            [profile.settings[ 'machine_model_offset_x'],
-            profile.settings[ 'machine_model_offset_y'],
-            profile.settings[ 'machine_model_offset_z'] 
-            ], np.float32) / machine_scale
         glColor4f(0.6, 0.6, 0.6, 0.5)
         self._object_shader.bind()
-        self._render_object(self._platform_mesh[machine_model_path])
+        self._render_object(mesh)
         self._object_shader.unbind()
         glDisable(GL_CULL_FACE)
 
@@ -712,14 +739,13 @@ class SceneView(opengl_gui.glGuiPanel):
         glDepthMask(True)
         glDisable(GL_BLEND)
 
+
 # TODO: Remove this or put it in a seperate file
 
 
 class ShaderEditor(wx.Dialog):
-
     def __init__(self, parent, callback, v, f):
-        super(ShaderEditor, self).__init__(
-            parent, title="Shader editor", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(parent, title='Shader editor', style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self._callback = callback
         s = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(s)

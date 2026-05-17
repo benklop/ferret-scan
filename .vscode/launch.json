@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Ferret GUI (binstub)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "./ferret",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python: Ferret GUI",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/ferret_gui.py",
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "envFile": "${workspaceFolder}/.vscode/ferret-dev.env",
+      "preLaunchTask": "ferret-dev-env"
+    },
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "envFile": "${workspaceFolder}/.vscode/ferret-dev.env",
+      "preLaunchTask": "ferret-dev-env"
+    }
+  ]
+}

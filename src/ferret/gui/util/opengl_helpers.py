@@ -1,37 +1,31 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from six.moves import map
-from six.moves import range
+from six.moves import map, range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx
+from ctypes import c_void_p
+
 import numpy
+import OpenGL
+import wx
 
 from ferret.util.resources import get_path_for_image
 
-import OpenGL
-
 OpenGL.ERROR_CHECKING = False
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
+import logging
+
 from OpenGL.GL import *
 from OpenGL.GL import shaders
+from OpenGL.GLU import *
 
-import logging
 logger = logging.getLogger(__name__)
 
-from sys import platform as _platform
-if _platform != 'darwin':
-    glutInit()  # Hack; required before glut can be called. Not required for all OS.
 
-
-class GLReferenceCounter(object):
-
+class GLReferenceCounter:
     def __init__(self):
         self._ref_counter = 1
 
@@ -50,9 +44,8 @@ def has_shader_support():
 
 
 class GLShader(GLReferenceCounter):
-
     def __init__(self, vertex_program, fragment_program):
-        super(GLShader, self).__init__()
+        super().__init__()
         self._vertex_program = vertex_program
         self._fragment_program = fragment_program
         try:
@@ -71,9 +64,9 @@ class GLShader(GLReferenceCounter):
             # Validation has to occur *after* linking
             glValidateProgram(self._program)
             if glGetProgramiv(self._program, GL_VALIDATE_STATUS) == GL_FALSE:
-                raise RuntimeError("Validation failure: %s" % (glGetProgramInfoLog(self._program)))
+                raise RuntimeError('Validation failure: %s' % (glGetProgramInfoLog(self._program)))
             if glGetProgramiv(self._program, GL_LINK_STATUS) == GL_FALSE:
-                raise RuntimeError("Link failure: %s" % (glGetProgramInfoLog(self._program)))
+                raise RuntimeError('Link failure: %s' % (glGetProgramInfoLog(self._program)))
             glDeleteShader(vertex_shader)
             glDeleteShader(fragment_shader)
         except RuntimeError as e:
@@ -98,8 +91,8 @@ class GLShader(GLReferenceCounter):
                 glUniform1f(glGetUniformLocation(self._program, name), value)
             elif type(value) is numpy.matrix:
                 glUniformMatrix3fv(
-                    glGetUniformLocation(self._program, name), 1, False,
-                    value.getA().astype(numpy.float32))
+                    glGetUniformLocation(self._program, name), 1, False, value.getA().astype(numpy.float32)
+                )
             else:
                 logger.warning('Unknown type for setUniform: %s' % (str(type(value))))
 
@@ -114,7 +107,7 @@ class GLShader(GLReferenceCounter):
 
     def __del__(self):
         if self._program is not None and bool(glDeleteProgram):
-            logger.warning("Shader was not properly released!")
+            logger.warning('Shader was not properly released!')
 
 
 class GLFakeShader(GLReferenceCounter):
@@ -124,7 +117,7 @@ class GLFakeShader(GLReferenceCounter):
     """
 
     def __init__(self):
-        super(GLFakeShader, self).__init__()
+        super().__init__()
 
     def bind(self):
         glEnable(GL_LIGHTING)
@@ -158,9 +151,10 @@ class GLVBO(GLReferenceCounter):
     Vertex buffer object. Used for faster rendering.
     """
 
-    def __init__(self, render_type, vertex_array,
-                 normal_array=None, indices_array=None, color_array=None, point_size=2):
-        super(GLVBO, self).__init__()
+    def __init__(
+        self, render_type, vertex_array, normal_array=None, indices_array=None, color_array=None, point_size=2
+    ):
+        super().__init__()
         self._render_type = render_type
         self._point_size = point_size
         if not bool(glGenBuffers):  # Fallback if buffers are not supported.
@@ -183,8 +177,7 @@ class GLVBO(GLReferenceCounter):
             if self._has_normals:  # TODO: Add size check to see if arrays have same size.
                 self._buffer = glGenBuffers(1)
                 glBindBuffer(GL_ARRAY_BUFFER, self._buffer)
-                glBufferData(GL_ARRAY_BUFFER, numpy.concatenate(
-                    (vertex_array, normal_array), 1), GL_STATIC_DRAW)
+                glBufferData(GL_ARRAY_BUFFER, numpy.concatenate((vertex_array, normal_array), 1), GL_STATIC_DRAW)
             else:
                 if self._has_color:
                     glPointSize(self._point_size)
@@ -192,8 +185,7 @@ class GLVBO(GLReferenceCounter):
                     glBindBuffer(GL_ARRAY_BUFFER, self._buffer[0])
                     glBufferData(GL_ARRAY_BUFFER, vertex_array, GL_STATIC_DRAW)
                     glBindBuffer(GL_ARRAY_BUFFER, self._buffer[1])
-                    glBufferData(
-                        GL_ARRAY_BUFFER, numpy.array(color_array, numpy.uint8), GL_STATIC_DRAW)
+                    glBufferData(GL_ARRAY_BUFFER, numpy.array(color_array, numpy.uint8), GL_STATIC_DRAW)
                 else:
                     self._buffer = glGenBuffers(1)
                     glBindBuffer(GL_ARRAY_BUFFER, self._buffer)
@@ -204,8 +196,7 @@ class GLVBO(GLReferenceCounter):
                 self._size = len(indices_array)
                 self._buffer_indices = glGenBuffers(1)
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self._buffer_indices)
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, numpy.array(
-                    indices_array, numpy.uint32), GL_STATIC_DRAW)
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, numpy.array(indices_array, numpy.uint32), GL_STATIC_DRAW)
 
     def render(self):
         glEnableClientState(GL_VERTEX_ARRAY)
@@ -291,7 +282,7 @@ class GLVBO(GLReferenceCounter):
 
     def __del__(self):
         if self._buffer is not None and bool(glDeleteBuffers):
-            logger.warning("VBO was not properly released!")
+            logger.warning('VBO was not properly released!')
 
 
 def unproject(winx, winy, winz, model_matrix, proj_matrix, viewport):
@@ -306,17 +297,29 @@ def unproject(winx, winy, winz, model_matrix, proj_matrix, viewport):
 
     viewport = list(map(float, viewport))
     if viewport[2] > 0 and viewport[3] > 0:
-        vector = numpy.array([(winx - viewport[0]) / viewport[2] * 2.0 - 1.0,
-                              (winy - viewport[1]) / viewport[3] * 2.0 - 1.0,
-                              winz * 2.0 - 1.0, 1]).reshape((1, 4))
+        vector = numpy.array(
+            [
+                (winx - viewport[0]) / viewport[2] * 2.0 - 1.0,
+                (winy - viewport[1]) / viewport[3] * 2.0 - 1.0,
+                winz * 2.0 - 1.0,
+                1,
+            ]
+        ).reshape((1, 4))
         vector = (numpy.matrix(vector) * final_matrix).getA().flatten()
         ret = list(vector)[0:3] / vector[3]
         return ret
 
 
 def convert_3x3_matrix_to_4x4(matrix):
-    return list(matrix.getA()[0]) + [0] + list(matrix.getA()[1]) + \
-        [0] + list(matrix.getA()[2]) + [0, 0, 0, 0, 1]
+    return list(matrix.getA()[0]) + [0] + list(matrix.getA()[1]) + [0] + list(matrix.getA()[2]) + [0, 0, 0, 0, 1]
+
+
+def _image_alpha_bytes(img):
+    if not img.HasAlpha():
+        return None
+    if hasattr(img, 'GetAlpha'):
+        return img.GetAlpha()
+    return img.GetAlphaData()
 
 
 def load_gl_texture(filename):
@@ -324,16 +327,15 @@ def load_gl_texture(filename):
     glBindTexture(GL_TEXTURE_2D, tex)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    img = wx.ImageFromBitmap(wx.Bitmap(get_path_for_image(filename)))
+    img = wx.Bitmap(get_path_for_image(filename)).ConvertToImage()
+    w, h = img.GetWidth(), img.GetHeight()
     rgb_data = img.GetData()
-    alpha_data = img.GetAlphaData()
+    alpha_data = _image_alpha_bytes(img)
     if alpha_data is not None:
-        data = ''
-        for i in range(0, len(alpha_data)):
-            data += rgb_data[i * 3:i * 3 + 3] + alpha_data[i]
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.GetWidth(),
-                     img.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
+        rgb = numpy.frombuffer(rgb_data, dtype=numpy.uint8).reshape((h, w, 3))
+        alpha = numpy.frombuffer(alpha_data, dtype=numpy.uint8).reshape((h, w, 1))
+        data = numpy.concatenate((rgb, alpha), axis=2).tobytes()
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
     else:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.GetWidth(),
-                     img.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, rgb_data)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb_data)
     return tex

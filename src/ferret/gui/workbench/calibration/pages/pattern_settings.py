@@ -1,26 +1,24 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import cv2
-import numpy as np
 
 import wx._core
 
-from ferret.util import resources
-
-from ferret.gui.engine import image_capture, image_detection, scanner_autocheck, laser_triangulation, \
-    platform_extrinsics
+from ferret.gui.engine import (
+    image_capture,
+    image_detection,
+)
+from ferret.gui.util.augmented_view import augmented_draw_pattern
 from ferret.gui.util.image_view import ImageView
 from ferret.gui.util.video_view import VideoView
-from ferret.gui.util.augmented_view import augmented_draw_pattern
+from ferret.util import resources
+
 
 class PatternSettingsPages(wx.Panel):
-
     def __init__(self, parent, start_callback=None, exit_callback=None):
         wx.Panel.__init__(self, parent)
 
@@ -28,7 +26,7 @@ class PatternSettingsPages(wx.Panel):
         self.video_view = VideoView(self, self.get_image)
 
         self.info_panel = wx.Panel(self)
-        title_text = wx.StaticText(self.info_panel, label="Pattern settings")
+        title_text = wx.StaticText(self.info_panel, label='Pattern settings')
         title_font = title_text.GetFont()
         title_font.SetWeight(wx.BOLD)
         title_text.SetFont(title_font)
@@ -44,27 +42,32 @@ class PatternSettingsPages(wx.Panel):
         hbox.Add(self.info_panel, 1, wx.ALL | wx.EXPAND, 3)
         hbox.Add(self.video_view, 1, wx.ALL | wx.EXPAND, 3)
 
-        self.add_info(_("1) Pattern size is the number of inner \"cross\" points "
-                        "of the pattern"), "pattern-size.jpg")
+        self.add_info(_('1) Pattern size is the number of inner "cross" points of the pattern'), 'pattern-size.jpg')
 
-        self.add_info(_("2) Origin distance is the distance from lower set of  \"cross\" points "
-                        "to the platform"), "pattern-distance.jpg")
+        self.add_info(
+            _('2) Origin distance is the distance from lower set of  "cross" points to the platform'),
+            'pattern-distance.jpg',
+        )
 
-        self.add_info(_("3) Pattern border is the clean white space around chessboard pattern."
-                        "\nThis white space is used for lasers calibration"), "")
+        self.add_info(
+            _(
+                '3) Pattern border is the clean white space around chessboard pattern.'
+                '\nThis white space is used for lasers calibration'
+            ),
+            '',
+        )
 
         self.Layout()
 
     def add_info(self, desc, picture):
-        if desc != "":
+        if desc != '':
             desc_text = wx.StaticText(self.info_panel, label=desc)
             self.info_box.Add(desc_text, 0, wx.ALL | wx.EXPAND, 14)
 
-        if picture != "":
+        if picture != '':
             image_view = ImageView(self.info_panel, quality=wx.IMAGE_QUALITY_HIGH)
             image_view.set_image(wx.Image(resources.get_path_for_image(picture)))
             self.info_box.Add(image_view, 1, wx.ALL | wx.EXPAND, 3)
-
 
     def play(self):
         self.video_view.play()

@@ -1,49 +1,59 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
 import numpy as np
+import wx._core
 
-from ferret.gui.engine import driver, pattern, calibration_data, laser_triangulation, \
-    platform_extrinsics, combo_calibration, image_capture
-from ferret.util import profile, system as sys
-from ferret.gui.util.custom_panels import ExpandablePanel, Slider, CheckBox, \
-    FloatTextBox, FloatTextBoxArray, FloatLabel, FloatLabelArray, Button, \
-    IntLabel, IntTextBox, ComboBox
+from ferret.gui.engine import (
+    calibration_data,
+    combo_calibration,
+    driver,
+    laser_triangulation,
+    pattern,
+    platform_extrinsics,
+)
+from ferret.gui.util.custom_panels import (
+    Button,
+    CheckBox,
+    ComboBox,
+    ExpandablePanel,
+    FloatLabel,
+    FloatLabelArray,
+    FloatTextBox,
+    FloatTextBoxArray,
+    IntTextBox,
+    Slider,
+)
 from ferret.gui.util.gryphon_controls import Header
+from ferret.util import profile
+from ferret.util import system as sys
 
 
 class PatternSettings(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Pattern settings"),
-                                 selected_callback=on_selected_callback)
+        ExpandablePanel.__init__(self, parent, _('Pattern settings'), selected_callback=on_selected_callback)
 
     def add_controls(self):
+        self.add_control('pattern_rows', Slider, _('Number of corner rows in the pattern'))
+        self.add_control('pattern_columns', Slider, _('Number of corner columns in the pattern'))
+        self.add_control('pattern_square_width', FloatTextBox, _('Square width in the pattern (mm)'))
         self.add_control(
-            'pattern_rows', Slider, _("Number of corner rows in the pattern"))
-        self.add_control(
-            'pattern_columns', Slider, _("Number of corner columns in the pattern"))
-        self.add_control(
-            'pattern_square_width', FloatTextBox, _("Square width in the pattern (mm)"))
-        self.add_control(
-            'pattern_origin_distance', FloatTextBox,
-            _("Minimum distance between the origin of the pattern (bottom-left corner) "
-              "and the pattern's base surface (mm)"))
+            'pattern_origin_distance',
+            FloatTextBox,
+            _(
+                'Minimum distance between the origin of the pattern (bottom-left corner) '
+                "and the pattern's base surface (mm)"
+            ),
+        )
 
-        self.add_control(
-            'pattern_border_l', FloatTextBox, _("Border Left (mm)"))
-        self.add_control(
-            'pattern_border_r', FloatTextBox, _("Border Right (mm)"))
-        self.add_control(
-            'pattern_border_t', FloatTextBox, _("Border Top (mm)"))
-        self.add_control(
-            'pattern_border_b', FloatTextBox, _("Border Bottom (mm)"))
+        self.add_control('pattern_border_l', FloatTextBox, _('Border Left (mm)'))
+        self.add_control('pattern_border_r', FloatTextBox, _('Border Right (mm)'))
+        self.add_control('pattern_border_t', FloatTextBox, _('Border Top (mm)'))
+        self.add_control('pattern_border_b', FloatTextBox, _('Border Bottom (mm)'))
 
     def update_callbacks(self):
         self.update_callback('pattern_rows', lambda v: self._update_rows(v))
@@ -81,30 +91,31 @@ class PatternSettings(ExpandablePanel):
 
 
 class ScannerAutocheck(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Scanner autocheck"),
-                                 selected_callback=on_selected_callback,
-                                 has_undo=False, has_restore=False)
+        ExpandablePanel.__init__(
+            self,
+            parent,
+            _('Scanner autocheck'),
+            selected_callback=on_selected_callback,
+            has_undo=False,
+            has_restore=False,
+        )
 
 
 class RotatingPlatform(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
         ExpandablePanel.__init__(
-            self, parent, _("Rotating platform"),
-            selected_callback=on_selected_callback, has_undo=False)
+            self, parent, _('Rotating platform'), selected_callback=on_selected_callback, has_undo=False
+        )
 
     def add_controls(self):
-        self.add_control('motor_step_calibration', FloatTextBox,
-                         _("Step for laser and platform calibration"))
-        self.add_control('motor_speed_calibration', FloatTextBox,
-                         _("Speed for laser and platform calibration"))
-        self.add_control('motor_acceleration_calibration', FloatTextBox,
-                         _("Acceleration for laser and platform calibration"))
+        self.add_control('motor_step_calibration', FloatTextBox, _('Step for laser and platform calibration'))
+        self.add_control('motor_speed_calibration', FloatTextBox, _('Speed for laser and platform calibration'))
+        self.add_control(
+            'motor_acceleration_calibration', FloatTextBox, _('Acceleration for laser and platform calibration')
+        )
 
-        self.add_control('after_calibration_position', ComboBox,
-                         _("Platform position on finish"))
+        self.add_control('after_calibration_position', ComboBox, _('Platform position on finish'))
 
     def update_callbacks(self):
         self.update_callback('motor_step_calibration', self._set_step)
@@ -132,11 +143,12 @@ class RotatingPlatform(ExpandablePanel):
         platform_extrinsics.final_move = value
         combo_calibration.final_move = value
 
-class LaserTriangulationPanel(ExpandablePanel):
 
+class LaserTriangulationPanel(ExpandablePanel):
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Laser triangulation"),
-                                 selected_callback=on_selected_callback, has_undo=False)
+        ExpandablePanel.__init__(
+            self, parent, _('Laser triangulation'), selected_callback=on_selected_callback, has_undo=False
+        )
 
     def add_controls(self):
         self.add_control('distance_left', FloatLabel)
@@ -144,7 +156,8 @@ class LaserTriangulationPanel(ExpandablePanel):
         self.add_control('distance_right', FloatLabel)
         self.add_control('normal_right', FloatLabelArray)
 
-'''
+
+"""
 class CloudCorrectionPanel(ExpandablePanel):
 
     def __init__(self, parent, on_selected_callback):
@@ -154,13 +167,14 @@ class CloudCorrectionPanel(ExpandablePanel):
     def add_controls(self):
         self.add_control('cloud_correction_left', FloatLabelArray)
         self.add_control('cloud_correction_right', FloatLabelArray)
-'''
+"""
+
 
 class PlatformExtrinsics(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Platform extrinsics"),
-                                 selected_callback=on_selected_callback, has_undo=False)
+        ExpandablePanel.__init__(
+            self, parent, _('Platform extrinsics'), selected_callback=on_selected_callback, has_undo=False
+        )
 
     def add_controls(self):
         self.add_control('rotation_matrix', FloatTextBoxArray)
@@ -168,29 +182,32 @@ class PlatformExtrinsics(ExpandablePanel):
 
 
 class VideoSettings(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Video settings"),
-                                 selected_callback=on_selected_callback,
-                                 has_undo=False, restore_callback=self._set_resolution)
+        ExpandablePanel.__init__(
+            self,
+            parent,
+            _('Video settings'),
+            selected_callback=on_selected_callback,
+            has_undo=False,
+            restore_callback=self._set_resolution,
+        )
 
     def add_controls(self):
-        self.add_control('camera_rotate', CheckBox, _("Rotate image"))
-        self.add_control('camera_hflip', CheckBox, _("Horizontal flip"))
-        self.add_control('camera_vflip', CheckBox, _("Vertical flip"))
+        self.add_control('camera_rotate', CheckBox, _('Rotate image'))
+        self.add_control('camera_hflip', CheckBox, _('Horizontal flip'))
+        self.add_control('camera_vflip', CheckBox, _('Vertical flip'))
         if driver.camera.set_resolution_supported():
-            self.add_control('auto_resolution', CheckBox, _("MAX resolution"))
-            self.add_control('camera_width', IntTextBox, _("Width"))
-            self.add_control('camera_height', IntTextBox, _("Height"))
-            self.add_control('set_resolution_button', Button, _("Set resolution"))
+            self.add_control('auto_resolution', CheckBox, _('MAX resolution'))
+            self.add_control('camera_width', IntTextBox, _('Width'))
+            self.add_control('camera_height', IntTextBox, _('Height'))
+            self.add_control('set_resolution_button', Button, _('Set resolution'))
 
-            if self.get_control('camera_width').GetValue()<0 or self.get_control('camera_height').GetValue()<0:
+            if self.get_control('camera_width').GetValue() < 0 or self.get_control('camera_height').GetValue() < 0:
                 self.get_control('auto_resolution').SetValue(True)
                 self._auto_resolution(True)
-            
+
         if driver.camera.focus_supported():
-            self.add_control(
-                'camera_focus', Slider, _("Manual focus"))
+            self.add_control('camera_focus', Slider, _('Manual focus'))
 
     def update_callbacks(self):
         self.update_callback('camera_rotate', lambda v: driver.camera.set_rotate(v))
@@ -217,9 +234,10 @@ class VideoSettings(ExpandablePanel):
             if real_width != new_width or real_height != new_height:
                 dlg = wx.MessageDialog(
                     self,
-                    _("Your camera does not accept this resolution.\n"
-                      "Do you want to use the nearest values?"),
-                    _("Wrong resolution"), wx.YES_NO | wx.ICON_QUESTION)
+                    _('Your camera does not accept this resolution.\nDo you want to use the nearest values?'),
+                    _('Wrong resolution'),
+                    wx.YES_NO | wx.ICON_QUESTION,
+                )
                 result = dlg.ShowModal() == wx.ID_YES
                 dlg.Destroy()
                 if result:
@@ -256,19 +274,23 @@ class VideoSettings(ExpandablePanel):
 
 
 class CameraIntrinsics(ExpandablePanel):
-
     def __init__(self, parent, on_selected_callback):
-        ExpandablePanel.__init__(self, parent, _("Camera intrinsics"),
-                                 selected_callback=on_selected_callback, has_undo=False)
+        ExpandablePanel.__init__(
+            self, parent, _('Camera intrinsics'), selected_callback=on_selected_callback, has_undo=False
+        )
 
     def add_controls(self):
         self.add_control('camera_matrix', FloatTextBoxArray)
         self.add_control('distortion_vector', FloatTextBoxArray)
         self.add_control('New camera prepare calculator', Header)
         self.add_control('new_camera_matrix', FloatLabelArray)
-        self.add_control('new_camera_ruler', FloatTextBox, _("Test target (ruler) length"))
-        self.add_control('new_camera_distance_h', FloatTextBox, _("Min distance to view whole test target placed horizontally"))
-        self.add_control('new_camera_distance_v', FloatTextBox, _("Min distance to view whole test target placed vertically"))
+        self.add_control('new_camera_ruler', FloatTextBox, _('Test target (ruler) length'))
+        self.add_control(
+            'new_camera_distance_h', FloatTextBox, _('Min distance to view whole test target placed horizontally')
+        )
+        self.add_control(
+            'new_camera_distance_v', FloatTextBox, _('Min distance to view whole test target placed vertically')
+        )
         self.add_control('apply_new_camera_button', Button)
 
     def Enable(self):
@@ -282,7 +304,7 @@ class CameraIntrinsics(ExpandablePanel):
         self.update_callback('new_camera_ruler', lambda v: self._update_new_camera_matrix(v))
         self.update_callback('new_camera_distance_h', lambda v: self._update_new_camera_matrix(v))
         self.update_callback('new_camera_distance_v', lambda v: self._update_new_camera_matrix(v))
-        self.update_callback('apply_new_camera_button', self._apply_new_camera_matrix )
+        self.update_callback('apply_new_camera_button', self._apply_new_camera_matrix)
 
     def _update_camera_matrix(self, value):
         calibration_data.camera_matrix = value
@@ -296,14 +318,11 @@ class CameraIntrinsics(ExpandablePanel):
             l = profile.settings['new_camera_ruler']
             h = profile.settings['new_camera_distance_h']
             v = profile.settings['new_camera_distance_v']
-            M = [ [res[0]*h/l, 0, res[0]/2],
-                  [0, res[1]*v/l, res[1]/2],
-                  [0,0,1] ]
+            M = [[res[0] * h / l, 0, res[0] / 2], [0, res[1] * v / l, res[1] / 2], [0, 0, 1]]
             profile.settings['new_camera_matrix'] = np.array(M)
             self.content['new_camera_matrix'].update_from_profile()
-        
+
     def _apply_new_camera_matrix(self):
         self._update_new_camera_matrix(0)
-        profile.settings['camera_matrix'] = np.array( profile.settings['new_camera_matrix'] ).copy()
+        profile.settings['camera_matrix'] = np.array(profile.settings['new_camera_matrix']).copy()
         self.content['camera_matrix'].update_from_profile()
-

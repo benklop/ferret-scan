@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -14,36 +13,31 @@ from ferret.engine.calibration.calibration import Calibration, CalibrationCancel
 
 
 class PatternNotDetected(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Pattern Not Detected")
+        Exception.__init__(self, 'Pattern Not Detected')
 
 
 class WrongMotorDirection(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Wrong Motor Direction")
+        Exception.__init__(self, 'Wrong Motor Direction')
 
 
 class LaserNotDetected(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Laser Not Detected")
+        Exception.__init__(self, 'Laser Not Detected')
 
 
 class WrongLaserPosition(Exception):
-
     def __init__(self):
-        Exception.__init__(self, "Wrong Laser Position")
+        Exception.__init__(self, 'Wrong Laser Position')
 
 
 @Singleton
 class Autocheck(Calibration):
-
     """Auto check algorithm:
-            - Check pattern detection
-            - Check motor direction
-            - Check lasers
+    - Check pattern detection
+    - Check motor direction
+    - Check lasers
     """
 
     def __init__(self):
@@ -147,7 +141,7 @@ class Autocheck(Calibration):
     def check_lasers(self):
         image = self.image_capture.capture_pattern()
         corners = self.image_detection.detect_corners(image)
-#        self.image_capture.flush_laser()
+        #        self.image_capture.flush_laser()
         for i in range(2):
             if not self._is_calibrating:
                 raise CalibrationCancel()

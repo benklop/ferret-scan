@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 from six.moves import range
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
@@ -12,12 +11,11 @@ import numpy as np
 
 from ferret import Singleton
 from ferret.engine.calibration.calibration_data import CalibrationData
-
 from ferret.util import profile
 
-@Singleton
-class PointCloudROI(object):
 
+@Singleton
+class PointCloudROI:
     def __init__(self):
         self.calibration_data = CalibrationData()
         self._use_roi = False
@@ -42,11 +40,13 @@ class PointCloudROI(object):
         self._center_u = 0
         self._center_v = 0
         self._circle_resolution = 30
-        self._circle_array = np.array([[np.cos(i * 2 * np.pi / self._circle_resolution)
-                                        for i in range(self._circle_resolution)],
-                                       [np.sin(i * 2 * np.pi / self._circle_resolution)
-                                        for i in range(self._circle_resolution)],
-                                       np.zeros(self._circle_resolution)])
+        self._circle_array = np.array(
+            [
+                [np.cos(i * 2 * np.pi / self._circle_resolution) for i in range(self._circle_resolution)],
+                [np.sin(i * 2 * np.pi / self._circle_resolution) for i in range(self._circle_resolution)],
+                np.zeros(self._circle_resolution),
+            ]
+        )
 
     def read_profile(self):
         self.set_show_center(profile.settings['show_center'])
@@ -72,8 +72,9 @@ class PointCloudROI(object):
         if self._center_v != 0 and self._center_u != 0 and self._use_roi:
             if image is not None:
                 mask = np.zeros(image.shape, np.uint8)
-                mask[self._vmin:self._vmax, self._umin:self._umax] = image[
-                    self._vmin:self._vmax, self._umin:self._umax]
+                mask[self._vmin : self._vmax, self._umin : self._umax] = image[
+                    self._vmin : self._vmax, self._umin : self._umax
+                ]
                 return mask
 
         return image
@@ -84,16 +85,15 @@ class PointCloudROI(object):
             z = point_cloud[2, :]
 
             if self._use_roi:
-                idx = np.where((z >= 0) &
-                               (z <= self._height) &
-                               (rho >= -self._radious) &
-                               (rho <= self._radious))[0]
+                idx = np.where((z >= 0) & (z <= self._height) & (rho >= -self._radious) & (rho <= self._radious))[0]
             else:
                 # valid points should be above platform and in front of camera for all scanning cylinder area
                 # fast approximation of camera distance is platform Z offset
-                idx = np.where((z >= 0) &
-                               (rho >= -self.calibration_data.platform_translation[2]) &
-                               (rho <=  self.calibration_data.platform_translation[2]))[0]
+                idx = np.where(
+                    (z >= 0)
+                    & (rho >= -self.calibration_data.platform_translation[2])
+                    & (rho <= self.calibration_data.platform_translation[2])
+                )[0]
 
             return point_cloud[:, idx], texture[:, idx]
 
@@ -111,40 +111,43 @@ class PointCloudROI(object):
             thickness_hiden = 1
             cy = self.calibration_data.camera_matrix[1][2]
 
-            center_up_u = self._no_trimmed_umin + \
-                (self._no_trimmed_umax - self._no_trimmed_umin) / 2
+            center_up_u = self._no_trimmed_umin + (self._no_trimmed_umax - self._no_trimmed_umin) / 2
             center_up_v = self._upper_vmin + (self._upper_vmax - self._upper_vmin) / 2
-            center_down_u = self._no_trimmed_umin + \
-                (self._no_trimmed_umax - self._no_trimmed_umin) / 2
+            center_down_u = self._no_trimmed_umin + (self._no_trimmed_umax - self._no_trimmed_umin) / 2
             center_down_v = self._lower_vmax + (self._lower_vmin - self._lower_vmax) / 2
-            axes_up = ((self._no_trimmed_umax - self._no_trimmed_umin) / 2,
-                       ((self._upper_vmax - self._upper_vmin) / 2))
-            axes_down = ((self._no_trimmed_umax - self._no_trimmed_umin) / 2,
-                         ((self._lower_vmin - self._lower_vmax) / 2))
+            axes_up = ((self._no_trimmed_umax - self._no_trimmed_umin) / 2, ((self._upper_vmax - self._upper_vmin) / 2))
+            axes_down = (
+                (self._no_trimmed_umax - self._no_trimmed_umin) / 2,
+                ((self._lower_vmin - self._lower_vmax) / 2),
+            )
 
             # upper ellipse
-            if (center_up_v < cy):
-                cv2.ellipse(image, (center_up_u, center_up_v), axes_up,
-                            0, 180, 360, (0, 100, 200), thickness)
-                cv2.ellipse(image, (center_up_u, center_up_v), axes_up,
-                            0, 0, 180, (0, 100, 200), thickness_hiden)
+            if center_up_v < cy:
+                cv2.ellipse(image, (center_up_u, center_up_v), axes_up, 0, 180, 360, (0, 100, 200), thickness)
+                cv2.ellipse(image, (center_up_u, center_up_v), axes_up, 0, 0, 180, (0, 100, 200), thickness_hiden)
             else:
-                cv2.ellipse(image, (center_up_u, center_up_v), axes_up,
-                            0, 180, 360, (0, 100, 200), thickness)
-                cv2.ellipse(image, (center_up_u, center_up_v), axes_up,
-                            0, 0, 180, (0, 100, 200), thickness)
+                cv2.ellipse(image, (center_up_u, center_up_v), axes_up, 0, 180, 360, (0, 100, 200), thickness)
+                cv2.ellipse(image, (center_up_u, center_up_v), axes_up, 0, 0, 180, (0, 100, 200), thickness)
 
             # lower ellipse
-            cv2.ellipse(image, (center_down_u, center_down_v), axes_down,
-                        0, 180, 360, (0, 100, 200), thickness_hiden)
-            cv2.ellipse(image, (center_down_u, center_down_v),
-                        axes_down, 0, 0, 180, (0, 100, 200), thickness)
+            cv2.ellipse(image, (center_down_u, center_down_v), axes_down, 0, 180, 360, (0, 100, 200), thickness_hiden)
+            cv2.ellipse(image, (center_down_u, center_down_v), axes_down, 0, 0, 180, (0, 100, 200), thickness)
 
             # cylinder lines
-            cv2.line(image, (self._no_trimmed_umin, center_up_v),
-                     (self._no_trimmed_umin, center_down_v), (0, 100, 200), thickness)
-            cv2.line(image, (self._no_trimmed_umax, center_up_v),
-                     (self._no_trimmed_umax, center_down_v), (0, 100, 200), thickness)
+            cv2.line(
+                image,
+                (self._no_trimmed_umin, center_up_v),
+                (self._no_trimmed_umin, center_down_v),
+                (0, 100, 200),
+                thickness,
+            )
+            cv2.line(
+                image,
+                (self._no_trimmed_umax, center_up_v),
+                (self._no_trimmed_umax, center_down_v),
+                (0, 100, 200),
+                thickness,
+            )
 
             # view center
             if axes_up[0] <= 0 or axes_up[1] <= 0:
@@ -155,11 +158,11 @@ class PointCloudROI(object):
                 axes_down_center = (20, axes_down[1] * 20 / axes_down[0])
 
             # upper center
-            cv2.ellipse(image, (self._center_u, min(center_up_v, self._center_v)),
-                        axes_up_center, 0, 0, 360, (0, 70, 120), -1)
+            cv2.ellipse(
+                image, (self._center_u, min(center_up_v, self._center_v)), axes_up_center, 0, 0, 360, (0, 70, 120), -1
+            )
             # lower center
-            cv2.ellipse(image, (self._center_u, self._center_v),
-                        axes_down_center, 0, 0, 360, (0, 70, 120), -1)
+            cv2.ellipse(image, (self._center_u, self._center_v), axes_down_center, 0, 0, 360, (0, 70, 120), -1)
         return image
 
     def _compute_roi(self):
@@ -205,9 +208,9 @@ class PointCloudROI(object):
             v_ = np.array(v.T)
 
             # Lower cylinder base
-            a = v_[:(len(v_) / 2)]
+            a = v_[: (len(v_) / 2)]
             # Upper cylinder base
-            b = v_[(len(v_) / 2):]
+            b = v_[(len(v_) / 2) :]
 
             self._lower_vmin = int(round(np.max(a)))
             self._lower_vmax = int(round(np.min(a)))

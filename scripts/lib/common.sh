@@ -99,14 +99,39 @@ ferret_python() {
     echo "${FERRET_PYTHON:-python3}"
 }
 
+# PyOpenGL must match wx GLCanvas: EGL on Wayland, GLX on X11.
+# Set FERRET_FORCE_X11=1 to use the legacy XWayland + GLX stack.
+ferret_configure_opengl() {
+    if [[ "$(uname -s)" != Linux ]]; then
+        return
+    fi
+    if [[ -n "${FERRET_FORCE_X11:-}" ]]; then
+        export GDK_BACKEND=x11
+        export PYOPENGL_PLATFORM="${PYOPENGL_PLATFORM:-glx}"
+        return
+    fi
+    if [[ -n "${WAYLAND_DISPLAY:-}" || "${XDG_SESSION_TYPE:-}" == wayland ]]; then
+        export PYOPENGL_PLATFORM="${PYOPENGL_PLATFORM:-egl}"
+    else
+        export PYOPENGL_PLATFORM="${PYOPENGL_PLATFORM:-glx}"
+    fi
+}
+
+# shellcheck source=wx_build.sh
+[[ -f "${BASH_SOURCE[0]%/*}/wx_build.sh" ]] && source "${BASH_SOURCE[0]%/*}/wx_build.sh"
+
 # Library paths only (checks / snap subprocesses — avoid PYTHONPATH shadowing libferret).
 ferret_export_libs() {
-    local libferret sdk_lib pyorbbec_install
+    local libferret sdk_lib pyorbbec_install venv_py
     libferret="$(ferret_libferret_root)"
     sdk_lib="$(ferret_sdk_lib_dir)"
     pyorbbec_install="$(ferret_pyorbbec_root)/install/lib"
+    venv_py="$(ferret_python)"
 
     export FERRET_LIBFERRET_ROOT="${libferret}"
+    if declare -F ferret_prepend_wx_runtime_ld_path >/dev/null 2>&1; then
+        ferret_prepend_wx_runtime_ld_path "${venv_py}"
+    fi
     if [[ -d "${sdk_lib}" ]]; then
         export LD_LIBRARY_PATH="${sdk_lib}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
     fi
@@ -117,17 +142,21 @@ ferret_export_libs() {
 
 # Export runtime variables for the GUI and dev tools.
 ferret_export_dev_runtime() {
-    local root libferret sdk_lib pyorbbec_install
+    local root libferret sdk_lib pyorbbec_install venv_py
     root="$(ferret_repo_root)"
     libferret="$(ferret_libferret_root)"
     sdk_lib="$(ferret_sdk_lib_dir)"
     pyorbbec_install="$(ferret_pyorbbec_root)/install/lib"
+    venv_py="$(ferret_python)"
 
     export FERRET_REPO_ROOT="${root}"
     export FERRET_LIBFERRET_ROOT="${libferret}"
-    export FERRET_PYTHON="$(ferret_python)"
+    export FERRET_PYTHON="${venv_py}"
     export PYTHONPATH="${root}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
+    if declare -F ferret_prepend_wx_runtime_ld_path >/dev/null 2>&1; then
+        ferret_prepend_wx_runtime_ld_path "${venv_py}"
+    fi
     if [[ -d "${sdk_lib}" ]]; then
         export LD_LIBRARY_PATH="${sdk_lib}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
     fi

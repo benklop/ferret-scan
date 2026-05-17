@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
 import six
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.\
                  Copyright (C) 2013 David Braam from Cura Project'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import os
 import gettext
+import os
 
 from ferret.util import system
 
@@ -22,7 +21,7 @@ def set_base_path(path):
 
 
 def get_path_for_resource(directory, resource_name):
-    assert os.path.isdir(resource_base_path), "{p} is not a directory".format(p=resource_base_path)
+    assert os.path.isdir(resource_base_path), f'{resource_base_path} is not a directory'
     path = os.path.normpath(os.path.join(resource_base_path, directory, resource_name))
     return path
 
@@ -72,10 +71,10 @@ def setup_localization(selected_language=None):
 
 def get_language_options():
     return [
-        ['en', u'English'],
-        ['es', u'Español'],
-        ['fr', u'Français'],
-        ['de', u'Deutsch'],
-        ['it', u'Italiano'],
-        ['pt', u'Português'],
+        ['en', 'English'],
+        ['es', 'Español'],
+        ['fr', 'Français'],
+        ['de', 'Deutsch'],
+        ['it', 'Italiano'],
+        ['pt', 'Português'],
     ]

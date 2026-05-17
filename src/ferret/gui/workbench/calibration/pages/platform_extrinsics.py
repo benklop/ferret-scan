@@ -1,45 +1,45 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
-from __future__ import print_function
 import six
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
-import wx._core
 import numpy as np
-
-from ferret.util import profile
-
-from ferret.gui.engine import pattern, calibration_data, platform_extrinsics, image_capture, image_detection, aruco_detection
-from ferret.gui.util.pattern_distance_window import PatternDistanceWindow
-from ferret.engine.calibration.platform_extrinsics import PlatformExtrinsicsError
-
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.figure import Figure
+import wx._core
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from matplotlib.figure import Figure
 
+from ferret.engine.calibration.platform_extrinsics import PlatformExtrinsicsError
+from ferret.gui.engine import (
+    aruco_detection,
+    calibration_data,
+    image_capture,
+    image_detection,
+    platform_extrinsics,
+)
+from ferret.gui.util.pattern_distance_window import PatternDistanceWindow
 from ferret.gui.workbench.calibration.pages.page import Page
 from ferret.gui.workbench.calibration.pages.video_page import VideoPage
-
+from ferret.util import profile
 from ferret.util.gryphon_util import estimate_platform_angle_from_pattern
 
 
 class PlatformExtrinsicsPages(wx.Panel):
-
     def __init__(self, parent, start_callback=None, exit_callback=None):
         wx.Panel.__init__(self, parent)  # , style=wx.RAISED_BORDER)
 
         self.start_callback = start_callback
         self.exit_callback = exit_callback
 
-        self.video_page = VideoPage(self, title=_('Platform extrinsics'),
-                                    start_callback=self.on_start, cancel_callback=self.on_exit)
-        self.video_page.add_info(_("Estimate platform position."), "")
-        self.video_page.add_info(_("Put the pattern on the platform as shown in the "
-                                 "picture and press \"Start\""), "pattern-position.png")
+        self.video_page = VideoPage(
+            self, title=_('Platform extrinsics'), start_callback=self.on_start, cancel_callback=self.on_exit
+        )
+        self.video_page.add_info(_('Estimate platform position.'), '')
+        self.video_page.add_info(
+            _('Put the pattern on the platform as shown in the picture and press "Start"'), 'pattern-position.png'
+        )
 
         self.result_page = ResultPage(self, exit_callback=self.on_exit)
 
@@ -105,32 +105,34 @@ class PlatformExtrinsicsPages(wx.Panel):
                     platform_extrinsics.angle_offset = estimate_platform_angle_from_pattern(pose)
                 else:
                     platform_extrinsics.angle_offset = -90
-                print((platform_extrinsics.angle_offset))
+                print(platform_extrinsics.angle_offset)
                 # full circle for ARUCO markers
                 if corners:
                     platform_extrinsics.angle_target = 360
                 else:
                     platform_extrinsics.angle_target = 180
-                print((platform_extrinsics.angle_target))
+                print(platform_extrinsics.angle_target)
 
-                platform_extrinsics.set_callbacks(lambda: wx.CallAfter(self.before_calibration),
-                                                  lambda p: wx.CallAfter(self.progress_calibration, p),
-                                                  lambda r: wx.CallAfter(self.after_calibration, r))
+                platform_extrinsics.set_callbacks(
+                    lambda: wx.CallAfter(self.before_calibration),
+                    lambda p: wx.CallAfter(self.progress_calibration, p),
+                    lambda r: wx.CallAfter(self.after_calibration, r),
+                )
                 platform_extrinsics.start()
             else:
                 dlg = wx.MessageDialog(
-                    self, _("Please put calibration pattern/markers on platform and make sure it is detected correctly.\n"
-                            "You can set pattern parameters in \"Pattern settings\" panel.\n"
-                            "Also you can set up the calibration's capture camera settings "
-                            "in the \"Adjustment workbench\"."),
-                    _("Pattern not detected"), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Please put calibration pattern/markers on platform and make sure it is detected correctly.\n'
+                        'You can set pattern parameters in "Pattern settings" panel.\n'
+                        "Also you can set up the calibration's capture camera settings "
+                        'in the "Adjustment workbench".'
+                    ),
+                    _('Pattern not detected'),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
-
-
-
-
-
 
     def on_exit(self):
         platform_extrinsics.cancel()
@@ -140,15 +142,17 @@ class PlatformExtrinsicsPages(wx.Panel):
 
 
 class ResultPage(Page):
-
     def __init__(self, parent, exit_callback=None):
-        Page.__init__(self, parent,
-                      title=_('Platform extrinsics result'),
-                      desc='.',
-                      left=_('Reject'),
-                      right=_('Accept'),
-                      button_left_callback=self.on_reject,
-                      button_right_callback=self.on_accept)
+        Page.__init__(
+            self,
+            parent,
+            title=_('Platform extrinsics result'),
+            desc='.',
+            left=_('Reject'),
+            right=_('Accept'),
+            button_left_callback=self.on_reject,
+            button_right_callback=self.on_accept,
+        )
 
         self.result = None
         self.exit_callback = exit_callback
@@ -183,35 +187,36 @@ class ResultPage(Page):
             t = result[1]
             self.result = (R, t)
             np.set_printoptions(formatter={'float': '{:g}'.format})
-            text = ' R: {0}  t: {1}'.format(
-                   np.round(R, 2), np.round(t, 4)).replace('\n', '')
+            text = f' R: {np.round(R, 2)}  t: {np.round(t, 4)}'.replace('\n', '')
             np.set_printoptions()
             self.desc_text.SetLabel(text)
             self.plot_panel.clear()
             self.plot_panel.add(result)
             self.plot_panel.Show()
             self.Layout()
-            dlg = wx.MessageDialog(
-                self, _("Platform calibrated correctly"),
-                _("Success"), wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _('Platform calibrated correctly'), _('Success'), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.Layout()
         else:
             if isinstance(result, PlatformExtrinsicsError):
                 dlg = wx.MessageDialog(
-                    self, _("Platform extrinsics calibration has failed. "
-                            "Please check the pattern and try again. "
-                            "Also you can set up the calibration's capture settings "
-                            "in the \"Adjustment workbench\" until the pattern "
-                            "is detected correctly"),
-                    _(result), wx.OK | wx.ICON_ERROR)
+                    self,
+                    _(
+                        'Platform extrinsics calibration has failed. '
+                        'Please check the pattern and try again. '
+                        "Also you can set up the calibration's capture settings "
+                        'in the "Adjustment workbench" until the pattern '
+                        'is detected correctly'
+                    ),
+                    _(result),
+                    wx.OK | wx.ICON_ERROR,
+                )
                 dlg.ShowModal()
                 dlg.Destroy()
 
 
 class PlatformExtrinsics3DPlot(wx.Panel):
-
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -221,8 +226,7 @@ class PlatformExtrinsics3DPlot(wx.Panel):
         fig = Figure(facecolor=(0.7490196, 0.7490196, 0.7490196, 1), tight_layout=True)
         self.canvas = FigureCanvasWxAgg(self, -1, fig)
         self.canvas.SetExtraStyle(wx.EXPAND)
-        self.ax = fig.add_subplot(111, projection='3d',
-                                  facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
+        self.ax = fig.add_subplot(111, projection='3d', facecolor=(0.7490196, 0.7490196, 0.7490196, 1))
 
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Layout()
@@ -251,15 +255,27 @@ class PlatformExtrinsics3DPlot(wx.Panel):
                 self.ax.scatter(dat.t[0], dat.t[2], dat.t[1], c='r', marker='o')
 
         # calibrated platform XYZ
-        self.ax.plot([t[0], t[0] + 50 * R[0][0]], 
-                     [t[2], t[2] + 50 * R[2][0]],
-                     [t[1], t[1] + 50 * R[1][0]], linewidth=2.0, color='red')
-        self.ax.plot([t[0], t[0] + 50 * R[0][1]], 
-                     [t[2], t[2] + 50 * R[2][1]],
-                     [t[1], t[1] + 50 * R[1][1]], linewidth=2.0, color='green')
-        self.ax.plot([t[0], t[0] + 50 * R[0][2]], 
-                     [t[2], t[2] + 50 * R[2][2]],
-                     [t[1], t[1] + 50 * R[1][2]], linewidth=2.0, color='blue')
+        self.ax.plot(
+            [t[0], t[0] + 50 * R[0][0]],
+            [t[2], t[2] + 50 * R[2][0]],
+            [t[1], t[1] + 50 * R[1][0]],
+            linewidth=2.0,
+            color='red',
+        )
+        self.ax.plot(
+            [t[0], t[0] + 50 * R[0][1]],
+            [t[2], t[2] + 50 * R[2][1]],
+            [t[1], t[1] + 50 * R[1][1]],
+            linewidth=2.0,
+            color='green',
+        )
+        self.ax.plot(
+            [t[0], t[0] + 50 * R[0][2]],
+            [t[2], t[2] + 50 * R[2][2]],
+            [t[1], t[1] + 50 * R[1][2]],
+            linewidth=2.0,
+            color='blue',
+        )
 
         # global axis
         self.ax.plot([0, 50], [0, 0], [0, 0], linewidth=2.0, color='red')

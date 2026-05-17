@@ -1,10 +1,10 @@
 import unittest
-from ferret.engine.driver.board import Board
 
 
 class BoardTest(unittest.TestCase):
-
     def setUp(self):
+        from ferret.engine.driver.board import Board
+
         self.board = Board()
 
     def test_serial_name(self):

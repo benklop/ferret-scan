@@ -1,45 +1,45 @@
-# -*- coding: utf-8 -*-
 # This file is part of the Horus Project
 
-from __future__ import absolute_import
+
 __author__ = 'Jesús Arroyo Torrens <jesus.arroyo@bq.com>'
 __copyright__ = 'Copyright (C) 2014-2016 Mundo Reader S.L.'
 __license__ = 'GNU General Public License v2 http://www.gnu.org/licenses/gpl2.html'
 
 import wx._core
 
-from ferret.util import profile, system as sys
-
 from ferret.gui.engine import driver
-
-from ferret.gui.wizard.connection_page import ConnectionPage
 from ferret.gui.wizard.calibration_page import CalibrationPage
+from ferret.gui.wizard.connection_page import ConnectionPage
 from ferret.gui.wizard.scanning_page import ScanningPage
+from ferret.util import profile
+from ferret.util import system as sys
 
 
 class Wizard(wx.Dialog):
-
     def __init__(self, parent):
         if sys.is_windows():
             size = (760, 560)
         else:
             size = (760, 520)
-        super(Wizard, self).__init__(parent, title="", size=size)
+        super().__init__(parent, title='', size=size)
 
         self.parent = parent
 
         self.connection_page = ConnectionPage(
             self,
             button_prev_callback=self.on_connection_page_prev_clicked,
-            button_next_callback=self.on_connection_page_next_clicked)
+            button_next_callback=self.on_connection_page_next_clicked,
+        )
         self.calibration_page = CalibrationPage(
             self,
             button_prev_callback=self.on_calibration_page_prev_clicked,
-            button_next_callback=self.on_calibration_page_next_clicked)
+            button_next_callback=self.on_calibration_page_next_clicked,
+        )
         self.scanning_page = ScanningPage(
             self,
             button_prev_callback=self.on_scanning_page_prev_clicked,
-            button_next_callback=self.on_scanning_page_next_clicked)
+            button_next_callback=self.on_scanning_page_next_clicked,
+        )
 
         pages = [self.connection_page, self.calibration_page, self.scanning_page]
 
@@ -93,8 +93,8 @@ class Wizard(wx.Dialog):
         result = True
         if message:
             dlg = wx.MessageDialog(
-                self, _("Do you really want to exit?"),
-                _("Exit wizard"), wx.YES_NO | wx.ICON_INFORMATION)
+                self, _('Do you really want to exit?'), _('Exit wizard'), wx.YES_NO | wx.ICON_INFORMATION
+            )
             result = dlg.ShowModal() == wx.ID_YES
             dlg.Destroy()
         if result:
@@ -151,8 +151,10 @@ class Wizard(wx.Dialog):
         profile.settings.save_settings()
         dlg = wx.MessageDialog(
             self,
-            _("You have completed the wizard.\nPress Play button to start scanning."),
-            _("Ready to scan!"), wx.OK | wx.ICON_INFORMATION)
+            _('You have completed the wizard.\nPress Play button to start scanning.'),
+            _('Ready to scan!'),
+            wx.OK | wx.ICON_INFORMATION,
+        )
         dlg.ShowModal()
         dlg.Destroy()
         self.connection_page.video_view.stop()

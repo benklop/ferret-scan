@@ -1,0 +1,557 @@
+[05/17 13:30:33.411641][info][441083][LinuxUsbPal.cpp:334] Create PollingDeviceWatcher!
+[05/17 13:30:33.411655][info][441083][DeviceManager.cpp:25] Current found device(s): (1)
+[05/17 13:30:33.411657][info][441083][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 13:30:33.411658][info][441083][DeviceManager.cpp:405] Enable net device enumeration: true
+[05/17 13:30:34.414840][info][441083][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/17 13:30:34.414851][info][441083][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 13:30:34.414880][info][441083][G2Device.cpp:460] Register color sensor on UVC interface 4 (CR-Scan Ferret RGB Camera)
+[05/17 13:30:34.414906][warning][441083][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[05/17 13:30:34.414942][warning][441083][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[05/17 13:30:34.414952][warning][441083][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=5003
+[05/17 13:30:34.427390][warning][441083][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 13:30:34.427403][warning][441083][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 13:30:34.429107][info][441083][DeviceManager.cpp:198] Device created successfully! Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T FW: 1.2.5
+[05/17 13:30:34.429118][info][441083][Pipeline.cpp:54] [BC6M451003T] Pipeline created with device: {name: CR-Scan Ferret, sn: BC6M451003T}, @0x564DDBD3DE00
+[05/17 13:30:36.441570][info][441083][Pipeline.cpp:228] [BC6M451003T] Check and set config done!
+[05/17 13:30:36.441705][info][441083][Pipeline.cpp:266] [BC6M451003T] Try to start streams!
+[05/17 13:30:36.441708][info][441083][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 13:30:36.441712][info][441083][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Color
+[05/17 13:30:36.441713][info][441083][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 13:30:36.445812][info][441083][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Depth, format: RLE, width: 1280, height: 800, fps: 30}
+[05/17 13:30:36.445818][info][441083][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Depth
+[05/17 13:30:36.445820][info][441083][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[05/17 13:30:36.448768][info][441083][Pipeline.cpp:293] [BC6M451003T] Start streams done!
+[05/17 13:30:36.448771][info][441083][Pipeline.cpp:250] [BC6M451003T] Pipeline start done!
+[05/17 13:30:36.459955][info][441144][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Depth
+[05/17 13:30:36.460456][warning][441145][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:30:36.461678][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 3377812017, cacheTimestamp: 33444020 ,currentDiff: 3344367997, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.461714][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 3377812017, cacheTimestamp: 33444020 ,currentDiff: 3344367997, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.461720][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 3377812017, sensor: Depth
+[05/17 13:30:36.461834][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 4292596695, cacheTimestamp: 3377812017 ,currentDiff: 914784678, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.461851][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 4292596695, cacheTimestamp: 3377812017 ,currentDiff: 914784678, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.461855][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 4292596695, sensor: Depth
+[05/17 13:30:36.462216][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 3683473522, cacheTimestamp: 4292596695 ,currentDiff: 609123173, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.462237][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 3683473522, cacheTimestamp: 4292596695 ,currentDiff: 609123173, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.462243][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 3683473522, sensor: Depth
+[05/17 13:30:36.463651][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 4219356540, cacheTimestamp: 3683473522 ,currentDiff: 535883018, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.463666][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 4219356540, cacheTimestamp: 3683473522 ,currentDiff: 535883018, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.463670][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 4219356540, sensor: Depth
+[05/17 13:30:36.466233][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2916700, cacheTimestamp: 4219356540 ,currentDiff: 4216439840, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.466257][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2916700, cacheTimestamp: 4219356540 ,currentDiff: 4216439840, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.466263][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2916700, sensor: Depth
+[05/17 13:30:36.468058][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2807883707, cacheTimestamp: 2916700 ,currentDiff: 2804967007, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.468072][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2807883707, cacheTimestamp: 2916700 ,currentDiff: 2804967007, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.468076][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2807883707, sensor: Depth
+[05/17 13:30:36.470266][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2496979494, cacheTimestamp: 2807883707 ,currentDiff: 310904213, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.470289][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2496979494, cacheTimestamp: 2807883707 ,currentDiff: 310904213, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.470295][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2496979494, sensor: Depth
+[05/17 13:30:36.471887][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 312000, cacheTimestamp: 2496979494 ,currentDiff: 2496667494, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.471898][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 312000, cacheTimestamp: 2496979494 ,currentDiff: 2496667494, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.471904][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 312000, sensor: Depth
+[05/17 13:30:36.472078][warning][441145][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:30:36.473861][warning][441145][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:30:36.473911][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2460044925, cacheTimestamp: 2561500 ,currentDiff: 2457483425, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.473921][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2460044925, cacheTimestamp: 2561500 ,currentDiff: 2457483425, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.473927][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2460044925, sensor: Depth
+[05/17 13:30:36.476361][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2102500, cacheTimestamp: 2460044925 ,currentDiff: 2457942425, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.476377][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2102500, cacheTimestamp: 2460044925 ,currentDiff: 2457942425, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.476383][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2102500, sensor: Depth
+[05/17 13:30:36.478047][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 3341125145, cacheTimestamp: 2102500 ,currentDiff: 3339022645, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.478066][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 3341125145, cacheTimestamp: 2102500 ,currentDiff: 3339022645, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.478077][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 3341125145, sensor: Depth
+[05/17 13:30:36.478347][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 64871336, cacheTimestamp: 3341125145 ,currentDiff: 3276253809, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.478365][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 64871336, cacheTimestamp: 3341125145 ,currentDiff: 3276253809, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.478370][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 64871336, sensor: Depth
+[05/17 13:30:36.479049][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 215378653, cacheTimestamp: 64871336 ,currentDiff: 150507317, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.479067][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 215378653, cacheTimestamp: 64871336 ,currentDiff: 150507317, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.479072][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 215378653, sensor: Depth
+[05/17 13:30:36.479951][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2175400, cacheTimestamp: 215378653 ,currentDiff: 213203253, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.479965][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2175400, cacheTimestamp: 215378653 ,currentDiff: 213203253, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.479969][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2175400, sensor: Depth
+[05/17 13:30:36.491338][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 4294957396, cacheTimestamp: 2175400 ,currentDiff: 4292781996, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.491388][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 4294957396, cacheTimestamp: 2175400 ,currentDiff: 4292781996, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.491394][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 4294957396, sensor: Depth
+[05/17 13:30:36.513939][warning][441144][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 40547029, cacheTimestamp: 4294957396 ,currentDiff: 4254410367, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:30:36.513995][warning][441144][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 40547029, cacheTimestamp: 4294957396 ,currentDiff: 4254410367, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:30:36.514013][error][441144][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 40547029, sensor: Depth
+[05/17 13:30:36.603166][info][441143][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Color
+[05/17 13:30:36.603525][info][441083][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/17 13:30:36.603528][info][441083][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/17 13:30:36.603534][info][441083][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Depth
+[05/17 13:30:36.609457][info][441083][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Depth
+[05/17 13:30:36.609506][info][441083][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Depth
+[05/17 13:30:36.609508][info][441083][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Color
+[05/17 13:30:36.618682][info][441083][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Color
+[05/17 13:30:36.618711][info][441083][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Color
+[05/17 13:30:36.618712][info][441083][Pipeline.cpp:363] [BC6M451003T] Stop streams done!
+[05/17 13:30:36.618834][info][441083][Pipeline.cpp:392] [BC6M451003T] Stop pipeline done!
+[05/17 13:30:36.639663][info][441083][Pipeline.cpp:65] [BC6M451003T] Pipeline destroyed! @0x564DDBD3DE00
+[05/17 13:30:36.639740][info][441083][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 13:30:36.640674][info][441083][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 13:30:36.640677][info][441083][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 13:30:36.640716][info][441083][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 13:30:36.641009][info][441083][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 13:30:36.641010][info][441083][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 13:31:39.979607][info][442162][LinuxUsbPal.cpp:334] Create PollingDeviceWatcher!
+[05/17 13:31:39.979624][info][442162][DeviceManager.cpp:25] Current found device(s): (1)
+[05/17 13:31:39.979626][info][442162][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 13:31:39.979628][info][442162][DeviceManager.cpp:405] Enable net device enumeration: true
+[05/17 13:31:40.982834][info][442162][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/17 13:31:40.982844][info][442162][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 13:31:40.982873][info][442162][G2Device.cpp:460] Register color sensor on UVC interface 4 (CR-Scan Ferret RGB Camera)
+[05/17 13:31:40.982904][warning][442162][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[05/17 13:31:40.982930][warning][442162][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[05/17 13:31:40.982943][warning][442162][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=5003
+[05/17 13:31:40.985164][warning][442162][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 13:31:40.985174][warning][442162][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 13:31:40.986598][info][442162][DeviceManager.cpp:198] Device created successfully! Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T FW: 1.2.5
+[05/17 13:31:40.986609][info][442162][Pipeline.cpp:54] [BC6M451003T] Pipeline created with device: {name: CR-Scan Ferret, sn: BC6M451003T}, @0x559600BB3450
+[05/17 13:31:42.999558][info][442162][Pipeline.cpp:228] [BC6M451003T] Check and set config done!
+[05/17 13:31:42.999692][info][442162][Pipeline.cpp:266] [BC6M451003T] Try to start streams!
+[05/17 13:31:42.999696][info][442162][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 13:31:42.999699][info][442162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Color
+[05/17 13:31:42.999701][info][442162][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 13:31:43.003794][info][442162][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Depth, format: RLE, width: 1280, height: 800, fps: 30}
+[05/17 13:31:43.003802][info][442162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Depth
+[05/17 13:31:43.003804][info][442162][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[05/17 13:31:43.006695][info][442162][Pipeline.cpp:293] [BC6M451003T] Start streams done!
+[05/17 13:31:43.006697][info][442162][Pipeline.cpp:250] [BC6M451003T] Pipeline start done!
+[05/17 13:31:43.017567][info][442242][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Depth
+[05/17 13:31:43.018057][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.020226][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2176300, cacheTimestamp: 4292188395 ,currentDiff: 4290012095, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.020267][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2176300, cacheTimestamp: 4292188395 ,currentDiff: 4290012095, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.020274][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2176300, sensor: Depth
+[05/17 13:31:43.021947][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2507459130, cacheTimestamp: 2176300 ,currentDiff: 2505282830, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.021963][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2507459130, cacheTimestamp: 2176300 ,currentDiff: 2505282830, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.021969][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2507459130, sensor: Depth
+[05/17 13:31:43.024043][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 4294340796, cacheTimestamp: 2507459130 ,currentDiff: 1786881666, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.024058][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 4294340796, cacheTimestamp: 2507459130 ,currentDiff: 1786881666, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.024068][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 4294340796, sensor: Depth
+[05/17 13:31:43.025918][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2355199071, cacheTimestamp: 4294340796 ,currentDiff: 1939141725, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.025936][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2355199071, cacheTimestamp: 4294340796 ,currentDiff: 1939141725, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.025942][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2355199071, sensor: Depth
+[05/17 13:31:43.026096][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2881700, cacheTimestamp: 2355199071 ,currentDiff: 2352317371, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.026108][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2881700, cacheTimestamp: 2355199071 ,currentDiff: 2352317371, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.026113][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2881700, sensor: Depth
+[05/17 13:31:43.026125][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2321188542, cacheTimestamp: 2881700 ,currentDiff: 2318306842, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.026133][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2321188542, cacheTimestamp: 2881700 ,currentDiff: 2318306842, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.026138][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2321188542, sensor: Depth
+[05/17 13:31:43.027757][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 4291551335, cacheTimestamp: 2321188542 ,currentDiff: 1970362793, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.027767][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 4291551335, cacheTimestamp: 2321188542 ,currentDiff: 1970362793, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.027771][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 4291551335, sensor: Depth
+[05/17 13:31:43.029971][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 2484300, cacheTimestamp: 4291551335 ,currentDiff: 4289067035, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.029985][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 2484300, cacheTimestamp: 4291551335 ,currentDiff: 4289067035, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.029991][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 2484300, sensor: Depth
+[05/17 13:31:43.030264][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.032143][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.034124][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.036045][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 4294965395, cacheTimestamp: 3086100 ,currentDiff: 4291879295, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.036067][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 4294965395, cacheTimestamp: 3086100 ,currentDiff: 4291879295, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.036074][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 4294965395, sensor: Depth
+[05/17 13:31:43.037352][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.037476][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.049629][warning][442243][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:31:43.071882][warning][442242][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: TimestampAnomalyDetector.cpp(61)
+ - msg: Timestamp anomaly detected, timestamp: 47757314, cacheTimestamp: 4291833096 ,currentDiff: 4244075782, maxValidTimestampDiff: 5000000
+ - type: UNKNOWN
+ - status: 101
+[05/17 13:31:43.071929][warning][442242][SensorBase.cpp:428] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(428):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 47757314, cacheTimestamp: 4291833096 ,currentDiff: 4244075782, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 101
+[05/17 13:31:43.071937][error][442242][SensorBase.cpp:429] [BC6M451003T] Timestamp anomaly detected, frame: 47757314, sensor: Depth
+[05/17 13:31:43.161135][info][442241][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Color
+[05/17 13:31:43.206811][warning][442162][Pipeline.cpp:335] [BC6M451003T] Wait for frame timeout, you can try to increase the wait time! current timeout=200
+[05/17 13:31:43.274935][info][442162][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/17 13:31:43.274946][info][442162][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/17 13:31:43.274956][info][442162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Depth
+[05/17 13:31:43.283666][info][442162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Depth
+[05/17 13:31:43.283694][info][442162][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Depth
+[05/17 13:31:43.283698][info][442162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Color
+[05/17 13:31:43.291459][info][442162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Color
+[05/17 13:31:43.291496][info][442162][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Color
+[05/17 13:31:43.291498][info][442162][Pipeline.cpp:363] [BC6M451003T] Stop streams done!
+[05/17 13:31:43.291632][info][442162][Pipeline.cpp:392] [BC6M451003T] Stop pipeline done!
+[05/17 13:31:43.313401][info][442162][Pipeline.cpp:65] [BC6M451003T] Pipeline destroyed! @0x559600BB3450
+[05/17 13:31:43.313488][info][442162][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 13:31:43.314335][info][442162][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 13:31:43.314338][info][442162][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 13:31:43.314377][info][442162][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 13:31:43.314665][info][442162][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 13:31:43.314666][info][442162][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 13:37:57.444538][info][445851][LinuxUsbPal.cpp:334] Create PollingDeviceWatcher!
+[05/17 13:37:57.444556][info][445851][DeviceManager.cpp:25] Current found device(s): (1)
+[05/17 13:37:57.444558][info][445851][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 13:37:57.444559][info][445851][DeviceManager.cpp:405] Enable net device enumeration: true
+[05/17 13:37:58.448134][info][445851][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/17 13:37:58.448146][info][445851][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 13:37:58.448175][info][445851][G2Device.cpp:460] Register color sensor on UVC interface 4 (CR-Scan Ferret RGB Camera)
+[05/17 13:37:58.448205][warning][445851][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[05/17 13:37:58.448233][warning][445851][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[05/17 13:37:58.448247][warning][445851][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=5003
+[05/17 13:37:58.450675][warning][445851][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 13:37:58.450687][warning][445851][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 13:37:58.452090][info][445851][DeviceManager.cpp:198] Device created successfully! Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T FW: 1.2.5
+[05/17 13:37:58.452101][info][445851][Pipeline.cpp:54] [BC6M451003T] Pipeline created with device: {name: CR-Scan Ferret, sn: BC6M451003T}, @0x5626409F9450
+[05/17 13:38:00.464654][info][445851][Pipeline.cpp:228] [BC6M451003T] Check and set config done!
+[05/17 13:38:00.464801][info][445851][Pipeline.cpp:266] [BC6M451003T] Try to start streams!
+[05/17 13:38:00.464805][info][445851][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 13:38:00.464808][info][445851][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Color
+[05/17 13:38:00.464809][info][445851][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 13:38:00.469007][info][445851][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Depth, format: RLE, width: 1280, height: 800, fps: 30}
+[05/17 13:38:00.469016][info][445851][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Depth
+[05/17 13:38:00.469019][info][445851][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[05/17 13:38:00.471776][info][445851][Pipeline.cpp:293] [BC6M451003T] Start streams done!
+[05/17 13:38:00.471779][info][445851][Pipeline.cpp:250] [BC6M451003T] Pipeline start done!
+[05/17 13:38:00.503685][info][445935][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Depth
+[05/17 13:38:00.505585][warning][445936][ObException.cpp:31] A unrecoverable_exception has occurred!
+ - where: PrivFilterCppWrapper.cpp(84)
+ - msg: Frame unpack failed
+ - type: UNKNOWN
+ - status: 1
+[05/17 13:38:00.626352][info][445934][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Color
+[05/17 13:38:00.626731][info][445851][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/17 13:38:00.626734][info][445851][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/17 13:38:00.626744][info][445851][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Depth
+[05/17 13:38:00.632708][info][445851][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Depth
+[05/17 13:38:00.632741][info][445851][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Depth
+[05/17 13:38:00.632746][info][445851][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Color
+[05/17 13:38:00.641941][info][445851][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Color
+[05/17 13:38:00.641976][info][445851][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Color
+[05/17 13:38:00.641977][info][445851][Pipeline.cpp:363] [BC6M451003T] Stop streams done!
+[05/17 13:38:00.642110][info][445851][Pipeline.cpp:392] [BC6M451003T] Stop pipeline done!
+[05/17 13:38:00.663445][info][445851][Pipeline.cpp:65] [BC6M451003T] Pipeline destroyed! @0x5626409F9450
+[05/17 13:38:00.663522][info][445851][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 13:38:00.664420][info][445851][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 13:38:00.664421][info][445851][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 13:38:00.664456][info][445851][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 13:38:00.664727][info][445851][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 13:38:00.664728][info][445851][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 17:32:11.693545][info][975260][LinuxUsbPal.cpp:334] Create PollingDeviceWatcher!
+[05/17 17:32:11.693559][info][975260][DeviceManager.cpp:25] Current found device(s): (1)
+[05/17 17:32:11.693560][info][975260][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 17:32:11.693562][info][975260][DeviceManager.cpp:405] Enable net device enumeration: true
+[05/17 17:32:12.696856][info][975260][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/17 17:32:12.696866][info][975260][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 17:32:12.696893][info][975260][G2Device.cpp:460] Register color sensor on UVC interface 4 (CR-Scan Ferret RGB Camera)
+[05/17 17:32:12.696928][warning][975260][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[05/17 17:32:12.696953][warning][975260][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[05/17 17:32:12.696966][warning][975260][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=5003
+[05/17 17:32:12.699387][warning][975260][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 17:32:12.699398][warning][975260][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 17:32:12.701015][info][975260][DeviceManager.cpp:198] Device created successfully! Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T FW: 1.2.5
+[05/17 17:32:12.701031][info][975260][Pipeline.cpp:54] [BC6M451003T] Pipeline created with device: {name: CR-Scan Ferret, sn: BC6M451003T}, @0x23AF4880
+[05/17 17:32:14.714781][info][975260][Pipeline.cpp:228] [BC6M451003T] Check and set config done!
+[05/17 17:32:14.714921][info][975260][Pipeline.cpp:266] [BC6M451003T] Try to start streams!
+[05/17 17:32:14.714927][info][975260][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 17:32:14.714930][info][975260][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Color
+[05/17 17:32:14.714932][info][975260][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 17:32:14.719028][info][975260][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Depth, format: RLE, width: 1280, height: 800, fps: 30}
+[05/17 17:32:14.719035][info][975260][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Depth
+[05/17 17:32:14.719037][info][975260][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[05/17 17:32:14.721733][info][975260][Pipeline.cpp:293] [BC6M451003T] Start streams done!
+[05/17 17:32:14.721735][info][975260][Pipeline.cpp:250] [BC6M451003T] Pipeline start done!
+[05/17 17:32:14.755985][info][975505][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Depth
+[05/17 17:32:14.851779][info][975504][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Color
+[05/17 17:32:14.858168][info][975260][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/17 17:32:14.858174][info][975260][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/17 17:32:14.858184][info][975260][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Depth
+[05/17 17:32:14.865880][info][975260][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Depth
+[05/17 17:32:14.865910][info][975260][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Depth
+[05/17 17:32:14.865914][info][975260][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Color
+[05/17 17:32:14.873813][info][975260][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Color
+[05/17 17:32:14.873864][info][975260][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Color
+[05/17 17:32:14.873865][info][975260][Pipeline.cpp:363] [BC6M451003T] Stop streams done!
+[05/17 17:32:14.874003][info][975260][Pipeline.cpp:392] [BC6M451003T] Stop pipeline done!
+[05/17 17:32:14.900535][info][975260][Pipeline.cpp:65] [BC6M451003T] Pipeline destroyed! @0x23AF4880
+[05/17 17:32:14.900661][info][975260][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 17:32:14.901750][info][975260][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 17:32:14.901752][info][975260][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 17:32:14.901863][info][975260][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 17:32:14.902247][info][975260][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 17:32:14.902248][info][975260][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 17:32:15.850066][info][975516][LinuxUsbPal.cpp:334] Create PollingDeviceWatcher!
+[05/17 17:32:15.850078][info][975516][DeviceManager.cpp:25] Current found device(s): (1)
+[05/17 17:32:15.850080][info][975516][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 17:32:15.850081][info][975516][DeviceManager.cpp:405] Enable net device enumeration: true
+[05/17 17:32:16.853105][info][975516][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/17 17:32:16.853114][info][975516][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 17:32:16.853141][info][975516][G2Device.cpp:460] Register color sensor on UVC interface 4 (CR-Scan Ferret RGB Camera)
+[05/17 17:32:16.853172][warning][975516][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[05/17 17:32:16.853201][warning][975516][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[05/17 17:32:16.853214][warning][975516][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=5003
+[05/17 17:32:16.855533][warning][975516][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 17:32:16.855549][warning][975516][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 17:32:16.856992][info][975516][DeviceManager.cpp:198] Device created successfully! Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T FW: 1.2.5
+[05/17 17:32:16.857003][info][975516][Pipeline.cpp:54] [BC6M451003T] Pipeline created with device: {name: CR-Scan Ferret, sn: BC6M451003T}, @0x26A61890
+[05/17 17:32:18.869412][info][975516][Pipeline.cpp:228] [BC6M451003T] Check and set config done!
+[05/17 17:32:18.869566][info][975516][Pipeline.cpp:266] [BC6M451003T] Try to start streams!
+[05/17 17:32:18.869571][info][975516][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 17:32:18.869575][info][975516][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Color
+[05/17 17:32:18.869577][info][975516][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 17:32:18.873891][info][975516][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Depth, format: RLE, width: 1280, height: 800, fps: 30}
+[05/17 17:32:18.873900][info][975516][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Depth
+[05/17 17:32:18.873904][info][975516][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[05/17 17:32:18.876745][info][975516][Pipeline.cpp:293] [BC6M451003T] Start streams done!
+[05/17 17:32:18.876748][info][975516][Pipeline.cpp:250] [BC6M451003T] Pipeline start done!
+[05/17 17:32:18.912871][info][975599][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Depth
+[05/17 17:32:19.033603][info][975598][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Color
+[05/17 17:32:19.033980][info][975516][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/17 17:32:19.033983][info][975516][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/17 17:32:19.033991][info][975516][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Depth
+[05/17 17:32:19.041538][info][975516][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Depth
+[05/17 17:32:19.041569][info][975516][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Depth
+[05/17 17:32:19.041573][info][975516][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Color
+[05/17 17:32:19.049781][info][975516][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Color
+[05/17 17:32:19.049809][info][975516][Pipeline.cpp:357] [BC6M451003T] Sensor stream stopped, sensorType=Color
+[05/17 17:32:19.049810][info][975516][Pipeline.cpp:363] [BC6M451003T] Stop streams done!
+[05/17 17:32:19.049951][info][975516][Pipeline.cpp:392] [BC6M451003T] Stop pipeline done!
+[05/17 17:32:19.067630][info][975516][Pipeline.cpp:65] [BC6M451003T] Pipeline destroyed! @0x26A61890
+[05/17 17:32:19.067703][info][975516][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 17:32:19.068597][info][975516][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 17:32:19.068599][info][975516][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 17:32:19.068635][info][975516][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/17 17:32:19.068914][info][975516][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/17 17:32:19.068915][info][975516][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done

@@ -5,4 +5,5 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "${ROOT}/scripts/lib/common.sh"
 ferret_export_dev_runtime
+ferret_configure_opengl
 exec "$(ferret_python)" "${ROOT}/scripts/ferret_gui.py" "$@"
