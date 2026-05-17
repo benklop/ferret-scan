@@ -1,0 +1,3 @@
+[submodule "libferret"]
+	path = libferret
+	url = https://github.com/benklop/libferret.git
