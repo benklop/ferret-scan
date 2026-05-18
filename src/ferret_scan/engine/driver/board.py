@@ -40,12 +40,17 @@ try:
     from ferret_scan.diy import diy_available
 
     if diy_available():
-        from ciclops.board import Board, OldFirmware, WrongFirmware  # noqa: F401
+        from ciclops.board import Board, BoardNotConnected, OldFirmware, WrongFirmware  # noqa: F401
     else:
-        from ferret_scan.engine.driver._noop_board import OldFirmware, WrongFirmware  # noqa: F401
+        from ferret_scan.engine.driver._noop_board import (  # noqa: F401
+            BoardNotConnected,
+            OldFirmware,
+            WrongFirmware,
+        )
         from ferret_scan.engine.driver._noop_board import _NoBoard as Board  # noqa: F401
 except ImportError:
     from ferret_scan.engine.driver._noop_board import (  # noqa: F401
+        BoardNotConnected,
         OldFirmware,
         WrongFirmware,
     )
