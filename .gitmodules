@@ -1,3 +1,9 @@
 [submodule "libferret"]
-	path = libferret
+	path = packages/libferret
 	url = https://github.com/benklop/libferret.git
+[submodule "packages/libciclops"]
+	path = packages/libciclops
+	url = https://github.com/benklop/libciclops.git
+[submodule "packages/librevolve"]
+	path = packages/librevolve
+	url = https://github.com/benklop/librevolve.git

@@ -45,6 +45,6 @@ src/ferret_scan/*.json
 # Creality algo assets (not distributed; research only)
 algo.obconfig
 **/algo_blobs/
-libferret/share/ferret/
-libferret/.cache/creality/
+packages/libferret/share/ferret/
+packages/libferret/.cache/creality/
 **/lib/ferret/

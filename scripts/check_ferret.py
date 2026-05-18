@@ -18,7 +18,7 @@ def fail(msg):
 
 def main():
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    default_libferret = os.path.join(root, 'libferret')
+    default_libferret = os.path.join(root, 'packages', 'libferret')
     libferret = os.environ.get('FERRET_LIBFERRET_ROOT', default_libferret)
     errors = 0
 

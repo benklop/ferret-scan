@@ -18,9 +18,9 @@ ok() {
 
 # --- Creality fetch scripts must not exist ---
 for f in \
-  "${ROOT}/libferret/scripts/fetch_creality_algo.sh" \
-  "${ROOT}/libferret/scripts/extract_algo_blobs.py" \
-  "${ROOT}/libferret/scripts/creality_scan_download.py"
+  "${ROOT}/packages/libferret/scripts/fetch_creality_algo.sh" \
+  "${ROOT}/packages/libferret/scripts/extract_algo_blobs.py" \
+  "${ROOT}/packages/libferret/scripts/creality_scan_download.py"
 do
   if [[ -f "${f}" ]]; then
     fail "removed script still present: ${f}"
@@ -48,10 +48,10 @@ else
 fi
 
 # --- Makefile must not reference algo-assets ---
-if grep -q 'algo-assets\|fetch_creality' "${ROOT}/libferret/Makefile" 2>/dev/null; then
-  fail "libferret/Makefile still references Creality algo fetch"
+if grep -q 'algo-assets\|fetch_creality' "${ROOT}/packages/libferret/Makefile" 2>/dev/null; then
+  fail "packages/libferret/Makefile still references Creality algo fetch"
 else
-  ok "libferret/Makefile has no algo-assets"
+  ok "packages/libferret/Makefile has no algo-assets"
 fi
 
 # --- dist/ artifacts (if present) ---

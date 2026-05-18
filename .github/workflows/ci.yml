@@ -51,3 +51,6 @@ jobs:
 
       - name: Pytest (libciclops)
         run: .venv/bin/python -m pytest packages/libciclops/tests/ -q
+
+      - name: Pytest (librevolve)
+        run: .venv/bin/python -m pytest packages/librevolve/tests/ -q

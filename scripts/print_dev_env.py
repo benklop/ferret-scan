@@ -15,7 +15,7 @@ def _repo_root() -> str:
 
 def _libferret_root(repo: str) -> str:
     env = os.environ.get('FERRET_LIBFERRET_ROOT')
-    vendored = os.path.join(repo, 'libferret')
+    vendored = os.path.join(repo, 'packages', 'libferret')
     if env and os.path.isfile(os.path.join(env, 'pyproject.toml')):
         return env
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):

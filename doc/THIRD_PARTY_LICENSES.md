@@ -17,17 +17,23 @@ When you receive a binary build (AppImage, Flatpak), you may obtain correspondin
 
 | Component | License | Location |
 |-----------|---------|----------|
-| Python package, C tools, integration | MIT | [libferret/pyproject.toml](../libferret/pyproject.toml) |
-| Ferret-specific SDK changes (`FerretDevice`, etc.) | MIT (Orbbec SDK fork) | [libferret/OrbbecSDK_v2](../libferret/OrbbecSDK_v2) |
+| Python package, C tools, integration | MIT | [libferret/pyproject.toml](../packages/libferret/pyproject.toml) |
+| Ferret-specific SDK changes (`FerretDevice`, etc.) | MIT (Orbbec SDK fork) | [libferret/OrbbecSDK_v2](../packages/libferret/OrbbecSDK_v2) |
 
 ## Orbbec SDK (open-source parts)
 
 | Component | License | Location |
 |-----------|---------|----------|
-| `libOrbbecSDK.so`, headers, examples | MIT | [libferret/OrbbecSDK_v2/LICENSE.txt](../libferret/OrbbecSDK_v2/LICENSE.txt) |
+| `libOrbbecSDK.so`, headers, examples | MIT | [libferret/OrbbecSDK_v2/LICENSE.txt](../packages/libferret/OrbbecSDK_v2/LICENSE.txt) |
 | Bundled third-party libraries (jsoncpp, libjpeg, spdlog, etc.) | MIT, BSD, LGPL, etc. | Summarized in `LICENSE.txt` |
 
 We modify only the **open-source** SDK sources (e.g. Ferret device support). We do **not** modify prebuilt extension binaries.
+
+## librevolve (optional)
+
+| Component | License | Location |
+|-----------|---------|----------|
+| Revopoint DAT BLE control | MIT | [librevolve](../packages/librevolve/) (git submodule) |
 
 ## Orbbec extension libraries (prebuilt)
 
@@ -35,7 +41,7 @@ Closed libraries loaded at runtime for depth/frame processing (e.g. `libob_frame
 
 | Rule | Detail |
 |------|--------|
-| License text | [extensions/license.txt](../libferret/OrbbecSDK_v2/extensions/license.txt) |
+| License text | [extensions/license.txt](../packages/libferret/OrbbecSDK_v2/extensions/license.txt) |
 | Distribution | Shipped **unmodified** alongside Ferret Scan packages |
 | Prohibited | Modifying, decompiling, or reverse engineering the extension binaries |
 | Packaging | Copies of `extensions/license.txt` and `End User License Agreement.txt` are installed under `share/doc/ferret-scan/orbbec/` in AppImage and Flatpak builds |
@@ -59,7 +65,7 @@ See each package’s metadata on PyPI or in `.venv/lib/python*/site-packages/*.d
 
 ## Removed third-party code
 
-The Pupil Labs macOS UVC extension (`engine/driver/uvc/mac/`, CC BY-NC-SA 3.0) was **removed** from this tree. DIY webcam capture uses OpenCV on all platforms via optional `libciclops`.
+The Pupil Labs macOS UVC extension (`engine/driver/uvc/mac/`, CC BY-NC-SA 3.0) was **removed** from this tree. DIY webcam capture uses OpenCV on all platforms via optional [`libciclops`](https://github.com/benklop/libciclops) (git submodule at `packages/libciclops/`).
 
 ## Creality algo assets (not distributed)
 

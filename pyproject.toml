@@ -48,7 +48,8 @@ markers = [
 target-version = "py39"
 line-length = 120
 exclude = [
-    "libferret",
+    "packages/libferret",
+    "packages/librevolve",
     ".deps",
     "build",
     "dist",
@@ -78,10 +79,10 @@ quote-style = "single"
 
 [tool.uv]
 package = true
-workspace = { members = [".", "packages/libciclops"] }
+workspace = { members = [".", "packages/libciclops", "packages/librevolve"] }
 # Always compile wxPython against the host GTK/wxGTK stack (wheels are not portable on Linux).
 no-binary-package = ["wxpython", "wxPython"]
 
 [tool.uv.sources]
 libciclops = { workspace = true }
-librevolve = { path = "../librevolve", editable = true }
+librevolve = { workspace = true }

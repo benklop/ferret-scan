@@ -11,7 +11,7 @@ def _libferret_root():
     if root and os.path.isfile(os.path.join(root, 'pyproject.toml')):
         return root
     here = os.path.dirname(os.path.abspath(__file__))
-    vendored = os.path.normpath(os.path.join(here, '..', '..', 'libferret'))
+    vendored = os.path.normpath(os.path.join(here, '..', '..', 'packages', 'libferret'))
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
         return vendored
     raise ImportError('libferret not found; set FERRET_LIBFERRET_ROOT or run ./scripts/dev-setup')

@@ -13,7 +13,7 @@ def repo_root() -> str:
 
 def default_libferret_root() -> str:
     """Prefer vendored libferret submodule in a source checkout."""
-    vendored = os.path.join(repo_root(), 'libferret')
+    vendored = os.path.join(repo_root(), 'packages', 'libferret')
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
         return vendored
     env = os.environ.get('FERRET_LIBFERRET_ROOT', '')

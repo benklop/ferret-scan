@@ -48,7 +48,7 @@ ferret_libferret_root() {
     fi
     local root vendored
     root="$(ferret_repo_root)"
-    vendored="${root}/libferret"
+    vendored="${root}/packages/libferret"
     if [[ -f "${vendored}/pyproject.toml" ]]; then
         echo "${vendored}"
         return

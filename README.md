@@ -37,18 +37,20 @@ Python **3.9–3.13** (aligned with [pyorbbecsdk v2-main](https://github.com/orb
 
 **Ferret-only install** (default): structured-light scanning with the CR-Scan Ferret — no `pyserial` or turntable stack required.
 
-**Optional Ciclop / DIY laser scanning** (serial turntable + USB webcam):
+**Optional Ciclop / DIY laser scanning** (serial turntable + USB webcam; [libciclops](https://github.com/benklop/libciclops) submodule):
 
 ```bash
+git submodule update --init packages/libciclops
 uv sync --extra diy          # installs workspace package libciclops (import: ciclops)
 # or after ./scripts/dev-setup (dev group includes libciclops)
 ```
 
 Without `[diy]`, the Control workbench and Ciclop scanner mode are hidden; `ferret-scan` still runs Ferret structured-light mode.
 
-**Optional Revopoint Dual-Axis Turntable** (Bluetooth via [librevolve](../librevolve)):
+**Optional Revopoint Dual-Axis Turntable** (Bluetooth via [librevolve](https://github.com/benklop/librevolve) submodule):
 
 ```bash
+git submodule update --init packages/librevolve
 uv sync --extra revolve       # or: uv sync --group dev
 revolve scan                  # find BLE address
 ```
@@ -79,7 +81,7 @@ On **Linux Wayland**, `./ferret` runs natively (no X11 shim) and sets `PYOPENGL_
 
 No `source` step: `./ferret` and `./scripts/dev-check` configure `LD_LIBRARY_PATH`, `PYTHONPATH`, and `FERRET_LIBFERRET_ROOT` automatically.
 
-Settings: `$XDG_CONFIG_HOME/ferret-scan/` (default `~/.config/ferret-scan/`). Calibration data: `$XDG_DATA_HOME/ferret-scan/`. Defaults work for a source checkout (`libferret` submodule, `python3` from `.venv`).
+Settings: `$XDG_CONFIG_HOME/ferret-scan/` (default `~/.config/ferret-scan/`). Calibration data: `$XDG_DATA_HOME/ferret-scan/`. Defaults work for a source checkout (`packages/libferret` submodule, `python3` from `.venv`).
 
 ### Contributing
 
@@ -102,7 +104,9 @@ sudo udevadm control --reload && sudo udevadm trigger
 ./scripts/dev-setup      # native dev environment
 ./scripts/dev-check      # license checks + hardware validation
 ./scripts/build          # Docker → AppImage / Flatpak
-./libferret/             # submodule (OrbbecSDK + Python ferret package)
+./packages/libferret/    # submodule (OrbbecSDK + Python ferret package)
+./packages/libciclops/   # submodule (optional DIY / Ciclop engine)
+./packages/librevolve/   # submodule (optional Revopoint DAT / BLE turntable)
 ./.deps/pyorbbecsdk/     # created by dev-setup
 pyproject.toml           # Python dependencies and tool config
 ```

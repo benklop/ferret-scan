@@ -20,7 +20,7 @@ def test_ferret_scan_and_libferret_device_import():
         sys.path.insert(0, scripts_lib)
     from libferret_import import get_ferret_device_class
 
-    libferret = os.path.join(repo, 'libferret')
+    libferret = os.path.join(repo, 'packages', 'libferret')
     if not os.path.isfile(os.path.join(libferret, 'pyproject.toml')):
         pytest.skip('libferret submodule not initialized')
 

@@ -31,7 +31,17 @@ echo "==> ferret-scan dev setup ($(ferret_native_arch))"
 echo "    libferret: ${LIBFERRET}"
 
 if [[ ! -f "${LIBFERRET}/pyproject.toml" ]]; then
-  echo "Initialize submodules: git submodule update --init --recursive" >&2
+  echo "Initialize libferret submodule: git submodule update --init packages/libferret" >&2
+  exit 1
+fi
+
+if [[ ! -f "${ROOT}/packages/libciclops/pyproject.toml" ]]; then
+  echo "Initialize libciclops submodule: git submodule update --init packages/libciclops" >&2
+  exit 1
+fi
+
+if [[ ! -f "${ROOT}/packages/librevolve/pyproject.toml" ]]; then
+  echo "Initialize librevolve submodule: git submodule update --init packages/librevolve" >&2
   exit 1
 fi
 
