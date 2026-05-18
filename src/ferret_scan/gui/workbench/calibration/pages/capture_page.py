@@ -8,8 +8,8 @@ from ferret_scan.gui.util.image_view import ImageView
 from ferret_scan.gui.util.video_view import VideoView
 from ferret_scan.gui.workbench.calibration.pages.page import Page
 from ferret_scan.runtime_engine import camera_intrinsics, image_capture, image_detection
+from ferret_scan.settings.paths import get_data_dir
 from ferret_scan.util import resources
-from ferret_scan.util.profile import get_data_dir
 from ferret_scan.util.version_compare import version_gt
 
 logger = logging.getLogger(__name__)
