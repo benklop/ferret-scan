@@ -14,12 +14,15 @@ dependencies = [
     "numpy>=1.24",
     "opencv-python>=4.8",
     "PyOpenGL>=3.1",
-    "pyserial>=3.5",
     "scipy>=1.10",
     "matplotlib>=3.8",
-    "six>=1.16",
+    "packaging>=23",
 ]
 version = "0.0.0.dev0"
+
+[project.optional-dependencies]
+diy = ["libciclops"]
+revolve = ["librevolve>=0.1.0"]
 
 [dependency-groups]
 dev = [
@@ -27,6 +30,8 @@ dev = [
     "ruff>=0.9",
     "nox>=2024.10",
     "pybind11>=2.10",
+    "libciclops",
+    "librevolve",
 ]
 
 [tool.setuptools.packages.find]
@@ -35,6 +40,9 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["test"]
 pythonpath = ["src"]
+markers = [
+    "needs_wx: requires a working wxPython install",
+]
 
 [tool.ruff]
 target-version = "py39"
@@ -48,26 +56,32 @@ exclude = [
     "pkg",
     "res",
     "setup_mac.py",
-    "src/ferret/engine/driver/uvc/mac",
 ]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]
 ignore = [
     "E501",  # line length (legacy)
-    "E722",  # bare except (legacy)
     "F403",  # star imports (legacy, e.g. uvc/mac)
     "F405",  # undefined from star import
 ]
 
 [tool.ruff.lint.per-file-ignores]
-# Legacy Horus/Gryphon code: gettext _(), late imports, ambiguous names.
-"src/ferret/**" = ["F821", "E402", "E741", "F841", "E721", "E712", "F524"]
+# gettext _() is injected at runtime
+"src/ferret_scan/gui/**" = ["F821"]
+"src/ferret_scan/util/profile.py" = ["F821", "E402"]
+"src/ferret_scan/settings/**" = ["F821", "E402"]
+"src/ferret_scan/engine/**" = ["E741", "E721"]
 
 [tool.ruff.format]
 quote-style = "single"
 
 [tool.uv]
 package = true
+workspace = { members = [".", "packages/libciclops"] }
 # Always compile wxPython against the host GTK/wxGTK stack (wheels are not portable on Linux).
 no-binary-package = ["wxpython", "wxPython"]
+
+[tool.uv.sources]
+libciclops = { workspace = true }
+librevolve = { path = "../librevolve", editable = true }

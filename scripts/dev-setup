@@ -98,6 +98,7 @@ cmake --install "${PYOB}/build"
 
 ferret_uv_pip --force-reinstall --no-deps -e "${PYOB}"
 ferret_uv_pip --force-reinstall --no-deps -e "${LIBFERRET}"
+ferret_uv_pip -e "${ROOT}/packages/libciclops"
 
 if ! "${VENV_PY}" -c "import pyorbbecsdk" 2>/dev/null; then
   echo "ERROR: pyorbbecsdk import failed after install" >&2

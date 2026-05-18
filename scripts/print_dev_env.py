@@ -20,7 +20,7 @@ def _libferret_root(repo: str) -> str:
         return env
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
         return vendored
-    return os.path.expanduser('~/repos/ferret')
+    raise RuntimeError('libferret not found; run ./scripts/dev-setup')
 
 
 def _sdk_lib_dir(libferret: str) -> str:

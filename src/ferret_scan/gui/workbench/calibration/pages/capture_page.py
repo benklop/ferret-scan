@@ -1,0 +1,149 @@
+import logging
+import os
+
+import cv2
+import wx
+
+from ferret_scan.gui.util.image_view import ImageView
+from ferret_scan.gui.util.video_view import VideoView
+from ferret_scan.gui.workbench.calibration.pages.page import Page
+from ferret_scan.runtime_engine import camera_intrinsics, image_capture, image_detection
+from ferret_scan.util import resources
+from ferret_scan.util.profile import get_data_dir
+from ferret_scan.util.version_compare import version_gt
+
+logger = logging.getLogger(__name__)
+
+
+class CapturePage(Page):
+    def __init__(self, parent, start_callback=None):
+        Page.__init__(
+            self,
+            parent,
+            title=_('Camera intrinsics (advanced)'),
+            desc=_(
+                'Default values are recommended. To perform the calibration, '
+                'click over the video panel and press '
+                'space bar to perform the captures.'
+            ),
+            left=_('Reset'),
+            right=_('Start'),
+            button_left_callback=self.initialize,
+            button_right_callback=start_callback,
+            view_progress=True,
+        )
+
+        self.right_button.Hide()
+
+        # Elements
+        self.video_view = VideoView(self.panel, self.get_image)
+        self.rows, self.columns = 3, 5
+        self.panel_grid = []
+        self.current_grid = 0
+        self.image_grid_panel = wx.Panel(self.panel)
+        self.grid_sizer = wx.GridSizer(self.rows, self.columns, 3, 3)
+        for panel in range(self.rows * self.columns):
+            self.panel_grid.append(ImageView(self.image_grid_panel))
+            self.panel_grid[panel].Bind(wx.EVT_KEY_DOWN, self.on_key_press)
+            self.grid_sizer.Add(self.panel_grid[panel], 0, wx.ALL | wx.EXPAND)
+        self.image_grid_panel.SetSizer(self.grid_sizer)
+
+        # Layout
+        self.panel_box.Add(self.video_view, 2, wx.ALL | wx.EXPAND, 2)
+        self.panel_box.Add(self.image_grid_panel, 3, wx.ALL | wx.EXPAND, 3)
+        self.Layout()
+
+        # Events
+        self.Bind(wx.EVT_KEY_DOWN, self.on_key_press)
+        self.video_view.Bind(wx.EVT_KEY_DOWN, self.on_key_press)
+        self.image_grid_panel.Bind(wx.EVT_KEY_DOWN, self.on_key_press)
+
+    def initialize(self):
+        self.desc_text.SetLabel(
+            _(
+                'Default values are recommended. To perform the calibration, '
+                'click over the video panel and press '
+                'space bar to perform the captures.'
+            )
+        )
+        self.current_grid = 0
+        self.gauge.SetValue(0)
+        camera_intrinsics.reset()
+        for panel in range(self.rows * self.columns):
+            self.panel_grid[panel].SetBackgroundColour((221, 221, 221))
+            self.panel_grid[panel].set_image(wx.Image(resources.get_path_for_image('void.png')))
+
+    def play(self):
+        self.gauge.SetValue(0)
+        self.video_view.play()
+        self.image_grid_panel.SetFocus()
+        self.GetParent().Layout()
+        self.Layout()
+
+    def stop(self):
+        self.initialize()
+        self.video_view.stop()
+
+    def reset(self):
+        self.video_view.reset()
+
+    def get_image(self):
+        image = image_capture.capture_pattern()
+        chessboard = image_detection.detect_pattern(image)
+        return chessboard
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+        if key == 32:  # spacebar
+            self.video_view.stop()
+            image = camera_intrinsics.capture()
+            if image is not None:
+                self.add_frame_to_grid(image)
+                image = self.save_image_file(image, self.current_grid)
+                if self.current_grid <= self.rows * self.columns:
+                    self.gauge.SetValue(self.current_grid * 100.0 / self.rows / self.columns)
+            self.video_view.play()
+
+        elif key == 82:  # 'R' 'r'
+            self.video_view.stop()
+            image = self.read_image_file(self.current_grid + 1)
+            if image is not None:
+                image = camera_intrinsics.capture(image)
+                if image is not None:
+                    self.add_frame_to_grid(image)
+                    if self.current_grid <= self.rows * self.columns:
+                        self.gauge.SetValue(self.current_grid * 100.0 / self.rows / self.columns)
+            self.video_view.play()
+
+    def add_frame_to_grid(self, image):
+        if self.current_grid < (self.columns * self.rows):
+            self.panel_grid[self.current_grid].set_frame(image)
+            self.current_grid += 1
+        if self.current_grid is (self.columns * self.rows):
+            self.desc_text.SetLabel(_("Press space bar to capture or 'r' to read frame"))
+            if self.button_right_callback is not None:
+                self.button_right_callback()
+
+    def save_image_file(self, image, id):
+        folder = os.path.join(get_data_dir(), 'camera_intrisics')
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        filename = os.path.join(folder, 'frame' + str(id) + '.png')
+        # if os.path.exists(filename):
+        if version_gt(cv2.__version__, '3.0.0'):
+            compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 0]
+        else:
+            compression_params = [cv2.CV_IMWRITE_PNG_COMPRESSION, 0]
+
+        cv2.imwrite(filename, image, compression_params)
+
+    def read_image_file(self, id):
+        folder = os.path.join(get_data_dir(), 'camera_intrisics')
+        filename = os.path.join(folder, 'frame' + str(id) + '.png')
+        if not os.path.exists(filename):
+            return None
+        image = cv2.imread(filename, cv2.IMREAD_COLOR)
+        if image is None:
+            logger.info('Error loading image ' + filename)
+        return image

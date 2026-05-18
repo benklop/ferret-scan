@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/ciclops/__init__.py
+src/ciclops/_config.py
+src/ciclops/_version.py
+src/ciclops/board.py
+src/ciclops/camera.py
+src/ciclops/camera_usb.py
+src/libciclops.egg-info/PKG-INFO
+src/libciclops.egg-info/SOURCES.txt
+src/libciclops.egg-info/dependency_links.txt
+src/libciclops.egg-info/requires.txt
+src/libciclops.egg-info/top_level.txt
+tests/test_board.py

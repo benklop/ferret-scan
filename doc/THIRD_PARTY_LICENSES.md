@@ -8,7 +8,7 @@ Ferret Scan combines open-source components and prebuilt Orbbec extension librar
 
 | Component | License | Notes |
 |-----------|---------|--------|
-| `src/ferret/` (Horus / Gryphon Scan lineage) | [GPLv2](../LICENSE) | Copyright headers in source files |
+| `src/ferret_scan/` (Horus / Gryphon Scan lineage) | [GPLv2](../LICENSE) | Copyright headers in source files |
 | Packaging scripts, GUI entry | GPLv2 | Same as above |
 
 When you receive a binary build (AppImage, Flatpak), you may obtain corresponding source from the repository above under GPLv2 terms.
@@ -57,11 +57,9 @@ Installed into the application virtual environment or bundle. Each package has i
 
 See each package’s metadata on PyPI or in `.venv/lib/python*/site-packages/*.dist-info/` after `dev-setup`.
 
-## macOS-only code (not used on Linux releases)
+## Removed third-party code
 
-| Path | License | Note |
-|------|---------|------|
-| `src/ferret/engine/driver/uvc/mac/` | CC BY-NC-SA 3.0 (Pupil Labs) | Non-commercial restriction; Linux builds do not rely on this path for Ferret camera access |
+The Pupil Labs macOS UVC extension (`engine/driver/uvc/mac/`, CC BY-NC-SA 3.0) was **removed** from this tree. DIY webcam capture uses OpenCV on all platforms via optional `libciclops`.
 
 ## Creality algo assets (not distributed)
 

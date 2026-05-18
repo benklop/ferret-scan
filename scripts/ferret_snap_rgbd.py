@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""One-shot RGBD grab for ferret-scan (Python 2 UI → Python 3 Orbbec stack).
+"""One-shot RGBD grab for ferret-scan (CLI / dev-check).
 
 Usage: ferret_snap_rgbd.py <out_dir>
 Writes: color.png, depth.png (uint16 mm), meta.json
-
-Requires: libferret on PYTHONPATH and pyorbbecsdk built against Ferret OrbbecSDK fork.
 """
 
 import json
 import os
 import sys
 
-import numpy as np
+_REPO = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(_REPO, 'src'))
 
 
 def main():
@@ -22,85 +21,29 @@ def main():
     out_dir = sys.argv[1]
     os.makedirs(out_dir, exist_ok=True)
 
-    lib_dir = os.path.join(os.path.dirname(__file__), 'lib')
-    if lib_dir not in sys.path:
-        sys.path.insert(0, lib_dir)
-    try:
-        from libferret_import import get_ferret_device_class
-
-        FerretDevice = get_ferret_device_class()
-    except ImportError as e:
-        print(f'libferret device import failed: {e}', file=sys.stderr)
-        print('Set FERRET_LIBFERRET_ROOT and run ./scripts/dev-setup', file=sys.stderr)
-        return 2
-
     try:
         import cv2
     except ImportError:
         print('opencv-python required', file=sys.stderr)
         return 2
 
-    dev = FerretDevice.open(laser=True, laser_settle_s=2.0)
-    config = dev.make_scan_config(color=True, depth=True, imu=False)
-    dev.pipeline.start(config)
-    dev.pipeline.enable_frame_sync()
+    from ferret_scan.services.ferret_rgbd import FerretRgbdService
+    from ferret_scan.util import runtime
 
-    frames = None
-    for _ in range(40):
-        fs = dev.pipeline.wait_for_frames(200)
-        if fs is None:
-            continue
-        depth = fs.get_depth_frame()
-        color = fs.get_color_frame()
-        if depth and color:
-            frames = (depth, color)
-            break
-
-    dev.pipeline.stop()
-
-    if frames is None:
-        print('no synced depth+color frameset', file=sys.stderr)
+    svc = FerretRgbdService(runtime.libferret_root())
+    try:
+        svc.connect()
+        color, depth, meta = svc.capture_rgbd()
+    except Exception as e:
+        print(f'Ferret snap failed: {e}', file=sys.stderr)
         return 2
-
-    depth_frame, color_frame = frames
-    scale = depth_frame.get_depth_scale()
-    w = depth_frame.get_width()
-    h = depth_frame.get_height()
-    depth = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(h, w)
-
-    color_fmt = color_frame.get_format()
-    cw = color_frame.get_width()
-    ch = color_frame.get_height()
-    color_data = np.frombuffer(color_frame.get_data(), dtype=np.uint8)
-    mjpg = getattr(getattr(cv2, 'OBFormat', object), 'MJPG', None)
-    if mjpg is None:
-        try:
-            from pyorbbecsdk import OBFormat
-
-            mjpg = OBFormat.MJPG
-        except ImportError:
-            mjpg = None
-    if mjpg is not None and color_fmt == mjpg:
-        color = cv2.imdecode(color_data, cv2.IMREAD_COLOR)
-        if color is None:
-            print('failed to decode MJPG color frame', file=sys.stderr)
-            return 2
-    else:
-        color = color_data.reshape(ch, cw, 3)
+    finally:
+        svc.disconnect()
 
     cv2.imwrite(os.path.join(out_dir, 'color.png'), color)
     cv2.imwrite(os.path.join(out_dir, 'depth.png'), depth)
-
-    meta = {
-        'depth_scale': float(scale),
-        'depth_width': int(w),
-        'depth_height': int(h),
-        'color_width': int(cw),
-        'color_height': int(ch),
-    }
     with open(os.path.join(out_dir, 'meta.json'), 'w') as f:
-        json.dump(meta, f)
-
+        json.dump(meta, f, indent=2)
     return 0
 
 

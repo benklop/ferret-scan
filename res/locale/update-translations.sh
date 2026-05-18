@@ -7,7 +7,7 @@ xgettext --language=Python \
 	--keyword=_ \
 	--output=ferret.pot \
 	--from-code=UTF-8 \
-	`find ../../src/ferret -name "*.py"`
+	`find ../../src/ferret_scan -name "*.py"`
 
 for LANG in `ls .`; do
 	if [ -e $LANG/LC_MESSAGES/ferret.po ]; then

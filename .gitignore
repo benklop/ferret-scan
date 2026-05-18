@@ -28,16 +28,17 @@ dist/
 .venv/
 src/Ferret.egg-info/
 ferret.egg-info/
+ferret_scan.egg-info/
+pytest-cache-files-*/
 ferret.log
 horus.log
 .tool-versions.local
 .vscode/ferret-dev.env
 version
-doc/readthedocs/_build
 python/
 ferret.bat
 horus.bat
-src/ferret/*.json
+src/ferret_scan/*.json
 *.bak
 *.bk
 

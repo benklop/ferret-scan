@@ -19,8 +19,6 @@ def fail(msg):
 def main():
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     default_libferret = os.path.join(root, 'libferret')
-    if not os.path.isfile(os.path.join(default_libferret, 'pyproject.toml')):
-        default_libferret = os.path.expanduser('~/repos/ferret')
     libferret = os.environ.get('FERRET_LIBFERRET_ROOT', default_libferret)
     errors = 0
 
@@ -45,7 +43,7 @@ def main():
         return errors
 
     try:
-        from ferret.util import runtime
+        from ferret_scan.util import runtime
 
         sdk_lib = runtime.sdk_lib_dir()
     except ImportError:

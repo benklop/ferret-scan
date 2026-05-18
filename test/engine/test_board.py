@@ -3,7 +3,7 @@ import unittest
 
 class BoardTest(unittest.TestCase):
     def setUp(self):
-        from ferret.engine.driver.board import Board
+        from ferret_scan.engine.driver.board import Board
 
         self.board = Board()
 

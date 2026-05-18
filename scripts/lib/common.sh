@@ -53,7 +53,7 @@ ferret_libferret_root() {
         echo "${vendored}"
         return
     fi
-    echo "${HOME}/repos/ferret"
+    echo "${FERRET_LIBFERRET_ROOT:-}"
 }
 
 ferret_sdk_lib_dir() {

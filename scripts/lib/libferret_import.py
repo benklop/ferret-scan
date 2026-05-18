@@ -1,4 +1,4 @@
-"""Import libferret's Python package without clashing with ferret-scan's ``ferret`` package."""
+"""Import libferret's Python ``ferret`` package (device API) alongside ferret_scan."""
 
 from __future__ import annotations
 
@@ -14,30 +14,19 @@ def _libferret_root():
     vendored = os.path.normpath(os.path.join(here, '..', '..', 'libferret'))
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
         return vendored
-    return os.path.expanduser('~/repos/ferret')
-
-
-def _unload_ferret_modules():
-    """Drop any cached ``ferret`` package so libferret's tree can be imported."""
-    for key in list(sys.modules):
-        if key == 'ferret' or key.startswith('ferret.'):
-            del sys.modules[key]
+    raise ImportError('libferret not found; set FERRET_LIBFERRET_ROOT or run ./scripts/dev-setup')
 
 
 def get_ferret_device_class():
-    """Return the libferret ``FerretDevice`` class."""
+    """Return the libferret ``FerretDevice`` class (``ferret.device``)."""
     lib = _libferret_root()
     pkg_path = os.path.join(lib, 'python')
     if not os.path.isdir(pkg_path):
         raise ImportError('libferret python tree missing: {0}'.format(pkg_path))
 
-    _unload_ferret_modules()
-    # Editable installs of ferret-scan and libferret both expose top-level ``ferret``;
-    # ensure libferret/python wins (insert(0) alone is skipped if pkg_path is already present).
-    while pkg_path in sys.path:
-        sys.path.remove(pkg_path)
-    sys.path.insert(0, pkg_path)
+    if pkg_path not in sys.path:
+        sys.path.insert(0, pkg_path)
 
-    from ferret.device import FerretDevice  # noqa: WPS433
+    from ferret.device import FerretDevice
 
     return FerretDevice

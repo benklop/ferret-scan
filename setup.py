@@ -6,7 +6,7 @@ import sys
 from setuptools import find_packages, setup
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-from ferret import __version__
+from ferret_scan import __version__
 
 # Empty until release tooling sets ferret.__version__; must be valid for setuptools/uv.
 _PACKAGE_VERSION = __version__ or '0.0.0.dev0'

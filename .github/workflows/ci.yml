@@ -37,11 +37,17 @@ jobs:
       - name: Dev setup
         run: ./scripts/dev-setup
 
+      - name: License compliance
+        run: bash scripts/check_licenses.sh
+
       - name: Ruff format
         run: uv run ruff format --check
 
       - name: Ruff lint
         run: uv run ruff check
 
-      - name: Pytest
-        run: .venv/bin/python -m pytest
+      - name: Pytest (ferret-scan)
+        run: .venv/bin/python -m pytest test/
+
+      - name: Pytest (libciclops)
+        run: .venv/bin/python -m pytest packages/libciclops/tests/ -q

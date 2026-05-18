@@ -35,6 +35,26 @@ uv run ruff check            # lint (or: nox -s lint)
 
 Python **3.9–3.13** (aligned with [pyorbbecsdk v2-main](https://github.com/orbbec/pyorbbecsdk)); dev default **3.13** via [`.python-version`](.python-version). Dependencies are declared in [`pyproject.toml`](pyproject.toml) with a committed [`uv.lock`](uv.lock).
 
+**Ferret-only install** (default): structured-light scanning with the CR-Scan Ferret — no `pyserial` or turntable stack required.
+
+**Optional Ciclop / DIY laser scanning** (serial turntable + USB webcam):
+
+```bash
+uv sync --extra diy          # installs workspace package libciclops (import: ciclops)
+# or after ./scripts/dev-setup (dev group includes libciclops)
+```
+
+Without `[diy]`, the Control workbench and Ciclop scanner mode are hidden; `ferret-scan` still runs Ferret structured-light mode.
+
+**Optional Revopoint Dual-Axis Turntable** (Bluetooth via [librevolve](../librevolve)):
+
+```bash
+uv sync --extra revolve       # or: uv sync --group dev
+revolve scan                  # find BLE address
+```
+
+In **Preferences**, set **Turntable** to `Revopoint DAT` and optionally the BLE address (empty = auto). Scanning uses `motor_step_scanning` for rotation increments.
+
 Development uses **asdf/Python from `.python-version`** and a project **`.venv` only** — nothing is installed into `/usr/local` or system `site-packages`.
 
 **Linux native packages** (install once; `wx-config` must exist before `./scripts/dev-setup`):
