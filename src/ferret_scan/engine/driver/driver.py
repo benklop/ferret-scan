@@ -1,7 +1,7 @@
 import logging
 import threading
 
-from ferret_scan.diy import diy_available
+from ferret_scan.hardware.registry import get_registry
 from ferret_scan.util import profile
 
 logger = logging.getLogger(__name__)
@@ -36,28 +36,30 @@ class Driver:
         return self._board
 
     def _turntable_enabled(self):
-        from ferret_scan.engine.driver.board import turntable_backend
-
-        return turntable_backend() != 'None'
+        return get_registry().turntable_enabled()
 
     @property
     def connect_state(self):
         return self._state
 
     def _is_ferret(self):
-        return profile.settings.get('scanner_mode', 'Ferret structured light') == 'Ferret structured light'
+        return get_registry().is_ferret_scanner()
 
     def _is_diy_mode(self):
-        return diy_available() and profile.settings.get('scanner_mode', 'Ferret structured light') == 'Ciclop laser'
+        return get_registry().is_ciclop_scanner()
 
     def _create_camera(self):
-        if self._is_ferret() or not self._is_diy_mode():
+        if self._is_ferret():
             from ferret_scan.engine.driver.camera_ferret import Camera_ferret
 
             return Camera_ferret(self)
-        from ferret_scan.engine.driver.camera_usb import Camera_usb
+        if self._is_diy_mode():
+            from ferret_scan.engine.driver.camera_usb import Camera_usb
 
-        return Camera_usb(self)
+            return Camera_usb(self)
+        from ferret_scan.engine.driver.camera_ferret import Camera_ferret
+
+        return Camera_ferret(self)
 
     def reset(self):
         if self._connect_thread is not None and self._connect_thread.is_alive():

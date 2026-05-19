@@ -57,7 +57,7 @@ class AppContext:
             laser_segmentation=LaserSegmentation(),
             point_cloud_generation=PointCloudGeneration(),
             current_video=CurrentVideo(),
-            ciclop_scan=CiclopScan(),
+            ciclop_scan=CiclopScan(driver=drv),
             camera_intrinsics=CameraIntrinsics(),
             scanner_autocheck=Autocheck(),
             laser_triangulation=LaserTriangulation(calibration_data=cal),

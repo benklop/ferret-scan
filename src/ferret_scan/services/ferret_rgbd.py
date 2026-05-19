@@ -62,24 +62,51 @@ def _decode_color_frame(color_frame):
     return color_data.reshape(ch, cw, 3).copy()
 
 
+def _read_device_temperature_c(device) -> float | None:
+    """Best-effort device temperature in Celsius from Orbbec properties."""
+    try:
+        ob = __import__('pyorbbecsdk', fromlist=['OBPropertyID', 'OBPermissionType'])
+        prop = ob.OBPropertyID
+        perm = ob.OBPermissionType
+        for prop_id in (
+            getattr(prop, 'OB_PROP_DEVICE_TEMPERATURE_FLOAT', None),
+            getattr(prop, 'OB_PROP_TEMPERATURE_FLOAT', None),
+            getattr(prop, 'OB_PROP_CHIP_TEMPERATURE_FLOAT', None),
+        ):
+            if prop_id is None:
+                continue
+            if device.is_property_supported(prop_id, perm.PERMISSION_READ):
+                return float(device.get_float_property(prop_id))
+    except Exception:
+        logger.debug('Device temperature property unavailable', exc_info=True)
+    return None
+
+
 class FerretRgbdService:
     """Keeps an open FerretDevice pipeline for repeated captures."""
 
     def __init__(self, libferret_root: str | None = None):
-        self._libferret_root = libferret_root or runtime.libferret_root()
+        self._libferret_root = libferret_root or runtime.resolve_libferret_root()
         self._device = None
+        self._last_temperature_c: float | None = None
 
     def connect(self) -> None:
         if self._device is not None:
             return
         if self._libferret_root:
             os.environ['FERRET_LIBFERRET_ROOT'] = self._libferret_root
+        from ferret_scan.util import profile
+
+        laser_on = bool(profile.settings.get('ferret_laser_on_connect', True))
+        laser_settle = float(profile.settings.get('ferret_laser_settle_s', 2.0))
+        low_bw = bool(profile.settings.get('ferret_low_bandwidth', False))
         FerretDevice = _get_device_class()
-        dev = FerretDevice.open(laser=True, laser_settle_s=2.0)
-        config = dev.make_scan_config(color=True, depth=True, imu=False)
+        dev = FerretDevice.open(laser=laser_on, laser_settle_s=laser_settle if laser_on else 0.0)
+        config = dev.make_scan_config(color=True, depth=True, imu=False, low_bandwidth=low_bw)
         dev.pipeline.start(config)
         dev.pipeline.enable_frame_sync()
         self._device = dev
+        self._last_temperature_c = _read_device_temperature_c(dev.device)
         logger.info('Ferret RGB-D service connected (in-process)')
 
     def disconnect(self) -> None:
@@ -113,6 +140,8 @@ class FerretRgbdService:
         h = depth_frame.get_height()
         depth = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(h, w)
         color = _decode_color_frame(color_frame)
+        if self._device is not None:
+            self._last_temperature_c = _read_device_temperature_c(self._device.device)
         meta = {
             'depth_scale': float(scale),
             'depth_width': int(w),
@@ -120,4 +149,6 @@ class FerretRgbdService:
             'color_width': int(color.shape[1]),
             'color_height': int(color.shape[0]),
         }
+        if self._last_temperature_c is not None:
+            meta['temperature'] = self._last_temperature_c
         return color, depth, meta

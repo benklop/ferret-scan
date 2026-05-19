@@ -6,7 +6,6 @@ from ferret_scan.engine.algorithms.image_detection import ImageDetection
 from ferret_scan.engine.algorithms.laser_segmentation import LaserSegmentation
 from ferret_scan.engine.algorithms.point_cloud_generation import PointCloudGeneration
 from ferret_scan.engine.algorithms.point_cloud_roi import PointCloudROI
-from ferret_scan.engine.driver.driver import Driver
 
 
 class ScanError(Exception):
@@ -17,8 +16,12 @@ class ScanError(Exception):
 class Scan:
     """Generic class for threading scanning"""
 
-    def __init__(self):
-        self.driver = Driver()
+    def __init__(self, driver=None):
+        if driver is None:
+            from ferret_scan.engine.driver.driver import driver as _driver_singleton
+
+            driver = _driver_singleton
+        self.driver = driver
         self.image_capture = ImageCapture()
         self.image_detection = ImageDetection()
         self.laser_segmentation = LaserSegmentation()

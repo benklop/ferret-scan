@@ -555,3 +555,716 @@
 [05/17 17:32:19.068635][info][975516][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
 [05/17 17:32:19.068914][info][975516][ObLibuvcDevicePort.cpp:87] uvc_close done.
 [05/17 17:32:19.068915][info][975516][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/17 20:55:47.006685][info][1215051][LinuxUsbPal.cpp:334] Create PollingDeviceWatcher!
+[05/17 20:55:47.006704][info][1215051][DeviceManager.cpp:25] Current found device(s): (1)
+[05/17 20:55:47.006706][info][1215051][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 20:55:47.006708][info][1215051][DeviceManager.cpp:405] Enable net device enumeration: true
+[05/17 20:55:48.011448][info][1215051][DeviceManager.cpp:25] Current device(s) list: (1)
+[05/17 20:55:48.011463][info][1215051][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 20:55:48.011522][info][1215051][G2Device.cpp:460] Register color sensor on UVC interface 4 (CR-Scan Ferret RGB Camera)
+[05/17 20:55:48.011589][warning][1215051][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[05/17 20:55:48.011652][warning][1215051][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[05/17 20:55:48.011685][warning][1215051][PropertyServer.cpp:87] [BC6M451003T] Not added to property map, property not found in OBPropertyBaseInfoMap, id=5003
+[05/17 20:55:48.016067][warning][1215051][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 20:55:48.016098][warning][1215051][G2AlgParamManager.cpp:81] Clamp invalid D2C paramIndex 255 to 0 (calib entries: 2)
+[05/17 20:55:48.019407][info][1215051][DeviceManager.cpp:198] Device created successfully! Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T FW: 1.2.5
+[05/17 20:55:48.019446][info][1215051][Pipeline.cpp:54] [BC6M451003T] Pipeline created with device: {name: CR-Scan Ferret, sn: BC6M451003T}, @0x7FF1C0319790
+[05/17 20:55:50.049660][info][1215051][Pipeline.cpp:228] [BC6M451003T] Check and set config done!
+[05/17 20:55:50.049832][info][1215051][Pipeline.cpp:266] [BC6M451003T] Try to start streams!
+[05/17 20:55:50.049838][info][1215051][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 20:55:50.049842][info][1215051][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Color
+[05/17 20:55:50.049845][info][1215051][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Color, format: MJPG, width: 1280, height: 720, fps: 30}
+[05/17 20:55:50.054762][info][1215051][VideoSensor.cpp:58] [BC6M451003T] Try to start stream: {type: Depth, format: RLE, width: 1280, height: 800, fps: 30}
+[05/17 20:55:50.054775][info][1215051][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPED to STARTING@Depth
+[05/17 20:55:50.054781][info][1215051][VideoSensor.cpp:127] [BC6M451003T] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[05/17 20:55:50.059384][info][1215051][Pipeline.cpp:293] [BC6M451003T] Start streams done!
+[05/17 20:55:50.059389][info][1215051][Pipeline.cpp:250] [BC6M451003T] Pipeline start done!
+[05/17 20:55:50.092142][info][1215162][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Depth
+[05/17 20:55:50.186764][info][1215161][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STARTING to STREAMING@Color
+[05/17 20:55:50.597098][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset!
+[05/17 20:55:53.629811][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**68 logs in 3032ms**]
+[05/17 20:55:55.123113][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.212681fps
+[05/17 20:55:55.128989][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.278885fps
+[05/17 20:55:55.188547][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.788086fps
+[05/17 20:55:55.188677][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.794041fps
+[05/17 20:55:59.657847][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**125 logs in 6028ms**]
+[05/17 20:56:00.154444][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:56:00.161483][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 20:56:00.219575][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:56:00.219696][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:56:05.185383][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:05.190726][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:56:05.250774][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:56:05.250902][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:56:10.216674][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:10.220551][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 20:56:10.281931][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:56:10.281971][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:56:11.687485][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**250 logs in 12029ms**]
+[05/17 20:56:15.221675][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.994001fps
+[05/17 20:56:15.247672][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:15.314591][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.604610fps
+[05/17 20:56:15.314698][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.604610fps
+[05/17 20:56:20.250934][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:56:20.278972][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:20.346587][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.809221fps
+[05/17 20:56:20.346710][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.809221fps
+[05/17 20:56:25.283864][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 20:56:25.309925][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:25.376818][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.224651fps
+[05/17 20:56:25.376936][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.224651fps
+[05/17 20:56:30.313178][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:56:30.341122][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:30.406630][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.423458fps
+[05/17 20:56:30.406711][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.423458fps
+[05/17 20:56:35.343699][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:56:35.372166][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:35.437645][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:56:35.437706][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:56:35.710595][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**487 logs in 24023ms**]
+[05/17 20:56:40.372941][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:56:40.403426][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:56:40.469771][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.213036fps
+[05/17 20:56:40.469846][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.213036fps
+[05/17 20:56:45.373655][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.994001fps
+[05/17 20:56:45.434629][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:45.500275][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.020075fps
+[05/17 20:56:45.500398][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.020075fps
+[05/17 20:56:50.375898][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.988007fps
+[05/17 20:56:50.465734][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:50.531155][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.019880fps
+[05/17 20:56:50.531276][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:56:55.404329][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:56:55.496927][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:56:55.562349][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:56:55.562471][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:00.431230][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.037796fps
+[05/17 20:57:00.528102][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:00.593413][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:00.593532][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:05.464580][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 20:57:05.559271][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:57:05.624664][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:05.624783][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:10.498390][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 20:57:10.590329][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:10.655797][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:10.655919][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:15.527125][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 20:57:15.621408][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:15.688361][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.001987fps
+[05/17 20:57:15.688482][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.001987fps
+[05/17 20:57:20.558212][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:57:20.652608][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:20.719846][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.815145fps
+[05/17 20:57:20.719907][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.815145fps
+[05/17 20:57:23.744148][warning][1215472][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**984 logs in 48033ms, last: 20:57:23.689855**]
+[05/17 20:57:25.587029][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 20:57:25.683739][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:25.750954][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:25.751065][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:30.618037][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:57:30.714997][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:30.782318][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:57:30.782386][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 20:57:35.651434][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 20:57:35.746099][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:35.813320][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:35.813383][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:40.683434][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:57:40.777255][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:57:40.844406][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:40.844454][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:45.712985][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:57:45.808334][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:45.875678][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:45.875767][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:50.744672][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:57:50.839532][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:50.906792][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:50.906856][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:57:55.776068][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:57:55.870649][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:57:55.937956][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:57:55.938068][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:00.807351][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:58:00.901804][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:00.968965][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:00.969018][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:05.836247][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 20:58:05.932942][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:06.000042][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:06.000107][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:10.871283][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.990070fps
+[05/17 20:58:10.964159][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:11.031268][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:58:11.031340][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 20:58:15.901685][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 20:58:15.995313][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:58:16.062399][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:16.062514][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:20.932154][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 20:58:21.026368][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:21.093557][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:21.093673][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:23.756902][warning][1215607][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1254 logs in 60012ms, last: 20:58:23.730280**]
+[05/17 20:58:25.963031][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:58:26.057563][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:26.124788][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:26.124908][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:30.994266][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:58:31.088706][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:31.155842][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:31.155898][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:36.028310][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 20:58:36.119801][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:36.186960][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:36.187016][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:41.056322][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 20:58:41.150982][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:41.218179][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:41.218295][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 20:58:46.087559][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:58:46.182168][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:46.249304][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:58:46.249416][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:51.118674][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:58:51.213326][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:58:51.280553][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:51.280673][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:58:56.149710][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:58:56.244423][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:58:56.311670][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:58:56.311725][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:01.180776][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:01.275581][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:01.342783][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:01.342912][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:06.212646][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:59:06.306774][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:06.373999][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:06.374086][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:11.243859][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:11.337890][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:11.405092][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:11.405178][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:16.275138][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:16.369084][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:16.436380][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:59:16.436514][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 20:59:21.306702][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:59:21.400271][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:59:21.467488][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:21.467568][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:23.772132][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1280 logs in 60015ms**]
+[05/17 20:59:26.337403][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:26.431358][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:26.498518][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:26.498615][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:31.367677][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 20:59:31.462565][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:31.529599][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:31.529710][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 20:59:36.398834][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:36.493716][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:36.561413][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:59:36.561530][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 20:59:41.430025][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:41.524865][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:41.592782][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.815145fps
+[05/17 20:59:41.592905][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.815145fps
+[05/17 20:59:46.461501][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 20:59:46.556046][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:46.623082][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.821072fps
+[05/17 20:59:46.623215][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.815145fps
+[05/17 20:59:51.493103][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:51.587180][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 20:59:51.654081][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 20:59:51.654153][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.019880fps
+[05/17 20:59:56.523490][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 20:59:56.618371][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 20:59:56.685562][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 20:59:56.685684][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:00:01.556677][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:00:01.649375][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:01.716681][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:01.716747][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:06.586713][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:00:06.680585][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:06.747840][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:06.747963][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:11.620655][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 21:00:11.711768][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:11.778852][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:11.778926][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:16.650054][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:00:16.742899][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:16.810002][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:16.810087][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:21.679308][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:00:21.774029][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:21.841259][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:00:21.841377][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:00:23.776512][warning][1215164][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1288 logs in 60004ms**]
+[05/17 21:00:26.709679][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:00:26.805137][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:26.872403][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:26.872476][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:31.741602][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:00:31.836400][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:00:31.903537][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:31.903643][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:36.773525][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:00:36.867576][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:36.934724][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:36.934843][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:41.804357][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:00:41.898585][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:41.965882][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:41.965949][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:46.832769][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 21:00:46.929700][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:46.996965][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:46.997078][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:00:51.864130][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:00:51.960991][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:52.028168][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:00:52.028240][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:00:56.865578][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.988007fps
+[05/17 21:00:56.992125][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:00:57.059289][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:00:57.059406][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:01.895588][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:01:02.023196][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:02.090473][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:02.090571][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:06.896351][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.994001fps
+[05/17 21:01:07.054344][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:01:07.121590][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:07.121648][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:11.924120][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.037796fps
+[05/17 21:01:12.085545][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:12.152869][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:12.152973][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:16.955156][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:01:17.116659][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:17.183810][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:17.183878][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:21.986399][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:01:22.147828][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:22.214954][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:22.215034][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:23.810227][warning][1221031][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1589 logs in 60033ms, last: 21:01:23.752560**]
+[05/17 21:01:27.017564][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:01:27.178986][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:27.246275][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:01:27.246409][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:01:32.046568][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:01:32.210237][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:01:32.277380][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:32.277496][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:37.079859][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:01:37.241333][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:37.308495][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:37.308599][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:42.080645][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.994001fps
+[05/17 21:01:42.272477][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:42.339570][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:42.339663][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:47.107563][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.037796fps
+[05/17 21:01:47.303535][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:47.370914][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:01:47.371043][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:01:52.140133][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:01:52.334769][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:52.371361][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.994001fps
+[05/17 21:01:52.371415][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.994001fps
+[05/17 21:01:57.171040][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:01:57.365965][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:01:57.399778][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.031822fps
+[05/17 21:01:57.399856][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.031822fps
+[05/17 21:02:02.201383][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:02:02.396970][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:02.430899][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:02.430983][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:07.232461][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:02:07.428152][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:07.462090][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:07.462217][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:02:12.265790][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:02:12.459347][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:02:12.493279][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:02:12.493403][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:17.295557][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:02:17.490544][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:17.524429][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:17.524551][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:22.328555][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:02:22.521654][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:22.555513][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:22.555589][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:23.819418][warning][1222724][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1421 logs in 60009ms, last: 21:02:23.792967**]
+[05/17 21:02:27.357431][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:02:27.552864][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:27.586737][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:27.586792][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:32.388395][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:02:32.583976][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:32.617790][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:32.617876][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:37.423335][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.990070fps
+[05/17 21:02:37.615049][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:37.648988][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:37.649113][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:42.454575][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:02:42.646234][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:02:42.680089][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:42.680224][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:02:47.482826][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 21:02:47.677456][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:47.711282][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:02:47.711387][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:52.513953][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:02:52.708643][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:52.742383][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:52.742438][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:02:57.543073][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:02:57.739734][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:02:57.773562][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:02:57.773638][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:02.576293][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 21:03:02.770872][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:02.774335][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.994001fps
+[05/17 21:03:02.774386][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.994001fps
+[05/17 21:03:07.606123][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:03:07.801940][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:07.802559][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.031822fps
+[05/17 21:03:07.802612][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.031822fps
+[05/17 21:03:12.637065][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:03:12.833131][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:12.833740][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:03:12.833806][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:17.667659][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:03:17.864372][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:03:17.868495][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.990070fps
+[05/17 21:03:17.868583][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.990070fps
+[05/17 21:03:22.704176][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.984116fps
+[05/17 21:03:22.895426][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:22.896019][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.037796fps
+[05/17 21:03:22.896078][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.037796fps
+[05/17 21:03:23.826602][warning][1223034][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1421 logs in 60007ms, last: 21:03:23.766994**]
+[05/17 21:03:27.730508][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.037796fps
+[05/17 21:03:27.926558][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:27.927123][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:03:27.927169][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:32.761757][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:03:32.927485][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.994001fps
+[05/17 21:03:32.927609][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.994001fps
+[05/17 21:03:32.957708][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:37.793132][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:03:37.956205][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.031822fps
+[05/17 21:03:37.956307][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.025850fps
+[05/17 21:03:37.988909][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:42.795541][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.982012fps
+[05/17 21:03:42.956469][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.994001fps
+[05/17 21:03:42.987429][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:43.020032][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:47.823365][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 21:03:47.985084][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.031822fps
+[05/17 21:03:48.018549][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:48.051240][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:03:52.854223][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:03:53.016405][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:03:53.049680][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:53.082353][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:03:57.885272][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:03:58.047377][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:03:58.080813][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:03:58.113498][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:02.916672][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:04:03.078620][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:03.112044][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:03.144749][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:07.947064][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:04:08.109748][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:08.143206][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:08.175835][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:12.978838][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:04:13.140941][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:13.174257][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:04:13.206939][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:18.010098][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:04:18.172036][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:18.205403][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:18.238121][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:23.041429][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:04:23.203160][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:23.239035][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.001987fps
+[05/17 21:04:23.269328][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:04:23.831667][warning][1223308][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1423 logs in 60005ms, last: 21:04:23.805582**]
+[05/17 21:04:28.042334][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.994001fps
+[05/17 21:04:28.234334][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:04:28.267774][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.025850fps
+[05/17 21:04:28.300409][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:33.069157][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.043772fps
+[05/17 21:04:33.265528][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:33.298920][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:33.331652][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:38.102873][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 21:04:38.266295][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.994001fps
+[05/17 21:04:38.330083][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:38.362724][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:43.132509][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:04:43.294469][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.031822fps
+[05/17 21:04:43.361167][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:43.393884][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:48.165717][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:04:48.325573][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:48.392331][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:04:48.424983][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:04:53.195656][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:04:53.356766][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:53.423513][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:53.456305][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:04:58.226343][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:04:58.387897][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:04:58.454636][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:04:58.487371][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:03.257363][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:05:03.419086][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:03.485805][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:03.518561][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:08.287978][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:05:08.450227][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:05:08.516963][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:08.549640][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:13.319503][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:05:13.481426][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:13.548644][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:05:13.580804][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:18.348405][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:05:18.512579][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:18.581384][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.001987fps
+[05/17 21:05:18.611966][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:23.381641][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:05:23.543986][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:23.610490][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.025850fps
+[05/17 21:05:23.643169][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:23.838996][warning][1223689][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1420 logs in 60007ms, last: 21:05:23.814879**]
+[05/17 21:05:28.411090][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:05:28.574812][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:28.641548][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:28.674233][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:05:33.413160][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.988007fps
+[05/17 21:05:33.606065][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:33.672804][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:33.705488][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:38.441706][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:05:38.637198][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:38.703826][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:38.736645][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:43.472035][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:05:43.668304][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:05:43.735055][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:43.767752][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:48.507529][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.984116fps
+[05/17 21:05:48.699470][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:48.766166][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:48.798938][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:53.535462][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 21:05:53.730688][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:53.797462][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:05:53.829984][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:05:58.566536][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:05:58.761825][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:05:58.828442][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:05:58.861205][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:03.597555][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:06:03.792982][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:03.859762][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:03.892343][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:06:08.628697][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:06:08.824088][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:08.890719][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:08.923593][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:13.659914][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:06:13.855276][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:06:13.922007][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:13.954641][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:18.690943][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:06:18.886394][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:18.953035][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:18.985852][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:23.722253][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:06:23.848241][warning][1224111][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1412 logs in 60009ms, last: 21:06:23.822087**]
+[05/17 21:06:23.917475][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:23.984217][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:06:24.016975][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:28.753236][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:06:28.948749][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:29.015424][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:29.048207][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:33.782740][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:06:33.979891][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:34.046552][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:34.079294][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:06:38.785702][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.982012fps
+[05/17 21:06:39.010962][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:39.077758][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:39.110446][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:43.813572][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 21:06:44.042213][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:44.108909][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:44.141593][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:48.815633][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.988007fps
+[05/17 21:06:49.073375][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:06:49.139965][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:49.172719][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:53.843088][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.037796fps
+[05/17 21:06:54.104516][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:06:54.171133][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:06:54.203861][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:06:58.874106][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:06:59.105486][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=29.994001fps
+[05/17 21:06:59.202343][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:06:59.235005][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:03.908383][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.990070fps
+[05/17 21:07:04.133520][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.031822fps
+[05/17 21:07:04.233537][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:04.266242][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:07:08.937942][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:07:09.164693][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:09.267448][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=29.996027fps
+[05/17 21:07:09.297452][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:13.966644][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:07:14.195741][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:14.295992][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.031822fps
+[05/17 21:07:14.328498][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:18.998639][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:07:19.226934][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:19.327005][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:19.359702][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:23.854638][warning][1224480][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1412 logs in 60006ms, last: 21:07:23.830545**]
+[05/17 21:07:24.030562][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:07:24.258091][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:24.358195][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:07:24.390857][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:29.058935][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.031822fps
+[05/17 21:07:29.289337][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:07:29.389257][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:29.422062][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:34.092165][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:07:34.320377][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:34.420455][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:34.453127][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:39.126681][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.990070fps
+[05/17 21:07:39.351519][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:39.451553][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:39.484363][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:07:44.157842][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:07:44.382686][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:44.482681][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:44.515368][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:49.185158][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.037796fps
+[05/17 21:07:49.413829][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:49.513805][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:49.546608][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:54.220717][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.984116fps
+[05/17 21:07:54.445036][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:54.545061][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:54.577704][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:07:59.246786][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.043772fps
+[05/17 21:07:59.476166][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:07:59.576155][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:07:59.608914][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:04.279490][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.001987fps
+[05/17 21:08:04.507309][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:08:04.607370][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:08:04.640051][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:09.310015][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:08:09.538446][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:08:09.638459][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:08:09.671221][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:14.341769][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.007948fps
+[05/17 21:08:14.569631][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:08:14.669613][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:08:14.702283][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.007948fps
+[05/17 21:08:19.372988][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.013912fps
+[05/17 21:08:19.600715][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:08:19.700747][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:08:19.733497][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:23.864272][warning][1224904][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**1431 logs in 60009ms, last: 21:08:23.835855**]
+[05/17 21:08:24.401802][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.025850fps
+[05/17 21:08:24.631905][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:08:24.732098][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:08:24.764739][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:29.435630][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=29.996027fps
+[05/17 21:08:29.663098][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:08:29.763123][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:08:29.795794][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:34.465983][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:08:34.694216][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.013912fps
+[05/17 21:08:34.794405][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.007948fps
+[05/17 21:08:34.827036][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:39.495903][info][1215164][SensorBase.cpp:379] [BC6M451003T] Depth Streaming... frameRate=30.019880fps
+[05/17 21:08:39.725431][info][1215161][VideoSensor.cpp:153] [BC6M451003T] Color backend frame callback, frameRate=30.007948fps
+[05/17 21:08:39.825304][info][1215169][SensorBase.cpp:379] [BC6M451003T] Color Streaming... frameRate=30.013912fps
+[05/17 21:08:39.858064][info][1215162][VideoSensor.cpp:153] [BC6M451003T] Depth backend frame callback, frameRate=30.013912fps
+[05/17 21:08:40.404331][info][1225215][DeviceManager.cpp:332] Device changed! removed: 1, added: 0
+[05/17 21:08:40.404366][warning][1225215][DeviceBase.cpp:207] Device is deactivated or disconnected while there are still sensors streaming!
+[05/17 21:08:40.404494][info][1225215][DeviceManager.cpp:25] Removed device(s) list: (1)
+[05/17 21:08:40.404496][info][1225215][DeviceManager.cpp:33] 	- Name: CR-Scan Ferret, PID: 0x069c, SN/ID: BC6M451003T, Connection: USB3.0
+[05/17 21:08:40.404500][info][1225215][DeviceManager.cpp:25] Current device(s) list: (0)
+[05/17 21:08:42.214217][warning][1214517][Pipeline.cpp:335] [BC6M451003T] Wait for frame timeout, you can try to increase the wait time! current timeout=200
+[05/17 21:08:45.216519][warning][1214517][Pipeline.cpp:335] [BC6M451003T] Wait for frame timeout, you can try to increase the wait time! current timeout=200 [**15 logs in 3002ms**]
+[05/17 21:08:51.417071][warning][1225302][Pipeline.cpp:335] [BC6M451003T] Wait for frame timeout, you can try to increase the wait time! current timeout=200 [**24 logs in 6200ms, last: 21:08:50.019977**]
+[05/17 21:09:23.871064][warning][1225152][Pipeline.cpp:324] [BC6M451003T] Output frameset queue is full, drop oldest frameset! [**393 logs in 60006ms, last: 21:08:40.363287**]
+[05/18 11:12:58.805176][info][1214517][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/18 11:12:58.805193][info][1214517][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/18 11:12:58.808088][warning][1214517][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: DeviceBase.cpp(330)
+ - msg: Device is deactivated/disconnected! DeviceComponentId:2
+ - type: WRONG_API_CALL_SEQUENCE
+ - status: 108
+[05/18 11:12:58.815397][info][1214517][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/18 11:12:58.815405][info][1214517][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/18 11:12:58.815420][warning][1214517][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: DeviceBase.cpp(330)
+ - msg: Device is deactivated/disconnected! DeviceComponentId:2
+ - type: WRONG_API_CALL_SEQUENCE
+ - status: 108
+[05/18 11:12:58.815506][info][1214517][Pipeline.cpp:367] [BC6M451003T] Try to stop pipeline!
+[05/18 11:12:58.815507][info][1214517][Pipeline.cpp:343] [BC6M451003T] Try to stop streams!
+[05/18 11:12:58.815510][warning][1214517][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: DeviceBase.cpp(330)
+ - msg: Device is deactivated/disconnected! DeviceComponentId:2
+ - type: WRONG_API_CALL_SEQUENCE
+ - status: 108
+[05/18 11:12:58.815550][warning][1214517][Pipeline.cpp:61] [BC6M451003T] Execute failure! A libobsensor_exception has occurred!
+ - where: Pipeline.cpp(61):~Pipeline
+ - msg: Device is deactivated/disconnected! DeviceComponentId:2
+ - type: N11libobsensor21recoverable_exceptionE
+ - status: 108
+[05/18 11:12:58.815566][info][1214517][Pipeline.cpp:65] [BC6M451003T] Pipeline destroyed! @0x7FF1C0319790
+[05/18 11:12:58.815587][info][1214517][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Color
+[05/18 11:12:58.815760][warning][1214517][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: DeviceBase.cpp(330)
+ - msg: Device is deactivated/disconnected! DeviceComponentId:0
+ - type: WRONG_API_CALL_SEQUENCE
+ - status: 108
+[05/18 11:12:58.818661][warning][1214517][VideoSensor.cpp:251] [BC6M451003T] Failed to send stop stream vendor command: Device is deactivated/disconnected! DeviceComponentId:0
+[05/18 11:12:58.818699][info][1214517][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Color
+[05/18 11:12:58.818795][info][1214517][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/18 11:12:58.820086][info][1214517][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STREAMING to STOPPING@Depth
+[05/18 11:12:58.820299][warning][1214517][ObException.cpp:25] A recoverable_exception has occurred!
+ - where: DeviceBase.cpp(330)
+ - msg: Device is deactivated/disconnected! DeviceComponentId:0
+ - type: WRONG_API_CALL_SEQUENCE
+ - status: 108
+[05/18 11:12:58.820322][warning][1214517][VideoSensor.cpp:251] [BC6M451003T] Failed to send stop stream vendor command: Device is deactivated/disconnected! DeviceComponentId:0
+[05/18 11:12:58.820327][info][1214517][SensorBase.cpp:210] [BC6M451003T] Stream state changed from STOPPING to STOPPED@Depth
+[05/18 11:12:58.820458][info][1214517][SensorBase.cpp:47] [BC6M451003T] SensorBase is destroyed
+[05/18 11:12:58.823338][info][1214517][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/18 11:12:58.823342][info][1214517][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done
+[05/18 11:12:58.823364][info][1214517][ObLibuvcDevicePort.cpp:87] uvc_close done.
+[05/18 11:12:58.823364][info][1214517][ObLibuvcDevicePort.cpp:88] ~ObLibuvcDevicePort done

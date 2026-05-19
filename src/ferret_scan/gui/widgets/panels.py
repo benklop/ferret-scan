@@ -138,10 +138,15 @@ class ExpandablePanel(wx.Panel):
     def set_expand_callback(self, expand_callback):
         self.expand_callback = expand_callback
 
-    def on_title_clicked(self, event):
+    def select_panel(self, invoke_callback=True):
+        """Expand this panel; optionally run the selection callback (e.g. switch pages)."""
         if self.expand_callback is not None:
             self.expand_callback(self)
+        if invoke_callback:
             self.on_selected()
+
+    def on_title_clicked(self, event):
+        self.select_panel(invoke_callback=True)
 
     def on_undo_button_clicked(self, event):
         if self.undo():

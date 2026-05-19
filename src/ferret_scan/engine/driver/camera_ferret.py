@@ -27,7 +27,7 @@ class Camera_ferret(Camera):
 
     def connect(self):
         try:
-            self._service = FerretRgbdService(runtime.libferret_root())
+            self._service = FerretRgbdService(runtime.resolve_libferret_root())
             self._service.connect()
         except (FerretRgbdError, FileNotFoundError, OSError) as e:
             raise FerretNotAvailable(str(e)) from e

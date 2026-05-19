@@ -9,7 +9,8 @@ import os
 
 import wx
 
-from ferret_scan.gui.wizard.main import Wizard
+from ferret_scan.gui.util.preferences import PreferencesDialog
+from ferret_scan.hardware.registry import get_registry
 from ferret_scan.util import profile, resources
 
 
@@ -26,7 +27,7 @@ def _logo_bitmap(max_height=120):
 
 
 class WelcomeDialog(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, auto_connect=True):
         wx.Dialog.__init__(
             self,
             parent,
@@ -35,22 +36,25 @@ class WelcomeDialog(wx.Dialog):
         )
 
         self.parent = parent
-        self.last_files = profile.settings['last_files']
+        self.auto_connect = auto_connect
+        self._open_preferences_after = False
 
         header = Header(self)
+        hardware = HardwarePicker(self)
         content = Content(self)
         check_box_show = wx.CheckBox(self, label=_("Don't show this dialog again"))
         check_box_show.SetValue(not profile.settings['show_welcome'])
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(header, 0, wx.EXPAND | wx.ALL, 8)
+        vbox.Add(hardware, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         vbox.Add(content, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         hbox.AddStretchSpacer(1)
         hbox.Add(check_box_show, 0, wx.ALIGN_CENTER_VERTICAL)
         vbox.Add(hbox, 0, wx.EXPAND | wx.ALL, 12)
         self.SetSizerAndFit(vbox)
-        self.SetMinSize((760, 520))
+        self.SetMinSize((760, 580))
         self.CentreOnParent()
 
         check_box_show.Bind(wx.EVT_CHECKBOX, self.on_check_box_changed)
@@ -64,6 +68,72 @@ class WelcomeDialog(wx.Dialog):
     def on_close(self, event):
         self.EndModal(wx.ID_OK)
         self.Destroy()
+        if self._open_preferences_after:
+            dlg = PreferencesDialog(parent=self.parent)
+            dlg.ShowModal()
+        from ferret_scan.hardware.migration import migrate_hardware_settings
+        from ferret_scan.runtime_engine import driver
+
+        migrate_hardware_settings(profile.settings)
+        profile.settings.save_settings(categories=['preferences'])
+        driver.reset()
+        self.parent.initialize_driver()
+        self.parent.refresh_device_ui()
+        if self.auto_connect:
+            wx.CallAfter(self.parent.auto_connect)
+
+
+class HardwarePicker(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        self.registry = get_registry()
+
+        box = wx.StaticBox(self, label=_('Hardware'))
+        sizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+
+        self.scanner_label = wx.StaticText(self, label=_('Scanner'))
+        self.scanner_combo = wx.ComboBox(self, size=(240, -1), style=wx.CB_READONLY)
+        self.turntable_label = wx.StaticText(self, label=_('Turntable'))
+        self.turntable_combo = wx.ComboBox(self, size=(240, -1), style=wx.CB_READONLY)
+        self.more_btn = wx.Button(self, label=_('More options…'))
+
+        self._scanner_map = {s.label: s.id for s in self.registry.available_scanners()}
+        self._turntable_map = {t.label: t.id for t in self.registry.available_turntables()}
+        self.scanner_combo.SetItems(list(self._scanner_map.keys()))
+        self.turntable_combo.SetItems(list(self._turntable_map.keys()))
+        self.scanner_combo.SetValue(self.registry.active_scanner().label)
+        self.turntable_combo.SetValue(self.registry.active_turntable().label)
+
+        row1 = wx.BoxSizer(wx.HORIZONTAL)
+        row1.Add(self.scanner_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        row1.Add(self.scanner_combo, 1, wx.EXPAND)
+        row2 = wx.BoxSizer(wx.HORIZONTAL)
+        row2.Add(self.turntable_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        row2.Add(self.turntable_combo, 1, wx.EXPAND)
+        sizer.Add(row1, 0, wx.EXPAND | wx.ALL, 6)
+        sizer.Add(row2, 0, wx.EXPAND | wx.ALL, 6)
+        sizer.Add(self.more_btn, 0, wx.ALIGN_RIGHT | wx.ALL, 6)
+
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(sizer, 0, wx.EXPAND)
+        self.SetSizer(outer)
+
+        self.scanner_combo.Bind(wx.EVT_COMBOBOX, self._on_hardware_changed)
+        self.turntable_combo.Bind(wx.EVT_COMBOBOX, self._on_hardware_changed)
+        self.more_btn.Bind(wx.EVT_BUTTON, self._on_more_options)
+
+    def _on_hardware_changed(self, event):
+        sl = self.scanner_combo.GetValue()
+        tl = self.turntable_combo.GetValue()
+        if sl in self._scanner_map:
+            self.registry.set_active_scanner(self._scanner_map[sl])
+        if tl in self._turntable_map:
+            self.registry.set_active_turntable(self._turntable_map[tl])
+
+    def _on_more_options(self, event):
+        welcome = self.GetParent()
+        welcome._open_preferences_after = True
+        welcome.Close()
 
 
 class Header(wx.Panel):
@@ -95,24 +165,25 @@ class CreateNew(wx.Panel):
         title_text.SetFont(title_font)
 
         scan_button = wx.Button(self, label=_('Scan using recent settings'))
+        advanced_control_button = wx.Button(self, label=_('Advanced control'))
         advanced_adjustment_button = wx.Button(self, label=_('Advanced adjustment'))
         advanced_calibration_button = wx.Button(self, label=_('Advanced calibration'))
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(title_text, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.BOTTOM, 8)
         vbox.Add(scan_button, 0, wx.EXPAND | wx.ALL, 4)
+        caps = get_registry().capabilities()
+        if caps.has_control_workbench:
+            vbox.Add(advanced_control_button, 0, wx.EXPAND | wx.ALL, 4)
         vbox.Add(advanced_adjustment_button, 0, wx.EXPAND | wx.ALL, 4)
         vbox.Add(advanced_calibration_button, 0, wx.EXPAND | wx.ALL, 4)
         self.SetSizer(vbox)
 
         scan_button.Bind(wx.EVT_BUTTON, self.on_scan)
+        if caps.has_control_workbench:
+            advanced_control_button.Bind(wx.EVT_BUTTON, self.on_advanced_control)
         advanced_adjustment_button.Bind(wx.EVT_BUTTON, self.on_advanced_adjustment)
         advanced_calibration_button.Bind(wx.EVT_BUTTON, self.on_advanced_calibration)
-
-    def on_wizard(self, event):
-        parent = self.GetParent().GetParent()
-        parent.Hide()
-        Wizard(parent.parent)
 
     def on_scan(self, event):
         profile.settings['workbench'] = 'scanning'
@@ -122,6 +193,8 @@ class CreateNew(wx.Panel):
         parent.Close()
 
     def on_advanced_control(self, event):
+        if 'control' not in self.GetParent().GetParent().parent.workbench:
+            return
         profile.settings['workbench'] = 'control'
         parent = self.GetParent().GetParent()
         workbench = parent.parent.workbench[profile.settings['workbench']].name
@@ -175,12 +248,20 @@ class OpenRecent(wx.Panel):
 
     def on_button_pressed(self, event):
         button = event.GetEventObject()
+        path = button.GetName()
+        if not os.path.isfile(path):
+            wx.MessageBox(
+                _('File not found:\n{path}').format(path=path),
+                _('Open recent'),
+                wx.OK | wx.ICON_WARNING,
+            )
+            return
         profile.settings['workbench'] = 'scanning'
         parent = self.GetParent().GetParent()
         workbench = parent.parent.workbench[profile.settings['workbench']].name
         parent.parent.update_workbench(workbench)
-        parent.parent.append_last_file(button.GetName())
-        parent.parent.workbench['scanning'].scene_view.load_file(button.GetName())
+        parent.parent.append_last_file(path)
+        parent.parent.workbench['scanning'].scene_view.load_file(path)
         parent.Close()
 
 

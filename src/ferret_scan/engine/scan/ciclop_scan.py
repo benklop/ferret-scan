@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 def _is_ferret_mode():
-    return profile.settings.get('scanner_mode', 'Ciclop laser') == 'Ferret structured light'
+    from ferret_scan.hardware.registry import get_registry
+
+    return get_registry().is_ferret_scanner()
 
 
 system = platform.system()
@@ -32,8 +34,8 @@ class CiclopScan(Scan):
     - Process Thread: compute 3D point cloud from raw images
     """
 
-    def __init__(self):
-        Scan.__init__(self)
+    def __init__(self, driver=None):
+        Scan.__init__(self, driver)
         self.image = None
         self.current_video = CurrentVideo()
         self.calibration_data = CalibrationData()

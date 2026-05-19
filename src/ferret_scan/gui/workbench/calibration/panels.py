@@ -326,3 +326,26 @@ class CameraIntrinsics(ExpandablePanel):
         self._update_new_camera_matrix(0)
         profile.settings['camera_matrix'] = np.array(profile.settings['new_camera_matrix']).copy()
         self.content['camera_matrix'].update_from_profile()
+
+
+class FerretBoardCalibrationPanel(ExpandablePanel):
+    def __init__(self, parent, on_selected_callback):
+        ExpandablePanel.__init__(
+            self,
+            parent,
+            _('Ferret calibration board'),
+            selected_callback=on_selected_callback,
+            has_undo=False,
+            has_restore=False,
+        )
+
+    def add_controls(self):
+        self.add_control(
+            'start_calibration',
+            Button,
+            _('Run calibration wizard…'),
+        )
+
+    def update_callbacks(self):
+        workbench = self.parent.parent
+        self.update_callback('start_calibration', workbench.open_ferret_board_wizard)

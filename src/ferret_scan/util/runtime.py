@@ -17,10 +17,21 @@ def libferret_root():
     vendored = os.path.join(repo_root(), 'packages', 'libferret')
     if os.path.isfile(os.path.join(vendored, 'pyproject.toml')):
         return vendored
-    env = os.environ.get('FERRET_LIBFERRET_ROOT', '')
-    if env and os.path.isfile(os.path.join(env, 'pyproject.toml')):
-        return env
     raise RuntimeError('libferret not found; run ./scripts/dev-setup')
+
+
+def resolve_libferret_root():
+    """Prefer a valid settings path, then env / packages/libferret."""
+    try:
+        from ferret_scan.util import profile
+
+        if profile.settings.setting_exists('ferret_libferret_root'):
+            configured = profile.settings['ferret_libferret_root'] or ''
+            if configured and os.path.isfile(os.path.join(configured, 'pyproject.toml')):
+                return configured
+    except Exception:
+        pass
+    return libferret_root()
 
 
 def _sdk_platform_dir():

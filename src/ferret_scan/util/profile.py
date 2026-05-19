@@ -30,9 +30,27 @@ def default_libferret_root():
         return ''
 
 
+def _migrate_libferret_root():
+    from ferret_scan.settings.persistence import default_libferret_root
+
+    if not settings.setting_exists('ferret_libferret_root'):
+        return
+    current = settings['ferret_libferret_root']
+    if current and os.path.isfile(os.path.join(str(current), 'pyproject.toml')):
+        return
+    try:
+        settings['ferret_libferret_root'] = default_libferret_root()
+    except RuntimeError:
+        settings['ferret_libferret_root'] = ''
+
+
 def load_settings():
     if os.path.exists(os.path.join(get_config_dir(), 'settings.json')):
         settings.load_settings()
+    _migrate_libferret_root()
+    from ferret_scan.hardware.migration import migrate_hardware_settings
+
+    migrate_hardware_settings(settings)
 
 
 def get_machine_size_polygons():

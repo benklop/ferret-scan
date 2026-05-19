@@ -55,6 +55,15 @@ class FerretApp(wx.App):
         # Load version
         version.download_lastest_data()
 
+        # Dismiss splash before main window init (modal dialogs during init can destroy it).
+        splash = self.splash
+        self.splash = None
+        if splash is not None:
+            try:
+                splash.Close()
+            except RuntimeError:
+                pass
+
         # Create main window
         self.main_window = MainWindow()
 
@@ -62,16 +71,8 @@ class FerretApp(wx.App):
         if profile.settings['check_for_updates'] and version.check_for_updates():
             v = VersionWindow(self.main_window)
             if v.download:
-                if self.splash is not None:
-                    self.splash.Show(False)
-                    self.splash = None
                 self.main_window.Close(True)
                 return
-
-        # Hide Splash
-        if self.splash is not None:
-            self.splash.Show(False)
-            self.splash = None
 
         # Show main window
         self.SetTopWindow(self.main_window)
@@ -80,6 +81,9 @@ class FerretApp(wx.App):
         if profile.settings['show_welcome']:
             # Defer until the main frame has painted (GTK otherwise skips first expose).
             wx.CallAfter(self._show_welcome_dialog)
+        else:
+            self.main_window.refresh_device_ui()
+            wx.CallAfter(self.main_window.auto_connect)
 
         set_full_screen_capable(self.main_window)
 

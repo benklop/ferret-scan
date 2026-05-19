@@ -35,7 +35,7 @@ def _(n):
 def register_ferret_settings(settings):
     # ============== CONNECTION Preferences ========
 
-    settings._add_setting(Setting('serial_name', _('Serial name'), 'preferences', str, ''))
+    settings._add_setting(Setting('serial_name', _('Serial name'), 'preferences', str, '', tag='ciclop_grbl'))
     settings._add_setting(
         Setting(
             'baud_rate',
@@ -44,14 +44,25 @@ def register_ferret_settings(settings):
             int,
             115200,
             possible_values=(9600, 14400, 19200, 38400, 57600, 115200),
+            tag='ciclop_grbl',
         )
     )
-    settings._add_setting(Setting('camera_id', _('Camera ID'), 'preferences', str, ''))
+    settings._add_setting(Setting('camera_id', _('Camera ID'), 'preferences', str, '', tag='ciclop'))
     from ferret_scan.diy import diy_available
 
-    _scanner_modes = ('Ferret structured light',)
-    if diy_available():
-        _scanner_modes = ('Ciclop laser', 'Ferret structured light')
+    _scanner_modes = ('Ciclop laser', 'Ferret structured light')
+    settings._add_setting(Setting('hardware_ids_migrated', _('Hardware IDs migrated'), 'preferences', bool, False))
+    settings._add_setting(
+        Setting(
+            'scanner_id',
+            _('Scanner'),
+            'preferences',
+            str,
+            'ferret',
+            possible_values=('ferret', 'ciclop'),
+            tooltip=_('Hardware scanner type.'),
+        )
+    )
     settings._add_setting(
         Setting(
             'scanner_mode',
@@ -60,7 +71,7 @@ def register_ferret_settings(settings):
             str,
             'Ferret structured light',
             possible_values=_scanner_modes,
-            tooltip=_('Ciclop: webcam + line lasers. Ferret: CR-Scan Ferret depth/RGB-D.'),
+            tooltip=_('Legacy alias; use scanner_id.'),
         )
     )
     settings._add_setting(
@@ -71,19 +82,58 @@ def register_ferret_settings(settings):
             str,
             _default_libferret_root(),
             tooltip=_('Path to libferret (submodule or clone with OrbbecSDK_v2).'),
+            tag='ferret',
+        )
+    )
+    settings._add_setting(
+        Setting('ferret_low_bandwidth', _('Low-bandwidth depth'), 'preferences', bool, False, tag='ferret')
+    )
+    settings._add_setting(
+        Setting('ferret_laser_on_connect', _('Laser on at connect'), 'preferences', bool, True, tag='ferret')
+    )
+    settings._add_setting(
+        Setting(
+            'ferret_laser_settle_s',
+            _('Laser settle time (s)'),
+            'preferences',
+            float,
+            2.0,
+            min_value=0.0,
+            max_value=30.0,
+            tag='ferret',
+        )
+    )
+    settings._add_setting(
+        Setting(
+            'ferret_calibration_board_sn',
+            _('Calibration board SN'),
+            'preferences',
+            str,
+            '',
+            tag='ferret',
+            tooltip=_('Serial number on the back of the optional Ferret calibration board.'),
         )
     )
     from ferret_scan.revolve import revolve_available
 
-    _turntable_backends = ['None']
+    _turntable_backends = ['None', 'Revopoint DAT', 'GRBL (Ciclop)']
     _default_turntable = 'None'
     if revolve_available():
-        _turntable_backends.append('Revopoint DAT')
         _default_turntable = 'Revopoint DAT'
-    if diy_available():
-        _turntable_backends.append('GRBL (Ciclop)')
-        if _default_turntable == 'None':
-            _default_turntable = 'GRBL (Ciclop)'
+    elif diy_available():
+        _default_turntable = 'GRBL (Ciclop)'
+    _turntable_ids = ['none', 'revopoint_dat', 'ciclop_grbl']
+    settings._add_setting(
+        Setting(
+            'turntable_id',
+            _('Turntable'),
+            'preferences',
+            str,
+            'revopoint_dat' if revolve_available() else ('ciclop_grbl' if diy_available() else 'none'),
+            possible_values=tuple(_turntable_ids),
+            tooltip=_('Turntable hardware type.'),
+        )
+    )
     settings._add_setting(
         Setting(
             'turntable_backend',
@@ -92,7 +142,7 @@ def register_ferret_settings(settings):
             str,
             _default_turntable,
             possible_values=tuple(_turntable_backends),
-            tooltip=_('Revopoint DAT: Bluetooth dual-axis table. GRBL: Ciclop serial board.'),
+            tooltip=_('Legacy alias; use turntable_id.'),
         )
     )
     settings._add_setting(
@@ -103,6 +153,7 @@ def register_ferret_settings(settings):
             str,
             '',
             tooltip=_('MAC address from revolve scan, or empty for auto-select.'),
+            tag='revopoint_dat',
         )
     )
     settings._add_setting(
@@ -113,6 +164,7 @@ def register_ferret_settings(settings):
             bool,
             True,
             tooltip=_('Allow Ferret connect when the turntable is absent (manual rotation).'),
+            tag='ferret',
         )
     )
     settings._add_setting(
@@ -123,13 +175,14 @@ def register_ferret_settings(settings):
             str,
             'BT ATmega328',
             possible_values=('Arduino Uno', 'BT ATmega328'),
+            tag='ciclop_grbl',
         )
     )
     settings._add_setting(
         Setting('firmware_string', 'Firmware version string', 'preferences', str, "Ferret Scan ['$' for help]")
     )
     settings._add_setting(Setting('init_string', 'Board init string', 'preferences', str, ''))
-    settings._add_setting(Setting('invert_motor', _('Invert motor'), 'preferences', bool, False))
+    settings._add_setting(Setting('invert_motor', _('Invert motor'), 'preferences', bool, False, tag='turntable'))
     settings._add_setting(
         Setting(
             'language',
@@ -582,6 +635,7 @@ def register_ferret_settings(settings):
             str,
             'pattern_settings',
             possible_values=(
+                'ferret_board_calibration',
                 'pattern_settings',
                 'camera_intrinsics',
                 'scanner_autocheck',

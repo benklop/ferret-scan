@@ -3,7 +3,6 @@ import hashlib
 import cv2
 import numpy as np
 
-from ferret_scan.engine.driver.driver import Driver
 from ferret_scan.util import profile
 
 
@@ -51,7 +50,8 @@ class CalibrationData:
         self.platform_translation = None
 
     def read_profile_camera(self):
-        driver = Driver()  # load driver singleton
+        from ferret_scan.engine.driver.driver import driver
+
         width, height = driver.camera.get_resolution()
         print('calibration_data.read_profile_camera: camera res = ' + str(driver.camera.get_resolution()))
         self.set_resolution(width, height)

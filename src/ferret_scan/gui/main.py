@@ -9,7 +9,6 @@ from collections import OrderedDict
 import wx
 
 from ferret_scan import __commit__, __datetime__, __version__
-from ferret_scan.diy import diy_available
 from ferret_scan.gui.util.preferences import PreferencesDialog
 from ferret_scan.gui.util.version_window import VersionWindow
 from ferret_scan.gui.welcome import WelcomeDialog
@@ -21,6 +20,7 @@ from ferret_scan.gui.workbench.scanning.main import ScanningWorkbench
 
 # from ferret_scan.gui.util.machine_settings import MachineSettingsDialog  # add in future version
 from ferret_scan.gui.workbench.toolbar import MainToolbar
+from ferret_scan.hardware.registry import get_registry
 from ferret_scan.runtime_engine import (
     ciclop_scan,
     driver,
@@ -53,6 +53,7 @@ class MainWindow(wx.Frame):
         # Initialize GUI
         self.load_menu()
         self.load_workbenches()
+        self.refresh_device_ui()
         self.update_profile_to_all_controls()
 
         ws, hs = self.GetSize()
@@ -69,8 +70,7 @@ class MainWindow(wx.Frame):
     def load_workbenches(self):
         self.toolbar = MainToolbar(self, self.on_connect, self.on_disconnect)
         self.workbench = OrderedDict()
-        if diy_available():
-            self.workbench['control'] = ControlWorkbench(self)
+        self.workbench['control'] = ControlWorkbench(self)
         self.workbench['adjustment'] = AdjustmentWorkbench(self)
         self.workbench['calibration'] = CalibrationWorkbench(self)
         self.workbench['scanning'] = ScanningWorkbench(self, self.toolbar.toolbar_scan)
@@ -79,18 +79,42 @@ class MainWindow(wx.Frame):
         sizer.Add(self.toolbar, 0, wx.ALL | wx.EXPAND)
         self.Bind(wx.EVT_COMBOBOX, self.on_combo_box_selected, self.toolbar.combo)
 
-        for workbench in self.workbench.values():
-            self.toolbar.combo.Append(workbench.name)
-            sizer.Add(workbench, 1, wx.ALL | wx.EXPAND)
-        wb_key = profile.settings['workbench']
-        if wb_key not in self.workbench:
-            wb_key = 'scanning'
-            profile.settings['workbench'] = wb_key
-        name = self.workbench[wb_key].name
-        self.update_workbench(name)
-        self.SetSizer(sizer)
+        for key in ('control', 'adjustment', 'calibration', 'scanning'):
+            sizer.Add(self.workbench[key], 1, wx.ALL | wx.EXPAND)
 
+        self.SetSizer(sizer)
+        self._rebuild_workbench_combo()
         self.workbench['scanning'].scene_view.set_point_size(profile.settings['point_size'])
+
+    def _rebuild_workbench_combo(self):
+        caps = get_registry().capabilities()
+        current_key = profile.settings.get('workbench', 'scanning')
+        if current_key == 'control' and not caps.has_control_workbench:
+            current_key = 'scanning'
+            profile.settings['workbench'] = current_key
+
+        self.toolbar.combo.Clear()
+        visible_keys = []
+        for key, wb in self.workbench.items():
+            if key == 'control' and not caps.has_control_workbench:
+                wb.Hide()
+                continue
+            wb.Show()
+            visible_keys.append((key, wb))
+            self.toolbar.combo.Append(wb.name)
+
+        for wb in self.workbench.values():
+            if hasattr(wb, 'configure'):
+                wb.configure(caps)
+
+        if visible_keys:
+            name = self.workbench[current_key].name if current_key in self.workbench else visible_keys[0][1].name
+            if current_key not in self.workbench or (current_key == 'control' and not caps.has_control_workbench):
+                current_key = visible_keys[0][0]
+                profile.settings['workbench'] = current_key
+                name = visible_keys[0][1].name
+            self.update_workbench(name)
+        self.Layout()
 
     def load_menu(self):
         self.menu_bar = wx.MenuBar()
@@ -368,8 +392,20 @@ class MainWindow(wx.Frame):
         self.launch_preferences()
 
     def launch_preferences(self, basic=False):
-        preferences = PreferencesDialog(basic=basic)
+        preferences = PreferencesDialog(basic=basic, parent=self)
         preferences.ShowModal()
+
+    def auto_connect(self):
+        """Connect hardware after startup (welcome closed or skipped)."""
+        if driver.is_connected or driver.connect_state == 'connecting':
+            return
+        self.toolbar.on_connect_tool_clicked(None)
+
+    def refresh_device_ui(self):
+        """Update toolbar and workbench visibility for active hardware."""
+        caps = get_registry().capabilities()
+        self.toolbar.apply_capabilities(caps)
+        self._rebuild_workbench_combo()
 
     """def on_machine_settings(self, event):
         machine_settings = MachineSettingsDialog(self)
@@ -477,7 +513,13 @@ class MainWindow(wx.Frame):
     def on_connect(self):
         for workbench in self.workbench.values():
             workbench.enable_content()
-        self.workbench[profile.settings['workbench']].on_connect()
+        wb_key = profile.settings.get('workbench', 'scanning')
+        caps = get_registry().capabilities()
+        if wb_key == 'control' and not caps.has_control_workbench:
+            wb_key = 'scanning'
+        if wb_key not in self.workbench:
+            wb_key = 'scanning'
+        self.workbench[wb_key].on_connect()
 
     def on_disconnect(self):
         for workbench in self.workbench.values():
@@ -553,7 +595,7 @@ class MainWindow(wx.Frame):
         wx.AboutBox(info)
 
     def on_welcome(self, event):
-        WelcomeDialog(self)
+        WelcomeDialog(self, auto_connect=False)
 
     def on_updates(self, event):
         if profile.settings['check_for_updates']:
@@ -644,17 +686,19 @@ class MainWindow(wx.Frame):
                 self.workbench['scanning'].pages_collection['view_page'].Unsplit()
 
     def initialize_driver(self):
-        from ferret_scan.engine.driver.board import turntable_backend
+        from ferret_scan.hardware.backends.ciclop_turntable import CiclopTurntableBackend
+        from ferret_scan.hardware.backends.revolve import RevolveTurntableBackend
 
-        backend = turntable_backend()
-        if backend == 'Revopoint DAT':
+        registry = get_registry()
+        tid = registry.active_turntable_id()
+        if tid == RevolveTurntableBackend.id:
             serial_list = driver.board.get_serial_list()
             current = profile.settings.get('revolve_device_address', '')
             if serial_list and current not in serial_list:
                 profile.settings['revolve_device_address'] = serial_list[0]
             if hasattr(driver.board, 'device_address'):
                 driver.board.device_address = profile.settings.get('revolve_device_address', '')
-        elif backend == 'GRBL (Ciclop)':
+        elif tid == CiclopTurntableBackend.id:
             serial_list = driver.board.get_serial_list()
             current_serial = profile.settings['serial_name']
             if len(serial_list) > 0 and current_serial not in serial_list:

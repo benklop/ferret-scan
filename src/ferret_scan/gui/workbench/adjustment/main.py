@@ -9,6 +9,7 @@ from ferret_scan.gui.workbench.adjustment.panels import (
     ScanSegmentationPanel,
 )
 from ferret_scan.gui.workbench.workbench import Workbench
+from ferret_scan.hardware.types import DeviceCapabilities
 from ferret_scan.runtime_engine import driver
 from ferret_scan.util import profile
 
@@ -18,6 +19,16 @@ class AdjustmentWorkbench(Workbench):
         Workbench.__init__(self, parent, name=_('Adjustment workbench'))
 
         self.current_video = CurrentVideo()
+
+    def configure(self, capabilities: DeviceCapabilities) -> None:
+        if not hasattr(self, 'panels_collection'):
+            return
+        for key, panel in self.panels_collection.expandable_panels.items():
+            if key in capabilities.adjustment_panels:
+                panel.Show()
+            else:
+                panel.Hide()
+        self.Layout()
 
     def add_panels(self):
         self.add_panel('scan_capture', ScanCapturePanel)

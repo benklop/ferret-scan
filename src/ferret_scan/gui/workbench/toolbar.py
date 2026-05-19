@@ -1,10 +1,15 @@
+import logging
+
 import wx
 
-from ferret_scan.diy import diy_available
 from ferret_scan.engine.driver.board import BoardNotConnected, OldFirmware, WrongFirmware
 from ferret_scan.engine.driver.camera import CameraNotConnected, InvalidVideo, WrongCamera, WrongDriver
+from ferret_scan.engine.driver.camera_ferret import FerretNotAvailable
+from ferret_scan.hardware.types import DeviceCapabilities
 from ferret_scan.runtime_engine import driver
 from ferret_scan.util import profile, resources, system
+
+logger = logging.getLogger(__name__)
 
 
 class MainToolbar(wx.Panel):
@@ -27,10 +32,8 @@ class MainToolbar(wx.Panel):
         # Layout
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         hbox.Add(self.toolbar_connect, 0, wx.ALL | wx.EXPAND, 3)
-        if diy_available():
-            hbox.Add(self.toolbar_control, 0, wx.ALL | wx.EXPAND, 3)
-        else:
-            self.toolbar_control.Hide()
+        hbox.Add(self.toolbar_control, 0, wx.ALL | wx.EXPAND, 3)
+        self.toolbar_control.Hide()
         hbox.Add(self.toolbar_scan, 0, wx.ALL | wx.EXPAND, 3)
         hbox.Add((0, 0), 1, wx.ALL | wx.EXPAND, 1)
         hbox.Add(self.combo, 0, wx.ALL, 10)
@@ -94,17 +97,25 @@ class MainToolbar(wx.Panel):
         self.Bind(wx.EVT_TOOL, lambda v: self.on_laser_tool_clicked(0, v.IsChecked()), self.l1_tool)
         self.Bind(wx.EVT_TOOL, lambda v: self.on_laser_tool_clicked(1, v.IsChecked()), self.l2_tool)
 
-    def on_connect_tool_clicked(self, event):
-        # If no camera id is selected
-        video_list = driver.camera.get_video_list()
-        current_video_id = profile.settings['camera_id']
-        if len(video_list) > 0:
-            if current_video_id not in video_list:
-                profile.settings['camera_id'] = str(video_list[0])
-                driver.camera.set_camera_id_from_settings(profile.settings['camera_id'])
+        self._caps_rotate = False
+        self._caps_lasers = False
 
-        driver.set_callbacks(lambda: wx.CallAfter(self.before_connect), lambda r: wx.CallAfter(self.after_connect, r))
-        driver.connect()
+    def on_connect_tool_clicked(self, event):
+        try:
+            video_list = driver.camera.get_video_list()
+            current_video_id = profile.settings['camera_id']
+            if len(video_list) > 0:
+                if current_video_id not in video_list:
+                    profile.settings['camera_id'] = str(video_list[0])
+                    driver.camera.set_camera_id_from_settings(profile.settings['camera_id'])
+
+            driver.set_callbacks(
+                lambda: wx.CallAfter(self.before_connect), lambda r: wx.CallAfter(self.after_connect, r)
+            )
+            driver.connect()
+        except Exception as exc:
+            logger.exception('Connect failed before driver thread started')
+            self._show_message(_('Connection failed'), wx.ICON_ERROR, str(exc))
 
     def on_disconnect_tool_clicked(self, event):
         self.wait_cursor = wx.BusyCursor()
@@ -177,6 +188,19 @@ class MainToolbar(wx.Panel):
                             'http://support.logitech.com/en_us/product/hd-webcam-c270'
                         ),
                     )
+            elif isinstance(result, FerretNotAvailable):
+                self._show_message(
+                    _('Ferret not available'),
+                    wx.ICON_ERROR,
+                    _(
+                        'Could not open the CR-Scan Ferret:\n\n{detail}\n\n'
+                        'Plug in the scanner via USB, then run ./scripts/dev-setup '
+                        '(builds libferret and pyorbbecsdk).'
+                    ).format(detail=result),
+                )
+            else:
+                logger.error('Unhandled connect failure: %s', result)
+                self._show_message(_('Connection failed'), wx.ICON_ERROR, str(result))
 
         self.update_status(driver.is_connected)
         self.GetParent().enable_gui(True)
@@ -214,11 +238,30 @@ class MainToolbar(wx.Panel):
             self.toolbar_scan.Hide()
 
     # ============= Control methods ===============
+    def apply_capabilities(self, caps: DeviceCapabilities) -> None:
+        self._caps_rotate = caps.toolbar_rotate
+        self._caps_lasers = caps.toolbar_lasers
+        show_control = caps.toolbar_rotate or caps.toolbar_lasers
+        if show_control:
+            self.toolbar_control.Show()
+        else:
+            self.toolbar_control.Hide()
+        tb = self.toolbar_control
+        tb.EnableTool(self.r_left_tool.GetId(), caps.toolbar_rotate)
+        tb.EnableTool(self.r_right_tool.GetId(), caps.toolbar_rotate)
+        tb.EnableTool(self.l1_tool.GetId(), caps.toolbar_lasers)
+        tb.EnableTool(self.l2_tool.GetId(), caps.toolbar_lasers)
+        self.Layout()
+
     def _enable_control_tools(self, enable):
-        self._enable_tool(self.r_left_tool, enable)
-        self._enable_tool(self.r_right_tool, enable)
-        self._enable_tool(self.l1_tool, enable)
-        self._enable_tool(self.l2_tool, enable)
+        if not self.toolbar_control.IsShown():
+            return
+        if self._caps_rotate:
+            self._enable_tool(self.r_left_tool, enable)
+            self._enable_tool(self.r_right_tool, enable)
+        if self._caps_lasers:
+            self._enable_tool(self.l1_tool, enable)
+            self._enable_tool(self.l2_tool, enable)
 
     def on_r_left_tool_clicked(self, item):
         step = profile.settings['motor_step_control']
